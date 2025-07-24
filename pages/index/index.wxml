@@ -1,7 +1,27 @@
 <!--index.wxml-->
-<navigation-bar title="Weixin" back="{{false}}" color="black" background="#FFF"></navigation-bar>
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    Weixin
+<view class="container">
+  <view class="welcome">
+    <text class="title">欢迎使用个人登录系统</text>
+    <text class="subtitle">点击底部"个人中心"标签进行登录</text>
   </view>
-</scroll-view>
+
+  <view class="features">
+    <view class="feature-item">
+      <text class="feature-icon">🔐</text>
+      <text class="feature-title">安全登录</text>
+      <text class="feature-desc">密码强度验证，保护账户安全</text>
+    </view>
+
+    <view class="feature-item">
+      <text class="feature-icon">📱</text>
+      <text class="feature-title">手机验证</text>
+      <text class="feature-desc">支持手机号码格式验证</text>
+    </view>
+
+    <view class="feature-item">
+      <text class="feature-icon">👁️</text>
+      <text class="feature-title">密码显示</text>
+      <text class="feature-desc">支持密码显示/隐藏切换</text>
+    </view>
+  </view>
+</view>

@@ -1,10 +1,65 @@
 /**index.wxss**/
-page {
-  height: 100vh;
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 40rpx 120rpx 40rpx; /* 底部留出tabBar空间 */
+  box-sizing: border-box;
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+
+.title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 20rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+/* 功能特性展示 */
+.features {
   display: flex;
   flex-direction: column;
+  gap: 30rpx;
 }
-.scrollarea {
-  flex: 1;
-  overflow-y: hidden;
+
+.feature-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20rpx;
+  padding: 40rpx 30rpx;
+  text-align: center;
+  backdrop-filter: blur(10rpx);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+}
+
+.feature-icon {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 20rpx;
+}
+
+.feature-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 16rpx;
+}
+
+.feature-desc {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
 }

@@ -1,0 +1,162 @@
+/* pages/personal/personal.wxss */
+
+/* 登录容器 */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 40rpx 120rpx 40rpx; /* 底部留出tabBar空间 */
+  box-sizing: border-box;
+}
+
+/* 登录头部 */
+.login-header {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+
+.login-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 登录表单 */
+.login-form {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 60rpx 40rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
+}
+
+/* 输入组 */
+.input-group {
+  margin-bottom: 40rpx;
+}
+
+.input-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.input-field {
+  width: 100%;
+  height: 88rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333333;
+  background: #fafafa;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #667eea;
+  background: #ffffff;
+  box-shadow: 0 0 0 4rpx rgba(102, 126, 234, 0.1);
+}
+
+/* 密码容器 */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  padding-right: 80rpx !important;
+}
+
+/* 密码输入框隐藏状态样式 */
+.password-input[password="true"] {
+  font-family: "Courier New", monospace;
+  letter-spacing: 2rpx;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 24rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.toggle-icon {
+  font-size: 28rpx;
+  color: #999999;
+  transition: color 0.3s ease;
+  user-select: none;
+}
+
+.password-toggle:active .toggle-icon {
+  color: #667eea;
+}
+
+.password-toggle:hover .toggle-icon {
+  color: #667eea;
+}
+
+/* 密码提示 */
+.password-hint {
+  margin-top: -20rpx;
+  margin-bottom: 40rpx;
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: #999999;
+  line-height: 1.4;
+}
+
+/* 登录按钮 */
+.login-btn {
+  width: 100%;
+  height: 88rpx;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  margin-top: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.login-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.4);
+}
+
+.login-btn.active:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.4);
+}
+
+.login-btn.disabled {
+  background: #e0e0e0;
+  color: #999999;
+  cursor: not-allowed;
+}
+
+/* 错误信息 */
+.error-message {
+  margin-top: 30rpx;
+  padding: 20rpx;
+  background: #fff5f5;
+  border: 2rpx solid #fed7d7;
+  border-radius: 12rpx;
+  text-align: center;
+}
+
+.error-text {
+  font-size: 26rpx;
+  color: #e53e3e;
+  line-height: 1.4;
+}

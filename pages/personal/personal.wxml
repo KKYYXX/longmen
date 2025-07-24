@@ -1,0 +1,74 @@
+<!--pages/personal/personal.wxml-->
+<view class="login-container">
+  <!-- 登录标题 -->
+  <view class="login-header">
+    <text class="login-title">个人登录</text>
+  </view>
+
+  <!-- 登录表单 -->
+  <view class="login-form">
+    <!-- 姓名输入 -->
+    <view class="input-group">
+      <text class="input-label">姓名</text>
+      <input
+        class="input-field"
+        type="text"
+        placeholder="请输入您的姓名"
+        value="{{formData.name}}"
+        bindinput="onNameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 手机号码输入 -->
+    <view class="input-group">
+      <text class="input-label">手机号码</text>
+      <input
+        class="input-field"
+        type="number"
+        placeholder="请输入11位手机号码"
+        value="{{formData.phone}}"
+        bindinput="onPhoneInput"
+        maxlength="11"
+      />
+    </view>
+
+    <!-- 密码输入 -->
+    <view class="input-group">
+      <text class="input-label">密码</text>
+      <view class="password-container">
+        <input
+          class="input-field password-input"
+          type="{{showPassword ? 'text' : 'password'}}"
+          placeholder="请输入不少于8位密码"
+          value="{{formData.password}}"
+          bindinput="onPasswordInput"
+          maxlength="20"
+          password="{{!showPassword}}"
+        />
+        <view class="password-toggle" bindtap="togglePassword">
+          <text class="toggle-icon">{{showPassword ? '👁️' : '🙈'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 密码要求提示 -->
+    <view class="password-hint">
+      <text class="hint-text">密码要求：不少于8位，包含大小写字母和数字</text>
+    </view>
+
+    <!-- 登录按钮 -->
+    <button
+      class="login-btn {{isFormValid ? 'active' : 'disabled'}}"
+      bindtap="onLogin"
+      disabled="{{!isFormValid}}"
+    >
+      登录
+    </button>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-message" wx:if="{{errorMessage}}">
+    <text class="error-text">{{errorMessage}}</text>
+  </view>
+</view>
