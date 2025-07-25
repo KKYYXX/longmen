@@ -139,7 +139,15 @@ Page({
     wx.showToast({
       title: '登录成功',
       icon: 'success',
-      duration: 2000
+      duration: 1500,
+      success: () => {
+        // 延迟跳转到权限管理中心
+        setTimeout(() => {
+          wx.navigateTo({
+            url: '/pages/admin/admin?name=' + encodeURIComponent(name) + '&phone=' + phone
+          });
+        }, 1500);
+      }
     });
 
     // 这里可以添加实际的登录逻辑，比如调用API

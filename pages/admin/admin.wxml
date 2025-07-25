@@ -1,0 +1,34 @@
+<!--pages/admin/admin.wxml-->
+<view class="admin-container">
+  <!-- 页面标题 -->
+  <view class="admin-header">
+    <text class="admin-title">权限管理中心</text>
+  </view>
+
+  <!-- 功能按钮区域 -->
+  <view class="admin-content">
+    <view class="button-group">
+      <!-- 有限管理按钮 -->
+      <button class="admin-btn" bindtap="onLimitedManage">
+        <text class="btn-text">有限管理</text>
+      </button>
+
+      <!-- 负责人转让按钮 -->
+      <button class="admin-btn" bindtap="onTransferOwnership">
+        <text class="btn-text">负责人转让</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="admin-footer">
+    <text class="footer-text">操作将影响账号权限分配</text>
+    <text class="footer-number">49999998</text>
+
+    <!-- 用户信息显示 -->
+    <view class="user-info" wx:if="{{userInfo.name}}">
+      <text class="user-name">当前用户：{{userInfo.name}}</text>
+      <text class="user-phone">手机号：{{userInfo.phone}}</text>
+    </view>
+  </view>
+</view>

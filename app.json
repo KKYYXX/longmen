@@ -1,14 +1,15 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/personal/personal"
+    "pages/personal/personal",
+    "pages/admin/admin"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarBackgroundColor": "#ffe9b3",
     "navigationBarTitleText": "个人登录系统",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f8f9fa",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fffbe6",
     "enablePullDownRefresh": false
   },
   "tabBar": {

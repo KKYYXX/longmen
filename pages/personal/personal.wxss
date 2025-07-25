@@ -3,7 +3,7 @@
 /* 登录容器 */
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fffbe6 0%, #ffe9b3 100%);
   padding: 60rpx 40rpx 120rpx 40rpx; /* 底部留出tabBar空间 */
   box-sizing: border-box;
 }
@@ -11,14 +11,15 @@
 /* 登录头部 */
 .login-header {
   text-align: center;
-  margin-bottom: 80rpx;
+  margin-bottom: 0;
 }
 
 .login-title {
   font-size: 48rpx;
   font-weight: bold;
-  color: #ffffff;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+  color: #b8860b;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 40rpx;
 }
 
 /* 登录表单 */
@@ -121,11 +122,16 @@
   width: 100%;
   height: 88rpx;
   border-radius: 12rpx;
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: bold;
   border: none;
   margin-top: 20rpx;
   transition: all 0.3s ease;
+  text-align: center;
+  letter-spacing: 2rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-btn.active {
