@@ -26,3 +26,40 @@
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
 }
+
+/* 功能特性展示 */
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.feature-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20rpx;
+  padding: 40rpx 30rpx;
+  text-align: center;
+  backdrop-filter: blur(10rpx);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+}
+
+.feature-icon {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 20rpx;
+}
+
+.feature-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 16rpx;
+}
+
+.feature-desc {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}

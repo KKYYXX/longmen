@@ -24,8 +24,7 @@
   border-radius: 20rpx;
   box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.12);
   padding: 60rpx 32rpx 60rpx 32rpx;
-  margin-bottom: 100rpx;
-  margin-top: 60rpx;
+  margin-bottom: 60rpx;
 }
 
 .button-group {
