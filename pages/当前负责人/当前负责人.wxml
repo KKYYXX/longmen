@@ -1,0 +1,35 @@
+<!--pages/当前负责人/当前负责人.wxml-->
+<view class="manager-container">
+  <!-- 页面头部 -->
+  <view class="manager-header">
+    <text class="manager-title">当前负责人</text>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="manager-content">
+    <!-- 头像区域 -->
+    <view class="avatar-section">
+      <image class="avatar-image" src="/images/生成个人中心图标 (2).png" mode="aspectFit"></image>
+    </view>
+
+    <!-- 信息区域 -->
+    <view class="info-section">
+      <view class="info-item">
+        <text class="info-label">姓名：</text>
+        <text class="info-value">{{managerInfo.name || '暂无'}}</text>
+      </view>
+
+      <view class="info-item">
+        <text class="info-label">电话：</text>
+        <text class="info-value">{{managerInfo.phone || '暂无'}}</text>
+      </view>
+    </view>
+
+    <!-- 转让按钮 -->
+    <view class="action-section">
+      <button class="transfer-btn" bindtap="onTransfer">
+        <text class="btn-text">转让</text>
+      </button>
+    </view>
+  </view>
+</view>

@@ -12,32 +12,94 @@ Page({
   },
 
   /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+    console.log('=== admin页面加载 ===');
+    this.loadUserInfo();
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+    console.log('=== admin页面显示 ===');
+    this.loadUserInfo();
+  },
+
+  /**
+   * 加载用户信息
+   */
+  loadUserInfo() {
+    const app = getApp();
+    const userInfo = app.getUserInfo();
+
+    console.log('admin页面获取到的用户信息:', JSON.stringify(userInfo));
+
+    this.setData({
+      userInfo: {
+        name: userInfo.name || '未知用户',
+        phone: userInfo.phone || '未知电话'
+      }
+    });
+
+    console.log('admin页面设置的用户信息:', JSON.stringify(this.data.userInfo));
+  },
+
+  /**
    * 有限管理按钮点击事件
    */
   onLimitedManage() {
-    wx.showToast({
-      title: '有限管理功能',
-      icon: 'success',
-      duration: 2000
+    console.log('点击了有限管理按钮');
+
+    // 跳转到有限管理人员名单页面
+    wx.navigateTo({
+      url: '/pages/有限管理人员名单/有限管理人员名单',
+      success: function() {
+        console.log('成功跳转到有限管理人员名单页面');
+      },
+      fail: function(err) {
+        console.error('跳转失败:', err);
+        console.error('错误详情:', JSON.stringify(err));
+        wx.showToast({
+          title: '页面跳转失败: ' + (err.errMsg || '未知错误'),
+          icon: 'none',
+          duration: 3000
+        });
+      }
     });
-    console.log('点击了有限管理');
   },
 
   /**
    * 负责人转让按钮点击事件
    */
   onTransferOwnership() {
-    wx.showModal({
-      title: '负责人转让',
-      content: '确定要进行负责人转让操作吗？',
-      success: function(res) {
-        if (res.confirm) {
-          wx.showToast({
-            title: '转让功能开发中',
-            icon: 'none',
-            duration: 2000
-          });
-        }
+    console.log('点击了负责人转让按钮');
+
+    // 获取当前用户信息
+    const userInfo = this.data.userInfo;
+    console.log('传递用户信息:', userInfo);
+
+    // 构建跳转URL，传递用户信息
+    let url = '/pages/当前负责人/当前负责人';
+    if (userInfo.name && userInfo.phone) {
+      url += `?name=${encodeURIComponent(userInfo.name)}&phone=${userInfo.phone}`;
+    }
+
+    // 跳转到当前负责人页面
+    wx.navigateTo({
+      url: url,
+      success: function() {
+        console.log('成功跳转到当前负责人页面');
+      },
+      fail: function(err) {
+        console.error('跳转失败:', err);
+        console.error('错误详情:', JSON.stringify(err));
+        wx.showToast({
+          title: '页面跳转失败: ' + (err.errMsg || '未知错误'),
+          icon: 'none',
+          duration: 3000
+        });
       }
     });
   },

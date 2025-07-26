@@ -1,0 +1,46 @@
+<!--pages/被转让人信息/被转让人信息.wxml-->
+<view class="transferee-container">
+
+  <!-- 主要内容区域 -->
+  <view class="transferee-content">
+    <!-- 头像区域 -->
+    <view class="avatar-section">
+      <image class="avatar-image" src="/images/生成个人中心图标 (2).png" mode="aspectFit"></image>
+    </view>
+
+    <!-- 信息区域 -->
+    <view class="info-section">
+      <view class="info-item">
+        <text class="info-label">姓名：</text>
+        <input class="info-input" placeholder="请输入姓名" value="{{transfereeInfo.name}}" bindinput="onNameInput" />
+      </view>
+
+      <view class="info-item">
+        <text class="info-label">电话：</text>
+        <input class="info-input" placeholder="请输入电话" value="{{transfereeInfo.phone}}" bindinput="onPhoneInput" type="number" />
+      </view>
+
+      <view class="info-item">
+        <text class="info-label">密码：</text>
+        <view class="password-container">
+          <input class="info-input password-input" placeholder="大小写字母+数字，不少于8位" value="{{transfereeInfo.password}}" bindinput="onPasswordInput" password="{{!showPassword}}" />
+          <view class="password-toggle" bindtap="togglePassword">
+            <text class="toggle-icon">{{showPassword ? '🙈' : '👁️'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 密码要求提示 -->
+      <view class="password-hint">
+        <text class="hint-text">密码要求：大小写字母和数字相结合，不少于8位数</text>
+      </view>
+    </view>
+
+    <!-- 确认按钮 -->
+    <view class="action-section">
+      <button class="confirm-btn {{isFormValid ? 'active' : 'disabled'}}" bindtap="onConfirm" disabled="{{!isFormValid}}">
+        <text class="btn-text">确认转让</text>
+      </button>
+    </view>
+  </view>
+</view>

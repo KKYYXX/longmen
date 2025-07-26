@@ -1,0 +1,220 @@
+/* pages/被转让人信息/被转让人信息.wxss */
+
+/* 被转让人页面容器 - 与其他页面保持一致的风格 */
+.transferee-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fffbe6 0%, #ffe9b3 100%);
+  padding: 60rpx 40rpx 120rpx 40rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+
+.transferee-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #b8860b;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 40rpx;
+  display: block;
+  letter-spacing: 2rpx;
+}
+
+/* 主要内容区域 */
+.transferee-content {
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.12);
+  padding: 60rpx 40rpx;
+  width: 100%;
+  max-width: 600rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 头像区域 */
+.avatar-section {
+  margin-bottom: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-image {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 20rpx;
+  background: #f5f5f5;
+  padding: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 信息区域 */
+.info-section {
+  width: 100%;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  min-width: 120rpx;
+  margin-right: 20rpx;
+}
+
+.info-value {
+  font-size: 32rpx;
+  color: #666;
+  flex: 1;
+}
+
+/* 输入框样式 */
+.info-input {
+  font-size: 32rpx;
+  color: #333;
+  flex: 1;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 16rpx 20rpx;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.info-input:focus {
+  border-color: #667eea;
+  background: #ffffff;
+  box-shadow: 0 0 0 4rpx rgba(102, 126, 234, 0.1);
+}
+
+.info-input::placeholder {
+  color: #ccc;
+  font-size: 28rpx;
+}
+
+/* 密码容器 */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.password-input {
+  padding-right: 80rpx !important;
+}
+
+/* 密码输入框隐藏状态样式 */
+.password-input[password="true"] {
+  font-family: "Courier New", monospace;
+  letter-spacing: 2rpx;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 24rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.toggle-icon {
+  font-size: 28rpx;
+  color: #999999;
+  transition: color 0.3s ease;
+  user-select: none;
+}
+
+.password-toggle:active .toggle-icon {
+  color: #667eea;
+}
+
+.password-toggle:hover .toggle-icon {
+  color: #667eea;
+}
+
+/* 密码提示 */
+.password-hint {
+  margin-top: 20rpx;
+  padding: 16rpx 20rpx;
+  background: #f8f9ff;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #667eea;
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 确认按钮区域 */
+.action-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 40rpx;
+}
+
+.confirm-btn {
+  width: 300rpx;
+  height: 88rpx;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 2rpx;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+
+/* 按钮激活状态 */
+.confirm-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.4);
+}
+
+.confirm-btn.active:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.4);
+}
+
+/* 按钮禁用状态 */
+.confirm-btn.disabled {
+  background: #e0e0e0;
+  color: #999999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  z-index: 2;
+  position: relative;
+}
