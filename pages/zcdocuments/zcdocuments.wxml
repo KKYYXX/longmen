@@ -1,0 +1,4 @@
+<view class="zcdocuments-container">
+  <button class="querybutton" bindtap="goToZcquery">查询</button>
+  <button class="alterbuttton" bindtap="goToZcalter">删改</button>
+</view> 
