@@ -2,14 +2,24 @@
   "pages": [
     "pages/index/index",
     "pages/personal/personal",
-    "pages/admin/admin"
+    "pages/admin/admin",
+    "pages/zcdocuments/zcdocuments",
+    "pages/zcquery/zcquery",
+    "pages/zcalter/zcalter",
+    "pages/有限管理人员名单/有限管理人员名单",
+    "pages/当前负责人/当前负责人",
+    "pages/被转让人信息/被转让人信息",
+    "pages/项目查询权限人员/项目查询权限人员",
+    "pages/项目修改权限人员/项目修改权限人员",
+    "pages/政策文件修改权限人员/政策修改权限人员",
+    "pages/典型案例修改权限人员/典型案例修改权限人员"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffe9b3",
     "navigationBarTitleText": "个人登录系统",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#fffbe6",
+    "backgroundColor": "#fffef8",
     "enablePullDownRefresh": false
   },
   "tabBar": {
@@ -18,6 +28,9 @@
     "borderStyle": "white",
     "backgroundColor": "#ffffff",
     "position": "bottom",
+    "height": "120rpx",
+    "fontSize": "100rpx",
+    "iconWidth": "100rpx",
     "list": [
       {
         "pagePath": "pages/index/index",

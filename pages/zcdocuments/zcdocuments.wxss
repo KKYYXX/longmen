@@ -1,0 +1,19 @@
+/* 样式统一在app.wxss管理 */
+
+.zcdocuments-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40rpx;
+  box-sizing: border-box;
+}
+
+.querybutton, .alterbuttton {
+  margin: 80rpx 0;
+  width: 600rpx;
+  height: 250rpx;
+  line-height: 250rpx;
+  font-size: 38rpx;
+} 
