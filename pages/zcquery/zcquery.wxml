@@ -1,1 +1,73 @@
-<view>资料查询页面</view> 
+<!-- 页面容器 -->
+<view class="zcquery-container">
+  <!-- 搜索区域 -->
+  <view class="search-section">
+    <view class="search-box">
+      <input 
+        class="search-input" 
+        placeholder="搜索文件名..." 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearch"
+      />
+      <view class="search-btn" bindtap="onSearch">
+        <text class="search-icon">🔍</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 文件列表 -->
+  <view class="file-list">
+    <view 
+      class="file-item {{item.expanded ? 'expanded' : ''}}" 
+      wx:for="{{fileList}}" 
+      wx:key="id"
+      bindtap="onFileTap"
+      data-index="{{index}}"
+    >
+      <!-- 文件头部 -->
+      <view class="file-header">
+        <view class="file-info">
+          <view class="file-icon">📄</view>
+          <view class="file-details">
+            <view class="file-name">{{item.fileName}}</view>
+            <view class="file-meta">
+              <text class="file-size">{{item.fileSize}}</text>
+              <text class="file-date">{{item.updateDate}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="file-actions">
+          <view class="expand-icon {{item.expanded ? 'expanded' : ''}}">▼</view>
+        </view>
+      </view>
+
+      <!-- 文件内容（展开时显示） -->
+      <view class="file-content" wx:if="{{item.expanded}}">
+        <view class="content-header">
+          <text class="content-title">文件内容</text>
+          <view class="content-actions">
+            <button class="action-btn download-btn" bindtap="onDownload" data-file="{{item}}">下载</button>
+            <button class="action-btn share-btn" bindtap="onShare" data-file="{{item}}">分享</button>
+          </view>
+        </view>
+        <view class="content-body">
+          <text class="content-text">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore}}">
+    <button class="load-more-btn" bindtap="onLoadMore" loading="{{loading}}">
+      {{loading ? '加载中...' : '加载更多'}}
+    </button>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{fileList.length === 0 && !loading}}">
+    <view class="empty-icon">📁</view>
+    <view class="empty-text">暂无文件</view>
+  </view>
+</view> 

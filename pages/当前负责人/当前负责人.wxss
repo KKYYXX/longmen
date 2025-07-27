@@ -1,9 +1,16 @@
 /* pages/当前负责人/当前负责人.wxss */
 
+.current-responsible-container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 40rpx;
+  box-sizing: border-box;
+}
+
 /* 负责人页面容器 - 与其他页面保持一致的风格 */
 .manager-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #fffbe6 0%, #ffe9b3 100%);
+  background: #ffffff;
   padding: 60rpx 40rpx 120rpx 40rpx;
   box-sizing: border-box;
   display: flex;

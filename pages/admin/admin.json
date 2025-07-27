@@ -1,4 +1,6 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "权限管理中心"  
+  "navigationBarTitleText": "权限管理中心",
+  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTextStyle": "black"
 }

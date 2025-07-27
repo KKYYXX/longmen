@@ -2,7 +2,7 @@
 <view class="container">
 
   <view class="welcome">
-    <text class="title">个人登录系统</text>
+    <text class="title">智绘龙门阵</text>
     <text class="subtitle">欢迎使用权限管理系统</text>
   </view>
   

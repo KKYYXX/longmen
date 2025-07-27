@@ -1,0 +1,36 @@
+<!-- 增加文件页面 -->
+<view class="zcalter-add-container">
+  <view class="page-header">
+    <text class="page-title">增加文件</text>
+  </view>
+  
+  <view class="form-container">
+    <view class="form-item">
+      <text class="form-label">文件名称</text>
+      <input class="form-input" placeholder="请输入文件名称" value="{{fileName}}" bindinput="onFileNameInput" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">文件类型</text>
+      <picker class="form-picker" range="{{fileTypes}}" value="{{fileTypeIndex}}" bindchange="onFileTypeChange">
+        <view class="picker-text">{{fileTypes[fileTypeIndex]}}</view>
+      </picker>
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">文件描述</text>
+      <textarea class="form-textarea" placeholder="请输入文件描述" value="{{fileDescription}}" bindinput="onDescriptionInput" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">上传文件</text>
+      <button class="upload-btn" bindtap="chooseFile">选择文件</button>
+      <text class="file-info" wx:if="{{selectedFile}}">已选择: {{selectedFile.name}}</text>
+    </view>
+  </view>
+  
+  <view class="action-buttons">
+    <button class="submit-btn" bindtap="submitForm">提交</button>
+    <button class="cancel-btn" bindtap="goBack">取消</button>
+  </view>
+</view> 

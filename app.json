@@ -6,6 +6,8 @@
     "pages/zcdocuments/zcdocuments",
     "pages/zcquery/zcquery",
     "pages/zcalter/zcalter",
+    "pages/zcalter_add/zcalter_add",
+    "pages/zcalter_delete/zcalter_delete",
     "pages/有限管理人员名单/有限管理人员名单",
     "pages/当前负责人/当前负责人",
     "pages/被转让人信息/被转让人信息",
@@ -16,10 +18,10 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#ffe9b3",
+    "navigationBarBackgroundColor": "#f9e286",
     "navigationBarTitleText": "个人登录系统",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#fffef8",
+    "backgroundColor": "#fffbe6",
     "enablePullDownRefresh": false
   },
   "tabBar": {
@@ -28,9 +30,6 @@
     "borderStyle": "white",
     "backgroundColor": "#ffffff",
     "position": "bottom",
-    "height": "120rpx",
-    "fontSize": "100rpx",
-    "iconWidth": "100rpx",
     "list": [
       {
         "pagePath": "pages/index/index",
@@ -42,11 +41,5 @@
       }
     ]
   },
-  "networkTimeout": {
-    "request": 10000,
-    "downloadFile": 10000
-  },
-  "debug": true,
-  "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "sitemapLocation": "sitemap.json"
 }

@@ -1,1 +1,31 @@
-/* 资料删改页面样式 */ 
+/* 资料删改页面样式 */
+
+.zcalter-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40rpx;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.addbutton, .deletebutton {
+  margin: 80rpx 0;
+  width: 600rpx;
+  height: 250rpx;
+  line-height: 250rpx;
+  font-size: 38rpx;
+  background: #efc758;
+  color: #ffffff;
+  border: none;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 12rpx rgba(239, 199, 88, 0.2);
+  transition: all 0.3s ease;
+}
+
+.addbutton:active, .deletebutton:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(239, 199, 88, 0.3);
+} 

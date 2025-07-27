@@ -1,1 +1,8 @@
 /* pages/项目修改权限人员/项目修改权限人员.wxss */
+
+.project-modify-permission-container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 40rpx;
+  box-sizing: border-box;
+}

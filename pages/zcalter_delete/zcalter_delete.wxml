@@ -1,0 +1,51 @@
+<!-- 删除文件页面 -->
+<view class="zcalter-delete-container">
+  <view class="page-header">
+    <text class="page-title">删除文件</text>
+  </view>
+  
+  <!-- 搜索区域 -->
+  <view class="search-section">
+    <view class="search-box">
+      <input 
+        class="search-input" 
+        placeholder="搜索文件名..." 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearch"
+      />
+      <view class="search-btn" bindtap="onSearch">
+        <text class="search-icon">🔍</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 文件列表 -->
+  <view class="file-list">
+    <view 
+      class="file-item" 
+      wx:for="{{fileList}}" 
+      wx:key="id"
+    >
+      <view class="file-info">
+        <view class="file-icon">📄</view>
+        <view class="file-details">
+          <view class="file-name">{{item.fileName}}</view>
+          <view class="file-meta">
+            <text class="file-size">{{item.fileSize}}</text>
+            <text class="file-date">{{item.updateDate}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="file-actions">
+        <button class="delete-btn" bindtap="deleteFile" data-file="{{item}}">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{fileList.length === 0}}">
+    <view class="empty-icon">📁</view>
+    <view class="empty-text">暂无文件</view>
+  </view>
+</view> 

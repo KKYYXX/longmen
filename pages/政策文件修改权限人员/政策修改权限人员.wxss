@@ -1,1 +1,8 @@
 /* pages/政策文件修改权限人员/政策修改权限人员.wxss */
+
+.policy-permission-container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 40rpx;
+  box-sizing: border-box;
+}

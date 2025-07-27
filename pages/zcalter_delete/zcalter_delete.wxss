@@ -1,11 +1,23 @@
-/* 资料查询页面样式 */
+/* 删除文件页面样式 */
 
-.zcquery-container {
+.zcalter-delete-container {
   min-height: 100vh;
   background: #ffffff;
   padding: 0;
   box-sizing: border-box;
-  padding-top: 20rpx;
+}
+
+.page-header {
+  text-align: center;
+  padding: 40rpx;
+  background: #f8f9fa;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333333;
 }
 
 /* 搜索区域 */
@@ -58,25 +70,10 @@
   background: #ffffff;
   border-radius: 16rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.file-item:active {
-  transform: scale(0.98);
-}
-
-.file-item.expanded {
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
-}
-
-/* 文件头部 */
-.file-header {
+  padding: 30rpx 40rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 30rpx 40rpx;
-  background: #ffffff;
 }
 
 .file-info {
@@ -118,95 +115,17 @@
   align-items: center;
 }
 
-.expand-icon {
-  font-size: 24rpx;
-  color: #999999;
-  transition: transform 0.3s ease;
-}
-
-.expand-icon.expanded {
-  transform: rotate(180deg);
-}
-
-/* 文件内容 */
-.file-content {
-  background: #f8f9fa;
-  border-top: 1rpx solid #e9ecef;
-  padding: 30rpx 40rpx;
-}
-
-.content-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
-}
-
-.content-title {
+.delete-btn {
+  padding: 16rpx 32rpx;
   font-size: 28rpx;
-  font-weight: bold;
-  color: #333333;
-}
-
-.content-actions {
-  display: flex;
-  gap: 16rpx;
-}
-
-.action-btn {
-  padding: 12rpx 24rpx;
-  font-size: 24rpx;
   border-radius: 8rpx;
   border: none;
-  background: #efc758;
+  background: #e74c3c;
   color: #ffffff;
   font-weight: bold;
 }
 
-.action-btn:active {
-  transform: scale(0.95);
-}
-
-.download-btn {
-  background: #efc758;
-}
-
-.share-btn {
-  background: #f1a464;
-}
-
-.content-body {
-  background: #ffffff;
-  border-radius: 12rpx;
-  padding: 30rpx;
-  border: 1rpx solid #e9ecef;
-}
-
-.content-text {
-  font-size: 28rpx;
-  color: #333333;
-  line-height: 1.6;
-  word-break: break-all;
-}
-
-/* 加载更多 */
-.load-more {
-  padding: 40rpx;
-  text-align: center;
-}
-
-.load-more-btn {
-  width: 300rpx;
-  height: 80rpx;
-  background: #efc758;
-  color: #ffffff;
-  border: none;
-  border-radius: 12rpx;
-  font-size: 28rpx;
-  font-weight: bold;
-}
-
-.load-more-btn:active {
+.delete-btn:active {
   transform: scale(0.95);
 }
 

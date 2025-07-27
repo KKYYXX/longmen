@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "政策文件删改"
+  "navigationBarTitleText": "政策文件删改",
+  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTextStyle": "black"
 } 

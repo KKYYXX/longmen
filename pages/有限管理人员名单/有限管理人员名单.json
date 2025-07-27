@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "有限管理"
+  "navigationBarTitleText": "有限管理",
+  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTextStyle": "black"
 }

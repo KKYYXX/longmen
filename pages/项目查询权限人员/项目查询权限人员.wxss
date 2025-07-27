@@ -1,1 +1,8 @@
-/* pages/项目查询人员名单/项目查询人员名单.wxss */
+/* pages/项目查询权限人员/项目查询权限人员.wxss */
+
+.project-query-permission-container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 40rpx;
+  box-sizing: border-box;
+}

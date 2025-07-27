@@ -109,6 +109,26 @@ Page({
   },
 
   /**
+   * 根据用户信息获取角色
+   * 实际项目中应该从后端获取用户角色
+   */
+  getUserRole(name, phone) {
+    // 测试阶段：任何登录用户都分配为admin角色，便于测试
+    return 'admin';
+    
+    // 正式环境下的角色分配逻辑（注释掉，等后端完成后启用）
+    // if (name.includes('admin') || phone.endsWith('0000')) {
+    //   return 'admin';
+    // } else if (name.includes('editor') || phone.endsWith('1111')) {
+    //   return 'editor';
+    // } else if (name.includes('manager') || phone.endsWith('2222')) {
+    //   return 'manager';
+    // } else {
+    //   return 'user'; // 普通用户，没有删改权限
+    // }
+  },
+
+  /**
    * 登录处理
    */
   onLogin() {
@@ -135,6 +155,19 @@ Page({
       return;
     }
 
+    // 模拟登录成功，存储用户信息
+    const userInfo = {
+      id: Date.now(), // 模拟用户ID
+      name: name,
+      phone: phone,
+      role: this.getUserRole(name, phone), // 根据用户信息获取角色
+      loginTime: new Date().toISOString()
+    };
+
+    // 存储用户信息和登录状态
+    wx.setStorageSync('userInfo', userInfo);
+    wx.setStorageSync('isLoggedIn', true);
+
     // 登录成功处理
     wx.showToast({
       title: '登录成功',
@@ -152,6 +185,7 @@ Page({
 
     // 这里可以添加实际的登录逻辑，比如调用API
     console.log('登录信息：', { name, phone, password });
+    console.log('用户信息已存储：', userInfo);
   },
 
   /**
