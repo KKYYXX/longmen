@@ -47,16 +47,16 @@ Page({
   },
 
   /**
-   * 有限管理按钮点击事件
+   * 权限管理按钮点击事件
    */
   onLimitedManage() {
-    console.log('点击了有限管理按钮');
+    console.log('点击了权限管理按钮');
 
-    // 跳转到有限管理人员名单页面
+    // 跳转到权限管理人员名单页面
     wx.navigateTo({
-      url: '/pages/有限管理人员名单/有限管理人员名单',
+      url: '/pages/权限管理人员名单/权限管理人员名单',
       success: function() {
-        console.log('成功跳转到有限管理人员名单页面');
+        console.log('成功跳转到权限管理人员名单页面');
       },
       fail: function(err) {
         console.error('跳转失败:', err);

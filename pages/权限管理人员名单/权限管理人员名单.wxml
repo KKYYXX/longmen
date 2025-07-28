@@ -1,8 +1,8 @@
-<!--pages/有限管理人员名单/有限管理人员名单.wxml-->
+<!--pages/权限管理人员名单/权限管理人员名单.wxml-->
 <view class="container">
   <!-- 页面头部 -->
   <view class="header">
-    <text class="title">有限管理人员名单</text>
+    <text class="title">权限管理人员名单</text>
   </view>
 
   <!-- 功能按钮区域 -->

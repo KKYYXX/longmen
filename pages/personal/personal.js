@@ -5,88 +5,332 @@ Page({
    * 页面的初始数据
    */
   data: {
-    // 表单数据
-    formData: {
-      name: '',
+    // 当前模式：login 或 register
+    currentMode: 'login',
+    // 登录方式：phone 或 wechat
+    loginType: 'phone',
+    
+    // 登录表单数据
+    loginForm: {
       phone: '',
+      wechat: '',
       password: ''
     },
+    
+    // 注册表单数据
+    registerForm: {
+      name: '',
+      phone: '',
+      wechat: '',
+      password: '',
+      confirmPassword: ''
+    },
+    
     // 密码显示状态
-    showPassword: false,
+    showLoginPassword: false,
+    showRegisterPassword: false,
+    showConfirmPassword: false,
+    
     // 表单验证状态
-    isFormValid: false,
+    isLoginFormValid: false,
+    isRegisterFormValid: false,
+    
     // 错误信息
     errorMessage: ''
   },
 
   /**
-   * 姓名输入处理
+   * 生命周期函数--监听页面加载
    */
-  onNameInput(e) {
+  onLoad(options) {
+    // 初始化用户数据库
+    this.initUserDatabase();
+  },
+
+  /**
+   * 初始化用户数据库
+   */
+  initUserDatabase() {
+    // 检查是否已有用户数据，如果没有则初始化
+    const users = wx.getStorageSync('userDatabase');
+    if (!users) {
+      wx.setStorageSync('userDatabase', []);
+    }
+  },
+
+  /**
+   * 检查用户是否已注册
+   */
+  checkUserExists(identifier, type) {
+    const users = wx.getStorageSync('userDatabase') || [];
+    
+    if (type === 'phone') {
+      return users.find(user => user.phone === identifier);
+    } else {
+      return users.find(user => user.wechat === identifier);
+    }
+  },
+
+  /**
+   * 验证用户登录信息
+   */
+  validateUserLogin(identifier, password, type) {
+    const users = wx.getStorageSync('userDatabase') || [];
+    
+    if (type === 'phone') {
+      return users.find(user => user.phone === identifier && user.password === password);
+    } else {
+      return users.find(user => user.wechat === identifier && user.password === password);
+    }
+  },
+
+  /**
+   * 注册新用户
+   */
+  registerNewUser(userData) {
+    const users = wx.getStorageSync('userDatabase') || [];
+    
+    // 检查手机号是否已存在
+    if (users.find(user => user.phone === userData.phone)) {
+      return { success: false, message: '该手机号已被注册' };
+    }
+    
+    // 检查微信号是否已存在
+    if (users.find(user => user.wechat === userData.wechat)) {
+      return { success: false, message: '该微信号已被注册' };
+    }
+    
+    // 添加新用户
+    const newUser = {
+      id: Date.now(),
+      name: userData.name,
+      phone: userData.phone,
+      wechat: userData.wechat,
+      password: userData.password,
+      registerTime: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    wx.setStorageSync('userDatabase', users);
+    
+    return { success: true, user: newUser };
+  },
+
+  /**
+   * 切换到登录模式
+   */
+  switchToLogin() {
     this.setData({
-      'formData.name': e.detail.value,
+      currentMode: 'login',
       errorMessage: ''
     });
-    this.validateForm();
   },
 
   /**
-   * 手机号码输入处理
+   * 切换到注册模式
    */
-  onPhoneInput(e) {
+  switchToRegister() {
     this.setData({
-      'formData.phone': e.detail.value,
+      currentMode: 'register',
       errorMessage: ''
     });
-    this.validateForm();
   },
 
   /**
-   * 密码输入处理
+   * 切换登录方式
    */
-  onPasswordInput(e) {
+  switchLoginType(e) {
+    const type = e.currentTarget.dataset.type;
     this.setData({
-      'formData.password': e.detail.value,
+      loginType: type,
       errorMessage: ''
     });
-    this.validateForm();
+    this.validateLoginForm();
+  },
+
+  // ========== 登录表单处理 ==========
+  
+  /**
+   * 登录手机号输入处理
+   */
+  onLoginPhoneInput(e) {
+    this.setData({
+      'loginForm.phone': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateLoginForm();
   },
 
   /**
-   * 切换密码显示/隐藏
+   * 登录微信号输入处理
    */
-  togglePassword() {
+  onLoginWechatInput(e) {
     this.setData({
-      showPassword: !this.data.showPassword
+      'loginForm.wechat': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateLoginForm();
+  },
+
+  /**
+   * 登录密码输入处理
+   */
+  onLoginPasswordInput(e) {
+    this.setData({
+      'loginForm.password': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateLoginForm();
+  },
+
+  /**
+   * 切换登录密码显示/隐藏
+   */
+  toggleLoginPassword() {
+    this.setData({
+      showLoginPassword: !this.data.showLoginPassword
     });
   },
 
   /**
-   * 表单验证
+   * 登录表单验证
    */
-  validateForm() {
-    const { name, phone, password } = this.data.formData;
+  validateLoginForm() {
+    const { loginType, loginForm } = this.data;
+    
+    if (loginType === 'phone') {
+      // 手机号登录验证
+      const { phone, password } = loginForm;
+      if (!phone.trim() || !password.trim()) {
+        this.setData({ isLoginFormValid: false });
+        return;
+      }
+      
+      // 验证手机号格式
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      if (!phoneRegex.test(phone)) {
+        this.setData({ isLoginFormValid: false });
+        return;
+      }
+    } else {
+      // 微信登录验证
+      const { wechat, password } = loginForm;
+      if (!wechat.trim() || !password.trim()) {
+        this.setData({ isLoginFormValid: false });
+        return;
+      }
+    }
+
+    this.setData({ isLoginFormValid: true });
+  },
+
+  // ========== 注册表单处理 ==========
+  
+  /**
+   * 注册姓名输入处理
+   */
+  onRegisterNameInput(e) {
+    this.setData({
+      'registerForm.name': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateRegisterForm();
+  },
+
+  /**
+   * 注册手机号输入处理
+   */
+  onRegisterPhoneInput(e) {
+    this.setData({
+      'registerForm.phone': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateRegisterForm();
+  },
+
+  /**
+   * 注册微信号输入处理
+   */
+  onRegisterWechatInput(e) {
+    this.setData({
+      'registerForm.wechat': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateRegisterForm();
+  },
+
+  /**
+   * 注册密码输入处理
+   */
+  onRegisterPasswordInput(e) {
+    this.setData({
+      'registerForm.password': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateRegisterForm();
+  },
+
+  /**
+   * 确认密码输入处理
+   */
+  onConfirmPasswordInput(e) {
+    this.setData({
+      'registerForm.confirmPassword': e.detail.value,
+      errorMessage: ''
+    });
+    this.validateRegisterForm();
+  },
+
+  /**
+   * 切换注册密码显示/隐藏
+   */
+  toggleRegisterPassword() {
+    this.setData({
+      showRegisterPassword: !this.data.showRegisterPassword
+    });
+  },
+
+  /**
+   * 切换确认密码显示/隐藏
+   */
+  toggleConfirmPassword() {
+    this.setData({
+      showConfirmPassword: !this.data.showConfirmPassword
+    });
+  },
+
+  /**
+   * 注册表单验证
+   */
+  validateRegisterForm() {
+    const { name, phone, wechat, password, confirmPassword } = this.data.registerForm;
 
     // 检查所有字段是否填写
-    if (!name.trim() || !phone.trim() || !password.trim()) {
-      this.setData({ isFormValid: false });
+    if (!name.trim() || !phone.trim() || !wechat.trim() || !password.trim() || !confirmPassword.trim()) {
+      this.setData({ isRegisterFormValid: false });
       return;
     }
 
     // 验证手机号格式
     const phoneRegex = /^1[3-9]\d{9}$/;
     if (!phoneRegex.test(phone)) {
-      this.setData({ isFormValid: false });
+      this.setData({ isRegisterFormValid: false });
       return;
     }
 
     // 验证密码格式
     if (!this.validatePassword(password)) {
-      this.setData({ isFormValid: false });
+      this.setData({ isRegisterFormValid: false });
       return;
     }
 
-    this.setData({ isFormValid: true });
+    // 验证确认密码
+    if (password !== confirmPassword) {
+      this.setData({ isRegisterFormValid: false });
+      return;
+    }
+
+    this.setData({ isRegisterFormValid: true });
   },
 
   /**
@@ -109,34 +353,14 @@ Page({
   },
 
   /**
-   * 根据用户信息获取角色
-   * 实际项目中应该从后端获取用户角色
+   * 注册处理
    */
-  getUserRole(name, phone) {
-    // 测试阶段：任何登录用户都分配为admin角色，便于测试
-    return 'admin';
-    
-    // 正式环境下的角色分配逻辑（注释掉，等后端完成后启用）
-    // if (name.includes('admin') || phone.endsWith('0000')) {
-    //   return 'admin';
-    // } else if (name.includes('editor') || phone.endsWith('1111')) {
-    //   return 'editor';
-    // } else if (name.includes('manager') || phone.endsWith('2222')) {
-    //   return 'manager';
-    // } else {
-    //   return 'user'; // 普通用户，没有删改权限
-    // }
-  },
-
-  /**
-   * 登录处理
-   */
-  onLogin() {
-    if (!this.data.isFormValid) {
+  onRegister() {
+    if (!this.data.isRegisterFormValid) {
       return;
     }
 
-    const { name, phone, password } = this.data.formData;
+    const { name, phone, wechat, password, confirmPassword } = this.data.registerForm;
 
     // 最终验证
     if (!name.trim()) {
@@ -150,22 +374,139 @@ Page({
       return;
     }
 
+    if (!wechat.trim()) {
+      this.setData({ errorMessage: '请输入微信号' });
+      return;
+    }
+
     if (!this.validatePassword(password)) {
       this.setData({ errorMessage: '密码格式不正确，请确保包含大小写字母和数字，且不少于8位' });
       return;
     }
 
-    // 模拟登录成功，存储用户信息
-    const userInfo = {
-      id: Date.now(), // 模拟用户ID
-      name: name,
-      phone: phone,
-      role: this.getUserRole(name, phone), // 根据用户信息获取角色
-      loginTime: new Date().toISOString()
-    };
+    if (password !== confirmPassword) {
+      this.setData({ errorMessage: '两次输入的密码不一致' });
+      return;
+    }
 
+    // 尝试注册新用户
+    const result = this.registerNewUser({ name, phone, wechat, password });
+    
+    if (!result.success) {
+      this.setData({ errorMessage: result.message });
+      return;
+    }
+
+    // 注册成功
+    wx.showToast({
+      title: '注册成功',
+      icon: 'success',
+      duration: 1500,
+      success: () => {
+        // 延迟切换到登录页面
+        setTimeout(() => {
+          this.setData({
+            currentMode: 'login',
+            loginType: 'phone',
+            errorMessage: '',
+            loginForm: {
+              phone: phone,
+              wechat: wechat,
+              password: ''
+            }
+          });
+        }, 1500);
+      }
+    });
+
+    console.log('注册成功：', result.user);
+  },
+
+  /**
+   * 登录处理
+   */
+  onLogin() {
+    if (!this.data.isLoginFormValid) {
+      return;
+    }
+
+    const { loginType, loginForm } = this.data;
+
+    if (loginType === 'phone') {
+      // 手机号登录验证
+      const { phone, password } = loginForm;
+      
+      if (!phone.trim()) {
+        this.setData({ errorMessage: '请输入手机号码' });
+        return;
+      }
+
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      if (!phoneRegex.test(phone)) {
+        this.setData({ errorMessage: '请输入正确的手机号码' });
+        return;
+      }
+
+      if (!password.trim()) {
+        this.setData({ errorMessage: '请输入密码' });
+        return;
+      }
+
+      // 检查用户是否已注册
+      const existingUser = this.checkUserExists(phone, 'phone');
+      if (!existingUser) {
+        this.setData({ errorMessage: '该手机号未注册，请先注册' });
+        return;
+      }
+
+      // 验证登录信息
+      const user = this.validateUserLogin(phone, password, 'phone');
+      if (!user) {
+        this.setData({ errorMessage: '手机号或密码错误' });
+        return;
+      }
+
+      // 登录成功
+      this.handleLoginSuccess(user);
+    } else {
+      // 微信登录验证
+      const { wechat, password } = loginForm;
+      
+      if (!wechat.trim()) {
+        this.setData({ errorMessage: '请输入微信号' });
+        return;
+      }
+
+      if (!password.trim()) {
+        this.setData({ errorMessage: '请输入密码' });
+        return;
+      }
+
+      // 检查用户是否已注册
+      const existingUser = this.checkUserExists(wechat, 'wechat');
+      if (!existingUser) {
+        this.setData({ errorMessage: '该微信号未注册，请先注册' });
+        return;
+      }
+
+      // 验证登录信息
+      const user = this.validateUserLogin(wechat, password, 'wechat');
+      if (!user) {
+        this.setData({ errorMessage: '微信号或密码错误' });
+        return;
+      }
+
+      // 登录成功
+      this.handleLoginSuccess(user);
+    }
+  },
+
+  /**
+   * 处理登录成功
+   */
+  handleLoginSuccess(user) {
     // 存储用户信息和登录状态
-    wx.setStorageSync('userInfo', userInfo);
+    wx.setStorageSync('userInfo', user);
     wx.setStorageSync('isLoggedIn', true);
 
     // 登录成功处理
@@ -177,22 +518,13 @@ Page({
         // 延迟跳转到权限管理中心
         setTimeout(() => {
           wx.navigateTo({
-            url: '/pages/admin/admin?name=' + encodeURIComponent(name) + '&phone=' + phone
+            url: '/pages/admin/admin?name=' + encodeURIComponent(user.name) + '&phone=' + user.phone
           });
         }, 1500);
       }
     });
 
-    // 这里可以添加实际的登录逻辑，比如调用API
-    console.log('登录信息：', { name, phone, password });
-    console.log('用户信息已存储：', userInfo);
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
+    console.log('登录成功：', user);
   },
 
   /**

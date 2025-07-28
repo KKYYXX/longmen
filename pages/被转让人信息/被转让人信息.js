@@ -150,17 +150,17 @@ Page({
               icon: 'success',
               duration: 1500,
               success: () => {
-                // 转让成功后跳转
+                // 转让成功后返回上一页
                 setTimeout(() => {
-                  // 使用reLaunch重新加载admin页面，确保数据刷新
-                  wx.reLaunch({
-                    url: '/pages/admin/admin',
+                  // 使用navigateBack返回上一页，不退登录
+                  wx.navigateBack({
+                    delta: 1,
                     success: () => {
-                      console.log('成功重新加载admin页面');
+                      console.log('成功返回上一页');
                     },
                     fail: (err) => {
-                      console.error('重新加载admin页面失败:', err);
-                      // 如果reLaunch失败，使用navigateBack
+                      console.error('返回上一页失败:', err);
+                      // 如果返回失败，尝试返回多级
                       wx.navigateBack({
                         delta: 2
                       });

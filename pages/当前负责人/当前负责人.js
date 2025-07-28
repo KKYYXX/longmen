@@ -79,13 +79,26 @@ Page({
     // 每次显示页面时刷新用户信息
     const app = getApp();
     const userInfo = app.getUserInfo();
+    
+    // 更新页面数据
     this.setData({
       managerInfo: {
-        name: userInfo.name,
-        phone: userInfo.phone
+        name: userInfo.name || '未知用户',
+        phone: userInfo.phone || '未知电话'
       }
     });
+    
     console.log('当前负责人页面显示，刷新用户信息:', userInfo);
+    console.log('页面显示时的负责人信息:', this.data.managerInfo);
+    
+    // 如果用户信息有更新，显示提示
+    if (userInfo.name && userInfo.name !== this.data.managerInfo.name) {
+      wx.showToast({
+        title: `负责人已更新为: ${userInfo.name}`,
+        icon: 'none',
+        duration: 2000
+      });
+    }
   },
 
   /**

@@ -1,8 +1,268 @@
 /* pages/项目查询权限人员/项目查询权限人员.wxss */
-
-.project-query-permission-container {
+.query-container {
   min-height: 100vh;
   background: #ffffff;
-  padding: 40rpx;
+  padding: 60rpx 40rpx 120rpx 40rpx;
   box-sizing: border-box;
+}
+
+/* 页面标题 */
+.query-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.query-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #b8860b;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 主要内容区域 */
+.query-content {
+  margin-bottom: 40rpx;
+}
+
+/* 权限人员列表 */
+.permission-list {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
+  border: 2rpx solid #e6e6e6;
+}
+
+.list-header {
+  margin-bottom: 30rpx;
+}
+
+.header-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #b8860b;
+}
+
+/* 人员列表 */
+.person-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.person-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: #fafafa;
+  border-radius: 12rpx;
+  border: 2rpx solid #e6e6e6;
+  transition: all 0.3s ease;
+}
+
+.person-item:hover {
+  background: #fff3cd;
+  border-color: #b8860b;
+}
+
+.person-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.person-avatar {
+  margin-right: 20rpx;
+}
+
+.avatar-image {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 2rpx solid #b8860b;
+}
+
+.person-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.person-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.person-phone {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.person-role {
+  font-size: 24rpx;
+  color: #b8860b;
+  background: #fff3cd;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  display: inline-block;
+}
+
+.person-actions {
+  display: flex;
+  gap: 10rpx;
+}
+
+.action-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.remove-btn {
+  background: linear-gradient(135deg, #ff4444 0%, #cc3333 100%);
+  color: #ffffff;
+}
+
+.remove-btn:active {
+  transform: scale(0.95);
+}
+
+/* 添加权限人员 */
+.add-permission {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
+  border: 2rpx solid #e6e6e6;
+}
+
+.add-header {
+  margin-bottom: 30rpx;
+}
+
+.add-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #b8860b;
+}
+
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #b8860b;
+}
+
+.input-field {
+  height: 80rpx;
+  border: 2rpx solid #e6e6e6;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #333333;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #b8860b;
+  background: #ffffff;
+  box-shadow: 0 0 0 4rpx rgba(184, 134, 11, 0.1);
+}
+
+.picker-field {
+  display: flex;
+  align-items: center;
+}
+
+.picker-text {
+  color: #333333;
+  font-size: 28rpx;
+}
+
+.add-btn {
+  height: 80rpx;
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-btn:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(184, 134, 11, 0.4);
+}
+
+.add-btn[disabled] {
+  background: #e6e6e6;
+  color: #999999;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 底部信息 */
+.query-footer {
+  text-align: center;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-radius: 12rpx;
+  border: 2rpx solid #ffeaa7;
+}
+
+.footer-text {
+  display: block;
+  font-size: 26rpx;
+  color: #b8860b;
+  margin-bottom: 10rpx;
+}
+
+.footer-number {
+  display: block;
+  font-size: 24rpx;
+  color: #b8860b;
+  font-weight: bold;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .query-container {
+    padding: 40rpx 30rpx 100rpx 30rpx;
+  }
+  
+  .permission-list, .add-permission {
+    padding: 30rpx;
+  }
+  
+  .person-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15rpx;
+  }
+  
+  .person-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }

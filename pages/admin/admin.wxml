@@ -10,7 +10,7 @@
     <view class="button-group">
       <!-- 有限管理按钮 -->
       <button class="admin-btn" bindtap="onLimitedManage">
-        <text class="btn-text">有限管理</text>
+        <text class="btn-text">权限管理</text>
       </button>
 
       <!-- 负责人转让按钮 -->

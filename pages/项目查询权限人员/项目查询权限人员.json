@@ -1,5 +1,6 @@
 {
   "usingComponents": {},
-  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTitleText": "项目查询权限人员",
+  "navigationBarBackgroundColor": "#ffe9b3",
   "navigationBarTextStyle": "black"
 }

@@ -1,5 +1,6 @@
 {
   "usingComponents": {},
+  "navigationBarTitleText": "典型案例修改权限人员",
   "navigationBarBackgroundColor": "#f9e286",
   "navigationBarTextStyle": "black"
 }
