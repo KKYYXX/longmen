@@ -22,5 +22,9 @@
     <button class="btn" bindtap="onCaseModify">
       <text>典型案例修改</text>
     </button>
+
+    <button class="btn" bindtap="onCaseModify">
+      <text>项目进度修改</text>
+    </button>
   </view>
 </view>

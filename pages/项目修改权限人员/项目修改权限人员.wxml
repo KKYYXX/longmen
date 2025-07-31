@@ -1,3 +1,9 @@
-<!--pages/项目修改权限人员/项目修改权限人员.wxml-->
-<view class="blank-container">
+<view class="page-container">
+  <view class="form-container">
+    <!-- 内容区域，包含表单和按钮 -->
+    <view class="button-container">
+      <button class="action-btn" bindtap="onAddClick">添加</button>
+      <button class="action-btn delete-btn" bindtap="onDeleteClick">删除</button>
+    </view>
+  </view>
 </view>
