@@ -5,5 +5,11 @@
       <button class="action-btn" bindtap="onAddClick">添加</button>
       <button class="action-btn delete-btn" bindtap="onDeleteClick">删除</button>
     </view>
+
+    <view class="container">
+      <button class="center-btn">目前人员</button>
+    </view>
+
+
   </view>
 </view>

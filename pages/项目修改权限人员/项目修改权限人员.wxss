@@ -1,4 +1,3 @@
-/* pages/项目修改权限人员/项目修改权限人员.wxss */
 
 /* 页面容器 */
 .page-container {
@@ -64,4 +63,36 @@
 .action-btn:active {
   transform: translateY(0);
   box-shadow: none;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.center-btn {
+  font-size: 30px; /* 可以根据需求调整大小 */
+  padding: 20px 40px;
+  background-color: #5388c0; /* 按钮的背景色 */
+  color: white;
+  border-radius: 8px; /* 按钮的圆角 */
+  border: none;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.center-btn {
+  font-size: 30px; /* 可以根据需求调整大小 */
+  padding: 20px 40px;
+  background-color: #4085ce; /* 按钮的背景色 */
+  color: white;
+  border-radius: 8px; /* 按钮的圆角 */
+  border: none;
 }
