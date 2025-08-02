@@ -65,3 +65,157 @@
   transform: translateY(0);
   box-shadow: none;
 }
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.center-btn {
+  font-size: 30px; /* 可以根据需求调整大小 */
+  padding: 20px 40px;
+  background-color: #5388c0; /* 按钮的背景色 */
+  color: white;
+  border-radius: 8px; /* 按钮的圆角 */
+  border: none;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.center-btn {
+  font-size: 30px; /* 可以根据需求调整大小 */
+  padding: 20px 40px;
+  background-color: #4085ce; /* 按钮的背景色 */
+  color: white;
+  border-radius: 8px; /* 按钮的圆角 */
+  border: none;
+}
+
+.container {
+  padding: 20px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.user-list {
+  margin-top: 20px;
+}
+
+.user-item {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 20rpx;
+  border: 2rpx solid #333;
+  width: 600rpx;
+  max-width: 90%;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 40rpx 40rpx 20rpx 40rpx;
+  text-align: center;
+  border-bottom: 1rpx solid #eee;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-body {
+  padding: 40rpx;
+}
+
+.input-group {
+  margin-bottom: 30rpx;
+}
+
+.input-label {
+  display: block;
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 15rpx;
+  font-weight: 500;
+}
+
+.input-field {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #007AFF;
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  font-size: 30rpx;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  border-color: #0056CC;
+  outline: none;
+}
+
+.modal-footer {
+  padding: 20rpx 40rpx 40rpx 40rpx;
+  text-align: center;
+}
+
+.modal-btn {
+  width: 100%;
+  height: 80rpx;
+  border-radius: 40rpx;
+  border: none;
+  font-size: 32rpx;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #45a049;
+  transform: translateY(-2rpx);
+}
+
+.confirm-btn:active {
+  transform: translateY(0);
+}

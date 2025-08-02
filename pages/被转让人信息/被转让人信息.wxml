@@ -5,7 +5,7 @@
   <view class="transferee-content">
     <!-- 头像区域 -->
     <view class="avatar-section">
-      <image class="avatar-image" src="/images/生成个人中心图标 (2).png" mode="aspectFit"></image>
+      <image class="avatar-image" src="/images/生成个人中心图标 (1).png" mode="aspectFit"></image>
     </view>
 
     <!-- 信息区域 -->
