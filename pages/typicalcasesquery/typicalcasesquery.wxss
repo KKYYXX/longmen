@@ -1,0 +1,499 @@
+/* 典型案例查询页面样式 */
+
+.typicalcases-query-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fffbf0 0%, #ffffff 30%, #fff8e1 100%);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 搜索区域 */
+.search-section {
+  padding: 30rpx;
+  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  border-bottom: 1rpx solid #FFE082;
+  box-shadow: 0 4rpx 20rpx rgba(255, 167, 38, 0.2);
+}
+
+/* 时间筛选 */
+.filter-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 28rpx;
+  color: #333333;
+  margin-right: 20rpx;
+  min-width: 120rpx;
+}
+
+.date-picker {
+  background: #f8f9fa;
+  border: 1rpx solid #dee2e6;
+  border-radius: 8rpx;
+  padding: 16rpx 20rpx;
+  font-size: 26rpx;
+  color: #495057;
+  margin-right: 20rpx;
+  min-width: 200rpx;
+}
+
+.date-separator {
+  font-size: 26rpx;
+  color: #6c757d;
+  margin: 0 10rpx;
+}
+
+/* 搜索框 */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid #dee2e6;
+}
+
+.search-input {
+  flex: 1;
+  height: 80rpx;
+  font-size: 28rpx;
+  color: #333333;
+  padding: 0;
+}
+
+.search-btn {
+  padding: 10rpx;
+  margin-left: 10rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  color: #FFA726;
+}
+
+/* 案例列表 */
+.case-list {
+  padding: 20rpx;
+}
+
+.case-item {
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 25rpx;
+  box-shadow: 0 4rpx 15rpx rgba(255, 167, 38, 0.15);
+  border-left: 6rpx solid #FFA726;
+  border: 2rpx solid rgba(255, 183, 77, 0.2);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.case-item:active {
+  transform: scale(0.98);
+}
+
+/* 案例头部 */
+.case-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+}
+
+.case-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.case-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+  color: #FFA726;
+}
+
+.case-details {
+  flex: 1;
+}
+
+.case-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.case-meta {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+.case-progress {
+  color: #FFA726;
+  font-weight: 500;
+}
+
+.case-actions {
+  padding: 10rpx;
+}
+
+.expand-icon {
+  font-size: 24rpx;
+  color: #6c757d;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* 案例内容 */
+.case-content {
+  padding: 0 30rpx 30rpx 30rpx;
+  border-top: 1rpx solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.case-description {
+  margin-bottom: 30rpx;
+  padding-top: 20rpx;
+}
+
+.content-label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10rpx;
+}
+
+.content-text {
+  font-size: 26rpx;
+  color: #495057;
+  line-height: 1.6;
+}
+
+/* 媒体区域 */
+.media-section {
+  margin-bottom: 30rpx;
+}
+
+/* 图片列表 */
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 10rpx;
+}
+
+.case-image {
+  width: 200rpx;
+  height: 150rpx;
+  border-radius: 8rpx;
+  object-fit: cover;
+}
+
+/* 视频列表 */
+.video-list {
+  margin-top: 10rpx;
+}
+
+.case-video {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 8rpx;
+  margin-bottom: 10rpx;
+}
+
+/* 文件列表 */
+.file-list {
+  margin-top: 10rpx;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  margin-bottom: 10rpx;
+  border: 1rpx solid #dee2e6;
+}
+
+.file-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+  color: #6c757d;
+}
+
+.file-name {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.file-size {
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+/* 进度区域 */
+.progress-section {
+  margin-bottom: 20rpx;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12rpx;
+  background: #e9ecef;
+  border-radius: 6rpx;
+  margin: 10rpx 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #FFA726;
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #FFA726;
+  font-weight: 500;
+}
+
+/* 加载状态 */
+.load-more, .loading, .no-more {
+  text-align: center;
+  padding: 40rpx;
+  font-size: 28rpx;
+  color: #6c757d;
+}
+
+.load-more {
+  color: #FFA726;
+  cursor: pointer;
+}
+
+/* 案例摘要 */
+.case-summary {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+  margin-top: 10rpx;
+}
+
+/* 案例分类 */
+.case-category {
+  background: #FFA726;
+  color: white;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  margin-right: 15rpx;
+}
+
+/* 成效和经验 */
+.case-achievements, .case-experience {
+  background: #fff8e1;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  border-left: 4rpx solid #FFA726;
+}
+
+/* 媒体区域 */
+.media-section {
+  margin-bottom: 30rpx;
+  padding: 20rpx;
+  background: #fffbf0;
+  border-radius: 12rpx;
+  border: 1rpx solid #FFE082;
+}
+
+/* 图片列表 */
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+  margin-top: 15rpx;
+}
+
+.image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200rpx;
+}
+
+.case-image {
+  width: 200rpx;
+  height: 150rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #FFE082;
+}
+
+.image-name {
+  font-size: 20rpx;
+  color: #666666;
+  text-align: center;
+  margin-top: 8rpx;
+  line-height: 1.3;
+}
+
+/* 视频列表 */
+.video-list {
+  margin-top: 15rpx;
+}
+
+.video-item {
+  margin-bottom: 20rpx;
+}
+
+.case-video {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 8rpx;
+}
+
+.video-name {
+  display: block;
+  font-size: 24rpx;
+  color: #666666;
+  margin-top: 10rpx;
+  text-align: center;
+}
+
+/* 链接列表 */
+.link-list {
+  margin-top: 15rpx;
+}
+
+.link-item {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 2rpx solid #FFA726;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+  transition: all 0.3s ease;
+}
+
+.link-item:active {
+  background: rgba(255, 167, 38, 0.1);
+}
+
+.link-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+}
+
+.link-name {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333333;
+}
+
+/* 报告列表 */
+.report-list {
+  margin-top: 15rpx;
+}
+
+.report-item {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 2rpx solid #FF8F00;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+  transition: all 0.3s ease;
+}
+
+.report-item:active {
+  background: rgba(255, 143, 0, 0.1);
+}
+
+.report-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+}
+
+.report-name {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.download-icon {
+  font-size: 24rpx;
+  color: #FF8F00;
+}
+
+/* 案例底部 */
+.case-footer {
+  margin-top: 30rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #FFE082;
+}
+
+.tags-section {
+  margin-bottom: 20rpx;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 10rpx;
+}
+
+.tag-item {
+  background: #FFE082;
+  color: #FF8F00;
+  padding: 6rpx 12rpx;
+  border-radius: 16rpx;
+  font-size: 20rpx;
+  border: 1rpx solid #FFA726;
+}
+
+.contact-info {
+  background: #fff8e1;
+  padding: 15rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #FFE082;
+}
+
+.contact-text {
+  font-size: 24rpx;
+  color: #FF8F00;
+  font-weight: 500;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 40rpx;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 120rpx;
+  color: #FFE082;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #FF8F00;
+}

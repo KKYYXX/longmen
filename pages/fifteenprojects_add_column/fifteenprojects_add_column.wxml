@@ -1,0 +1,87 @@
+<view class="add-column-container">
+  <view class="page-header">
+    <text class="page-title">新增列</text>
+    <text class="page-subtitle">为十五项项目添加新的数据列</text>
+  </view>
+
+  <view class="form-container">
+    <!-- 步骤1：输入列名 -->
+    <view class="step-section" wx:if="{{currentStep === 1}}">
+      <view class="step-header">
+        <text class="step-title">步骤1：输入新增列名</text>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">列名称 *</text>
+        <input
+          class="form-input"
+          placeholder="例如：项目负责人、完成状态、预算金额等"
+          value="{{columnName}}"
+          bindinput="onColumnNameInput"
+        />
+      </view>
+
+      <view class="button-group">
+        <button class="next-btn" bindtap="nextStep" disabled="{{!columnName.trim()}}">下一步</button>
+        <button class="cancel-btn" bindtap="cancel">取消</button>
+      </view>
+    </view>
+
+    <!-- 步骤2：选择项目 -->
+    <view class="step-section" wx:if="{{currentStep === 2}}">
+      <view class="step-header">
+        <text class="step-title">步骤2：选择要添加列的项目</text>
+      </view>
+
+      <view class="project-list">
+        <view
+          class="project-item {{selectedProjects.includes(item.id) ? 'selected' : ''}}"
+          wx:for="{{projectList}}"
+          wx:key="id"
+          bindtap="toggleProject"
+          data-id="{{item.id}}"
+        >
+          <view class="project-info">
+            <view class="project-name">{{item.name}}</view>
+            <view class="project-desc">{{item.description}}</view>
+          </view>
+          <view class="select-icon">{{selectedProjects.includes(item.id) ? '✓' : '○'}}</view>
+        </view>
+      </view>
+
+      <view class="button-group">
+        <button class="next-btn" bindtap="nextStep" disabled="{{selectedProjects.length === 0}}">下一步</button>
+        <button class="back-btn" bindtap="prevStep">上一步</button>
+      </view>
+    </view>
+
+    <!-- 步骤3：输入内容 -->
+    <view class="step-section" wx:if="{{currentStep === 3}}">
+      <view class="step-header">
+        <text class="step-title">步骤3：为选中的项目输入"{{columnName}}"的内容</text>
+      </view>
+
+      <view class="content-list">
+        <view
+          class="content-item"
+          wx:for="{{selectedProjectsData}}"
+          wx:key="id"
+        >
+          <view class="project-label">{{item.name}} - {{columnName}}</view>
+          <textarea
+            class="content-input"
+            placeholder="请输入{{columnName}}的内容"
+            value="{{item.content}}"
+            bindinput="onContentInput"
+            data-id="{{item.id}}"
+          />
+        </view>
+      </view>
+
+      <view class="button-group">
+        <button class="save-btn" bindtap="saveColumn">保存</button>
+        <button class="back-btn" bindtap="prevStep">上一步</button>
+      </view>
+    </view>
+  </view>
+</view>

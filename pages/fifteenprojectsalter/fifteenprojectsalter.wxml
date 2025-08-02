@@ -1,0 +1,19 @@
+<view class="fifteen-projects-alter-container">
+  <!-- 增加功能区域 -->
+  <view class="add-section">
+    <text class="section-title">增加功能</text>
+    <view class="button-group">
+      <button class="add-column-btn" bindtap="goToAddColumn">新增列</button>
+      <button class="add-project-btn" bindtap="goToAddProject">新增项目</button>
+    </view>
+  </view>
+
+  <!-- 修改功能区域 -->
+  <view class="modify-section">
+    <text class="section-title">修改功能</text>
+    <view class="button-group">
+      <button class="modify-btn" bindtap="goToModifyProjects">修改项目</button>
+      <button class="delete-btn" bindtap="goToFifteenProjectsDelete">删除项目</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,10 @@
+<view class="add-container">
+  <view class="page-header">
+    <text class="page-title">添加十五项项目</text>
+  </view>
+  
+  <view class="content">
+    <text class="placeholder-text">添加十五项项目功能正在开发中...</text>
+    <text class="note-text">此页面将包含项目信息录入表单，支持上传图片、视频、文件等功能</text>
+  </view>
+</view>

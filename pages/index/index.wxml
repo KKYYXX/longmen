@@ -7,6 +7,8 @@
   </view>
   
   <view class="button-container">
+    <button class="case-btn" bindtap="goToTypicalCases">典型案例</button>
+    <button class="project-btn" bindtap="goToFifteenProjects">十五项项目</button>
     <button class="policy-btn" bindtap="goToPolicyDocuments">政策文件</button>
   </view>
   

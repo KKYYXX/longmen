@@ -1,0 +1,4 @@
+<view class="typicalcases-alter-container">
+  <button class="addbutton" bindtap="goToTypicalCasesAdd">增加案例</button>
+  <button class="deletebutton" bindtap="goToTypicalCasesDelete">删除案例</button>
+</view>

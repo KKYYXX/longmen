@@ -1,0 +1,149 @@
+/* 典型案例删除页面样式 */
+
+.typicalcases-delete-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fffbf0 0%, #ffffff 30%, #fff8e1 100%);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.page-header {
+  text-align: center;
+  padding: 60rpx 40rpx 40rpx;
+  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  color: white;
+  box-shadow: 0 4rpx 20rpx rgba(255, 167, 38, 0.3);
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 搜索区域 */
+.search-section {
+  padding: 30rpx 40rpx;
+  background: #ffffff;
+  border-bottom: 1rpx solid #FFE082;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+  flex: 1;
+  height: 80rpx;
+  font-size: 28rpx;
+  color: #333333;
+  padding: 0;
+}
+
+.search-btn {
+  padding: 10rpx;
+  margin-left: 10rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  color: #FFA726;
+}
+
+/* 案例列表 */
+.case-list {
+  padding: 20rpx;
+}
+
+.case-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border-left: 4rpx solid #FFA726;
+}
+
+.case-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.case-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+  color: #FFA726;
+}
+
+.case-details {
+  flex: 1;
+}
+
+.case-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.case-meta {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+.case-progress {
+  color: #FFA726;
+  font-weight: 500;
+}
+
+.case-actions {
+  margin-left: 20rpx;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8rpx;
+  padding: 16rpx 32rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  box-shadow: 0 2rpx 6rpx rgba(231, 76, 60, 0.2);
+  transition: all 0.3s ease;
+}
+
+.delete-btn:active {
+  transform: translateY(1rpx);
+  box-shadow: 0 1rpx 4rpx rgba(231, 76, 60, 0.3);
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 40rpx;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 120rpx;
+  color: #dee2e6;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #6c757d;
+}

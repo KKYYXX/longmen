@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "十五项项目查询",
+  "navigationBarBackgroundColor": "#FFB74D",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50
+}

@@ -1,0 +1,31 @@
+/* 十五项项目页面样式 */
+
+.fifteenprojects-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40rpx;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #fffbf0 0%, #ffffff 30%, #fff8e1 100%);
+}
+
+.querybutton, .alterbuttton {
+  margin: 80rpx 0;
+  width: 600rpx;
+  height: 250rpx;
+  line-height: 250rpx;
+  font-size: 38rpx;
+  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 20rpx;
+  box-shadow: 0 6rpx 20rpx rgba(255, 167, 38, 0.3);
+  transition: all 0.3s ease;
+}
+
+.querybutton:active, .alterbuttton:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 15rpx rgba(255, 167, 38, 0.4);
+}

@@ -1,0 +1,113 @@
+<view class="add-project-container">
+  <view class="page-header">
+    <text class="page-title">新增项目</text>
+    <text class="page-subtitle">填写各列的内容</text>
+  </view>
+
+  <view class="form-container">
+    <!-- 动态生成表单项 -->
+    <view class="form-section">
+      <text class="section-title">项目信息</text>
+
+      <view
+        class="form-item"
+        wx:for="{{projectColumns}}"
+        wx:key="key"
+      >
+        <text class="form-label">
+          {{item.name}}
+          <text wx:if="{{item.required}}" class="required-mark">*</text>
+        </text>
+
+        <!-- 文本输入 -->
+        <input
+          wx:if="{{item.type === 'text'}}"
+          class="form-input"
+          placeholder="{{item.placeholder}}"
+          value="{{projectData[item.key]}}"
+          bindinput="onFieldInput"
+          data-field="{{item.key}}"
+        />
+
+        <!-- 多行文本输入 -->
+        <textarea
+          wx:if="{{item.type === 'textarea'}}"
+          class="form-textarea"
+          placeholder="{{item.placeholder}}"
+          value="{{projectData[item.key]}}"
+          bindinput="onFieldInput"
+          data-field="{{item.key}}"
+          maxlength="1000"
+        />
+
+        <!-- 日期选择 -->
+        <picker
+          wx:if="{{item.type === 'date'}}"
+          class="form-picker"
+          mode="date"
+          value="{{projectData[item.key]}}"
+          bindchange="onPickerChange"
+          data-field="{{item.key}}"
+        >
+          <view class="picker-display">
+            {{projectData[item.key] || item.placeholder}}
+          </view>
+        </picker>
+
+        <!-- 选择器 -->
+        <picker
+          wx:if="{{item.type === 'select'}}"
+          class="form-picker"
+          bindchange="onPickerChange"
+          range="{{item.options}}"
+          data-field="{{item.key}}"
+        >
+          <view class="picker-display">
+            {{projectData[item.key] || '请选择' + item.name}}
+          </view>
+        </picker>
+
+        <!-- 滑块 -->
+        <view wx:if="{{item.type === 'slider'}}" class="slider-container">
+          <slider
+            class="form-slider"
+            value="{{projectData[item.key]}}"
+            min="{{item.min || 0}}"
+            max="{{item.max || 100}}"
+            step="1"
+            show-value
+            bindchange="onSliderChange"
+            data-field="{{item.key}}"
+          />
+          <text class="slider-unit">{{item.unit || ''}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 文件上传 -->
+    <view class="form-section">
+      <text class="section-title">文件上传</text>
+
+      <view class="form-item">
+        <text class="form-label">项目报告</text>
+        <view class="upload-area" bindtap="uploadReport">
+          <text class="upload-icon">📊</text>
+          <text class="upload-text">点击上传项目报告</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">相关文件</text>
+        <view class="upload-area" bindtap="uploadFiles">
+          <text class="upload-icon">📄</text>
+          <text class="upload-text">点击上传相关文件</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="save-btn" bindtap="saveProject">保存项目</button>
+      <button class="cancel-btn" bindtap="cancel">取消</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,444 @@
+/* 删改项目页面样式 */
+
+.modify-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fffbf0 0%, #ffffff 30%, #fff8e1 100%);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.page-header {
+  text-align: center;
+  padding: 60rpx 40rpx 40rpx;
+  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  color: white;
+  position: relative;
+  box-shadow: 0 4rpx 20rpx rgba(255, 167, 38, 0.3);
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20rpx solid transparent;
+  border-right: 20rpx solid transparent;
+  border-top: 20rpx solid #FFB74D;
+}
+
+.page-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.page-subtitle {
+  display: block;
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+/* 步骤区域 */
+.step-section {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 50rpx;
+  margin: 40rpx 30rpx;
+  box-shadow: 0 8rpx 30rpx rgba(255, 167, 38, 0.15);
+  border: 2rpx solid rgba(255, 183, 77, 0.3);
+}
+
+.step-header {
+  text-align: center;
+  margin-bottom: 50rpx;
+  padding-bottom: 30rpx;
+  border-bottom: 3rpx solid #FFA726;
+  position: relative;
+}
+
+.step-header::after {
+  content: '';
+  position: absolute;
+  bottom: -6rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80rpx;
+  height: 6rpx;
+  background: #FFB74D;
+  border-radius: 3rpx;
+}
+
+.step-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #FF8F00;
+  margin-bottom: 15rpx;
+  text-shadow: 0 2rpx 4rpx rgba(255, 143, 0, 0.2);
+}
+
+.step-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #666666;
+  font-weight: 500;
+}
+
+/* 项目列表 */
+.project-list, .column-list {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.project-item, .column-item {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.project-item.selected, .column-item.selected {
+  background: rgba(255, 167, 38, 0.15);
+  border-color: #FFA726;
+  box-shadow: 0 4rpx 15rpx rgba(255, 167, 38, 0.2);
+  transform: translateY(-2rpx);
+}
+
+.project-number, .column-number {
+  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  color: white;
+  border-radius: 50%;
+  width: 70rpx;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: bold;
+  margin-right: 25rpx;
+  flex-shrink: 0;
+  box-shadow: 0 3rpx 10rpx rgba(255, 167, 38, 0.3);
+}
+
+.project-info, .column-info {
+  flex: 1;
+}
+
+.project-name, .column-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.project-desc, .column-current {
+  font-size: 24rpx;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.select-icon {
+  font-size: 36rpx;
+  color: #FFA726;
+  font-weight: bold;
+  margin-left: 25rpx;
+}
+
+/* 操作类型列表 */
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  transition: all 0.3s ease;
+}
+
+.action-item.selected {
+  background: rgba(33, 150, 243, 0.1);
+  border-color: #2196F3;
+}
+
+.action-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+}
+
+.action-info {
+  flex: 1;
+}
+
+.action-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.action-desc {
+  font-size: 24rpx;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+/* 修改内容区域 */
+.modify-content {
+  margin-bottom: 30rpx;
+}
+
+.current-content, .new-content {
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.content-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 15rpx;
+}
+
+.content-text {
+  font-size: 24rpx;
+  color: #495057;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.content-input {
+  width: 100%;
+  min-height: 120rpx;
+  padding: 15rpx;
+  border: 2rpx solid #e9ecef;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #333333;
+  background: #ffffff;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+
+.content-input:focus {
+  border-color: #2196F3;
+  box-shadow: 0 0 0 3rpx rgba(33, 150, 243, 0.1);
+}
+
+/* 添加内容区域 */
+.add-content {
+  margin-bottom: 30rpx;
+}
+
+.upload-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.upload-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border: 2rpx dashed #2196F3;
+  border-radius: 12rpx;
+  padding: 40rpx 20rpx;
+  transition: all 0.3s ease;
+}
+
+.upload-item:active {
+  background: rgba(33, 150, 243, 0.1);
+  border-color: #1976D2;
+}
+
+.upload-icon {
+  font-size: 48rpx;
+  margin-bottom: 15rpx;
+}
+
+.upload-text {
+  font-size: 24rpx;
+  color: #333333;
+  text-align: center;
+}
+
+/* 链接输入 */
+.link-input {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.form-input {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid #e9ecef;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #333333;
+  background: #f8f9fa;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+}
+
+.form-input:focus {
+  border-color: #2196F3;
+  background: #ffffff;
+}
+
+.add-link-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 已添加内容 */
+.added-content {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.added-item {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.added-item:last-child {
+  margin-bottom: 0;
+}
+
+.item-type {
+  background: #2196F3;
+  color: white;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 20rpx;
+  margin-right: 15rpx;
+}
+
+.item-name {
+  flex: 1;
+  font-size: 24rpx;
+  color: #333333;
+}
+
+.item-actions {
+  margin-left: 15rpx;
+}
+
+.remove-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6rpx;
+  padding: 8rpx 16rpx;
+  font-size: 20rpx;
+}
+
+/* 按钮组 */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30rpx;
+  margin-top: 80rpx;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.next-btn, .save-btn {
+  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 50rpx;
+  padding: 20rpx 50rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  box-shadow: 0 6rpx 20rpx rgba(255, 167, 38, 0.4);
+  transition: all 0.3s ease;
+  min-width: 200rpx;
+  order: 2; /* 放在右边 */
+}
+
+.next-btn:active, .save-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 15rpx rgba(255, 167, 38, 0.5);
+}
+
+.next-btn[disabled] {
+  background: #e0e0e0;
+  color: #999999;
+  box-shadow: none;
+}
+
+.back-btn {
+  background: linear-gradient(135deg, #FFE082 0%, #FFF176 100%);
+  color: #FF8F00;
+  border: 2rpx solid #FFA726;
+  border-radius: 50rpx;
+  padding: 18rpx 40rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 15rpx rgba(255, 224, 130, 0.3);
+  transition: all 0.3s ease;
+  min-width: 160rpx;
+  order: 1; /* 放在左边 */
+}
+
+.back-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 10rpx rgba(255, 224, 130, 0.4);
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%);
+  color: #666666;
+  border: 2rpx solid #CCCCCC;
+  border-radius: 50rpx;
+  padding: 18rpx 40rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 15rpx rgba(204, 204, 204, 0.2);
+  transition: all 0.3s ease;
+  min-width: 160rpx;
+  order: 1; /* 放在左边 */
+}
+
+.cancel-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 10rpx rgba(204, 204, 204, 0.3);
+}

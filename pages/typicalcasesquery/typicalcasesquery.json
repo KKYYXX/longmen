@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "典型案例查询",
+  "navigationBarBackgroundColor": "#FFA726",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50
+}

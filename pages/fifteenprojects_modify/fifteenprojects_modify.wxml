@@ -1,0 +1,207 @@
+<view class="modify-container">
+  <view class="page-header">
+    <text class="page-title">删改项目</text>
+    <text class="page-subtitle">选择项目和列进行修改或添加内容</text>
+  </view>
+
+  <!-- 步骤1：选择项目 -->
+  <view class="step-section" wx:if="{{currentStep === 1}}">
+    <view class="step-header">
+      <text class="step-title">步骤1：选择第几个项目</text>
+    </view>
+
+    <view class="project-list">
+      <view
+        class="project-item {{selectedProject && selectedProject.id === item.id ? 'selected' : ''}}"
+        wx:for="{{projectList}}"
+        wx:key="id"
+        bindtap="selectProject"
+        data-project="{{item}}"
+      >
+        <view class="project-number">第{{index + 1}}个</view>
+        <view class="project-info">
+          <view class="project-name">{{item.name}}</view>
+          <view class="project-desc">{{item.description}}</view>
+        </view>
+        <view class="select-icon">{{selectedProject && selectedProject.id === item.id ? '✓' : '○'}}</view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="next-btn" bindtap="nextStep" disabled="{{!selectedProject}}">下一步</button>
+      <button class="cancel-btn" bindtap="cancel">取消</button>
+    </view>
+  </view>
+
+  <!-- 步骤2：选择列 -->
+  <view class="step-section" wx:if="{{currentStep === 2}}">
+    <view class="step-header">
+      <text class="step-title">步骤2：选择第几列</text>
+      <text class="step-subtitle">当前项目：{{selectedProject.name}}</text>
+    </view>
+
+    <view class="column-list">
+      <view
+        class="column-item {{selectedColumn && selectedColumn.key === item.key ? 'selected' : ''}}"
+        wx:for="{{projectColumns}}"
+        wx:key="key"
+        bindtap="selectColumn"
+        data-column="{{item}}"
+      >
+        <view class="column-number">第{{index + 1}}列</view>
+        <view class="column-info">
+          <view class="column-name">{{item.name}}</view>
+          <view class="column-current">当前内容：{{selectedProject[item.key] || '暂无'}}</view>
+        </view>
+        <view class="select-icon">{{selectedColumn && selectedColumn.key === item.key ? '✓' : '○'}}</view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="next-btn" bindtap="nextStep" disabled="{{!selectedColumn}}">下一步</button>
+      <button class="back-btn" bindtap="prevStep">上一步</button>
+    </view>
+  </view>
+
+  <!-- 步骤3：选择操作类型 -->
+  <view class="step-section" wx:if="{{currentStep === 3}}">
+    <view class="step-header">
+      <text class="step-title">步骤3：选择操作类型</text>
+      <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
+    </view>
+
+    <view class="action-list">
+      <view
+        class="action-item {{selectedAction === 'modify' ? 'selected' : ''}}"
+        bindtap="selectAction"
+        data-action="modify"
+      >
+        <view class="action-icon">✏️</view>
+        <view class="action-info">
+          <view class="action-name">修改内容</view>
+          <view class="action-desc">修改当前列的文字内容</view>
+        </view>
+        <view class="select-icon">{{selectedAction === 'modify' ? '✓' : '○'}}</view>
+      </view>
+
+      <view
+        class="action-item {{selectedAction === 'add' ? 'selected' : ''}}"
+        bindtap="selectAction"
+        data-action="add"
+      >
+        <view class="action-icon">📎</view>
+        <view class="action-info">
+          <view class="action-name">添加内容</view>
+          <view class="action-desc">添加图片、视频、链接、新闻稿等</view>
+        </view>
+        <view class="select-icon">{{selectedAction === 'add' ? '✓' : '○'}}</view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="next-btn" bindtap="nextStep" disabled="{{!selectedAction}}">下一步</button>
+      <button class="back-btn" bindtap="prevStep">上一步</button>
+    </view>
+  </view>
+
+  <!-- 步骤4：修改内容 -->
+  <view class="step-section" wx:if="{{currentStep === 4 && selectedAction === 'modify'}}">
+    <view class="step-header">
+      <text class="step-title">修改内容</text>
+      <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
+    </view>
+
+    <view class="modify-content">
+      <view class="current-content">
+        <text class="content-label">当前内容：</text>
+        <text class="content-text">{{selectedProject[selectedColumn.key] || '暂无内容'}}</text>
+      </view>
+
+      <view class="new-content">
+        <text class="content-label">新内容：</text>
+        <textarea
+          class="content-input"
+          placeholder="请输入新的内容"
+          value="{{newContent}}"
+          bindinput="onNewContentInput"
+          maxlength="1000"
+        />
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="save-btn" bindtap="saveModification">保存修改</button>
+      <button class="back-btn" bindtap="prevStep">上一步</button>
+    </view>
+  </view>
+
+  <!-- 步骤4：添加内容 -->
+  <view class="step-section" wx:if="{{currentStep === 4 && selectedAction === 'add'}}">
+    <view class="step-header">
+      <text class="step-title">添加内容</text>
+      <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
+    </view>
+
+    <view class="add-content">
+      <view class="upload-options">
+        <view class="upload-item" bindtap="uploadImage">
+          <view class="upload-icon">🖼️</view>
+          <text class="upload-text">添加图片</text>
+        </view>
+
+        <view class="upload-item" bindtap="uploadVideo">
+          <view class="upload-icon">🎥</view>
+          <text class="upload-text">添加视频</text>
+        </view>
+
+        <view class="upload-item" bindtap="addLink">
+          <view class="upload-icon">🔗</view>
+          <text class="upload-text">添加链接</text>
+        </view>
+
+        <view class="upload-item" bindtap="uploadDocument">
+          <view class="upload-icon">📄</view>
+          <text class="upload-text">添加新闻稿</text>
+        </view>
+      </view>
+
+      <!-- 链接输入框 -->
+      <view class="link-input" wx:if="{{showLinkInput}}">
+        <input
+          class="form-input"
+          placeholder="请输入链接地址"
+          value="{{linkUrl}}"
+          bindinput="onLinkInput"
+        />
+        <input
+          class="form-input"
+          placeholder="请输入链接标题"
+          value="{{linkTitle}}"
+          bindinput="onLinkTitleInput"
+        />
+        <button class="add-link-btn" bindtap="confirmAddLink">确认添加</button>
+      </view>
+
+      <!-- 已添加的内容列表 -->
+      <view class="added-content" wx:if="{{addedItems.length > 0}}">
+        <text class="content-label">已添加的内容：</text>
+        <view
+          class="added-item"
+          wx:for="{{addedItems}}"
+          wx:key="index"
+        >
+          <text class="item-type">{{item.type}}</text>
+          <text class="item-name">{{item.name}}</text>
+          <view class="item-actions">
+            <button class="remove-btn" bindtap="removeItem" data-index="{{index}}">删除</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="save-btn" bindtap="saveAddition" disabled="{{addedItems.length === 0}}">保存添加</button>
+      <button class="back-btn" bindtap="prevStep">上一步</button>
+    </view>
+  </view>
+</view>

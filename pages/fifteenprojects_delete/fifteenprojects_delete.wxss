@@ -1,0 +1,148 @@
+/* 十五项项目删除页面样式 */
+
+.fifteen-projects-delete-container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.page-header {
+  text-align: center;
+  padding: 40rpx;
+  background: #f8f9fa;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+/* 搜索区域 */
+.search-section {
+  padding: 20rpx 40rpx;
+  background: #f8f9fa;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+  flex: 1;
+  height: 80rpx;
+  font-size: 28rpx;
+  color: #333333;
+  padding: 0;
+}
+
+.search-btn {
+  padding: 10rpx;
+  margin-left: 10rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  color: #FFB74D;
+}
+
+/* 项目列表 */
+.project-list {
+  padding: 20rpx;
+}
+
+.project-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border-left: 4rpx solid #FFB74D;
+}
+
+.project-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.project-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+  color: #FFB74D;
+}
+
+.project-details {
+  flex: 1;
+}
+
+.project-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.project-meta {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+.project-progress {
+  color: #FFB74D;
+  font-weight: 500;
+}
+
+.project-actions {
+  margin-left: 20rpx;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8rpx;
+  padding: 16rpx 32rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  box-shadow: 0 2rpx 6rpx rgba(231, 76, 60, 0.2);
+  transition: all 0.3s ease;
+}
+
+.delete-btn:active {
+  transform: translateY(1rpx);
+  box-shadow: 0 1rpx 4rpx rgba(231, 76, 60, 0.3);
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 40rpx;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 120rpx;
+  color: #dee2e6;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #6c757d;
+}

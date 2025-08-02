@@ -1,0 +1,4 @@
+<view class="fifteenprojects-container">
+  <button class="querybutton" bindtap="goToFifteenProjectsQuery">查询</button>
+  <button class="alterbuttton" bindtap="goToFifteenProjectsAlter">删改</button>
+</view>

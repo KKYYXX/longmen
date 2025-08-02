@@ -1,0 +1,8 @@
+<view class="typicalcases-container">
+  <button class="querybutton" bindtap="goToTypicalCasesQuery">查询</button>
+  <button class="alterbuttton" bindtap="goToTypicalCasesAlter">删改</button>
+</view>
+<view class="typicalcases-container">
+  <button class="querybutton" bindtap="goToTypicalCasesQuery">查询</button>
+  <button class="alterbuttton" bindtap="goToTypicalCasesAlter">删改</button>
+</view>

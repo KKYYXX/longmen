@@ -1,0 +1,36 @@
+.add-container {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 0;
+}
+
+.page-header {
+  text-align: center;
+  padding: 40rpx;
+  background: #FFB74D;
+  color: white;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+.content {
+  padding: 100rpx 40rpx;
+  text-align: center;
+}
+
+.placeholder-text {
+  display: block;
+  font-size: 32rpx;
+  color: #333333;
+  margin-bottom: 40rpx;
+}
+
+.note-text {
+  display: block;
+  font-size: 26rpx;
+  color: #6c757d;
+  line-height: 1.6;
+}
