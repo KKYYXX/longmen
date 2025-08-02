@@ -29,7 +29,10 @@
   height: 80rpx;
   font-size: 28rpx;
   color: #333333;
-  padding: 0;
+  padding: 0 20rpx;
+  line-height: 80rpx;
+  display: flex;
+  align-items: center;
 }
 
 .search-btn {
@@ -161,6 +164,10 @@
   background: #efc758;
   color: #ffffff;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .action-btn:active {
@@ -204,6 +211,10 @@
   border-radius: 12rpx;
   font-size: 28rpx;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .load-more-btn:active {

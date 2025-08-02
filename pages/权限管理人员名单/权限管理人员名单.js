@@ -72,5 +72,23 @@ Page({
         });
       }
     });
+  },
+
+  onProgressModify() {
+    // 跳转到项目进度修改权限人员页面
+    wx.navigateTo({
+      url: '/pages/项目进度修改权限人员/项目进度修改权限人员',
+      success: function() {
+        console.log('成功跳转到项目进度修改权限人员页面');
+      },
+      fail: function(err) {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
   }
-})
+});

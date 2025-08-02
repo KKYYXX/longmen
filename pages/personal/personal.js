@@ -355,6 +355,9 @@ Page({
   /**
    * 注册处理
    */
+  /**
+   * 注册处理（联调后端接口）
+   */
   onRegister() {
     if (!this.data.isRegisterFormValid) {
       return;
@@ -421,6 +424,7 @@ Page({
 
     console.log('注册成功：', result.user);
   },
+
 
   /**
    * 登录处理

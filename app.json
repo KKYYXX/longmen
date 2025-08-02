@@ -27,7 +27,8 @@
     "pages/项目查询权限人员/项目查询权限人员",
     "pages/项目修改权限人员/项目修改权限人员",
     "pages/政策文件修改权限人员/政策修改权限人员",
-    "pages/典型案例修改权限人员/典型案例修改权限人员"
+    "pages/典型案例修改权限人员/典型案例修改权限人员",
+    "pages/项目进度修改权限人员/项目进度修改权限人员"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -35,24 +36,30 @@
     "navigationBarTitleText": "个人登录系统",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#fffbe6",
-    "enablePullDownRefresh": false
+    "enablePullDownRefresh": false,
+    "disableScroll": false
   },
   "tabBar": {
     "color": "#7A7E83",
-    "selectedColor": "#667eea",
+    "selectedColor": "#8B4513",
     "borderStyle": "white",
     "backgroundColor": "#ffffff",
     "position": "bottom",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "🏠 首页"
+        "text": "首页",
+        "iconPath": "./images/首页.jpg",
+        "selectedIconPath": "./images/首页_选中.jpg"
       },
       {
         "pagePath": "pages/personal/personal",
-        "text": "👤 个人中心"
+        "text": "个人",
+        "iconPath": "./images/个人.jpg",
+        "selectedIconPath": "./images/个人_选中.jpg"
       }
     ]
   },
   "sitemapLocation": "sitemap.json"
 }
+    

@@ -2,7 +2,7 @@ Page({
   data: {
     fileName: '',
     fileTypeIndex: 0,
-    fileTypes: ['PDF文档', 'Word文档', 'Excel表格', '图片文件', '其他文件'],
+    fileTypes: ['PDF文档', 'Word文档', '图片文件', '其他文件'],
     fileDescription: '',
     selectedFile: null
   },

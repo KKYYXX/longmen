@@ -1,16 +1,63 @@
 <!--index.wxml-->
-<view class="container">
-
-  <view class="welcome">
-    <text class="title">智绘龙门阵</text>
-    <text class="subtitle">欢迎使用权限管理系统</text>
+<view class="app-container">
+  <!-- 背景颗粒质感 -->
+  <view class="grain-overlay"></view>
+  
+  <!-- 顶部标题 -->
+  <view class="header">
+    <view class="city-emblem">
+      <text class="emblem-icon">🏛️</text>
+    </view>
+    <text class="app-title">龙门政府数据管理平台</text>
+    <text class="app-subtitle">智能管理 · 高效服务 · 安全保障</text>
+    
+    <!-- 装饰元素 -->
+    <view class="decoration decoration-1"></view>
+    <view class="decoration decoration-2"></view>
   </view>
   
-  <view class="button-container">
-    <button class="case-btn" bindtap="goToTypicalCases">典型案例</button>
-    <button class="project-btn" bindtap="goToFifteenProjects">十五项项目</button>
-    <button class="policy-btn" bindtap="goToPolicyDocuments">政策文件</button>
+  <!-- 主要内容 -->
+  <view class="content">
+    <!-- 功能按钮区域 - 整合了双方设计的优势 -->
+    <view class="feature-buttons">
+      <!-- 功能按钮1 -->
+      <view class="feature-card" bindtap="goToTypicalCases">
+        <view class="icon-container">
+          <text class="feature-icon">📖</text>
+        </view>
+        <view class="feature-info">
+          <text class="feature-title">典型案例</text>
+          <text class="feature-desc">优秀实践成果展示，经验分享学习平台，创新解决方案库</text>
+        </view>
+      </view>
+      
+      <!-- 功能按钮2 -->
+      <view class="feature-card" bindtap="goToFifteenProjects">
+        <view class="icon-container">
+          <text class="feature-icon">📋</text>
+        </view>
+        <view class="feature-info">
+          <text class="feature-title">十五项项目</text>
+          <text class="feature-desc">重点任务追踪、责任落实监督、进度管理控制</text>
+        </view>
+      </view>
+      
+      <!-- 功能按钮3 -->
+      <view class="feature-card" bindtap="goToPolicyDocuments">
+        <view class="icon-container">
+          <text class="feature-icon">📄</text>
+        </view>
+        <view class="feature-info">
+          <text class="feature-title">政策文件</text>
+          <text class="feature-desc">最新政府公告、政策法规库、文件查阅下载</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 装饰性背景元素 -->
+    <view class="decoration decoration-3"></view>
+    <view class="decoration decoration-4"></view>
   </view>
   
 </view>
-
+    

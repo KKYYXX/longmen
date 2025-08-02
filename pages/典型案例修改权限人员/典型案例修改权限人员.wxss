@@ -1,5 +1,67 @@
 /* pages/典型案例修改权限人员/典型案例修改权限人员.wxss */
-.blank-container {
-  min-height: 100vh;
-  background: #ffffff;
+
+/* 页面容器 */
+.page-container {
+  background: #f0f0f0; /* 背景色 */
+  height: 100vh; /* 充满屏幕 */
+  display: flex;
+  flex-direction: column; /* 使内容垂直排列 */
+  padding: 20rpx;
+}
+
+/* 表单容器 */
+.form-container {
+  flex-grow: 1; /* 让内容区域占满剩余空间 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 按钮容器 */
+.button-container {
+  display: flex;
+  justify-content: center; /* 水平居中按钮 */
+  align-items: center; /* 垂直居中按钮 */
+  width: 100%;
+  padding: 10rpx;
+  position: absolute; /* 绝对定位 */
+  bottom: 20rpx; /* 固定底部 */
+}
+
+/* 按钮样式 */
+.action-btn {
+  width: 200rpx; /* 宽度 */
+  height: 60rpx; /* 高度 */
+  border-radius: 30rpx; /* 圆角效果 */
+  background-color: #4CAF50; /* 添加按钮颜色 */
+  color: white;
+  font-size: 28rpx;
+  border: none;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  margin: 0 15rpx; /* 按钮之间的间距 */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 悬停效果 */
+.action-btn:hover {
+  background-color: #45a049; /* 鼠标悬停时按钮变色 */
+  transform: translateY(-3rpx);
+}
+
+/* 删除按钮的特定样式 */
+.delete-btn {
+  background-color: #f44336; /* 删除按钮颜色 */
+}
+
+.delete-btn:hover {
+  background-color: #e53935; /* 删除按钮悬停效果 */
+}
+
+/* 按钮点击效果 */
+.action-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
