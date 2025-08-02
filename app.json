@@ -27,18 +27,22 @@
   },
   "tabBar": {
     "color": "#7A7E83",
-    "selectedColor": "#667eea",
+    "selectedColor": "#8B4513",
     "borderStyle": "white",
     "backgroundColor": "#ffffff",
     "position": "bottom",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "🏠 首页"
+        "text": "首页",
+        "iconPath": "./images/首页.jpg",
+        "selectedIconPath": "./images/首页_选中.jpg"
       },
       {
         "pagePath": "pages/personal/personal",
-        "text": "👤 个人中心"
+        "text": "个人",
+        "iconPath": "./images/个人.jpg",
+        "selectedIconPath": "./images/个人_选中.jpg"
       }
     ]
   },

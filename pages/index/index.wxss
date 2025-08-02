@@ -1,89 +1,39 @@
 /**index.wxss**/
 .container {
-  min-height: 100vh;
-  background: #ffffff;
-  padding: 60rpx 40rpx 120rpx 40rpx; /* 底部留出tabBar空间 */
-  box-sizing: border-box;
-}
-
-.welcome {
+  padding: 40rpx;
   text-align: center;
-  margin-bottom: 80rpx;
 }
 
-.title {
+.container text {
   display: block;
   font-size: 48rpx;
   font-weight: bold;
-  color: #000000;
-  margin-bottom: 20rpx;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+  color: #b66328;
+  margin-bottom: 40rpx;
 }
 
-.subtitle {
-  display: block;
-  font-size: 28rpx;
-  color: rgb(0, 0, 0);
-  line-height: 1.5;
-}
-
-/* 功能特性展示 */
-.features {
-  display: flex;
-  flex-direction: column;
-  gap: 30rpx;
-}
-
-.feature-item {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20rpx;
-  padding: 40rpx 30rpx;
+/* 背景图片区域 */
+.background-image-container {
+  width: 750rpx;
   text-align: center;
-  backdrop-filter: blur(10rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 40rpx;
 }
 
-.feature-icon {
-  display: block;
-  font-size: 48rpx;
-  margin-bottom: 20rpx;
+.background-image {
+  width: 100%;
+  max-width: 750rpx;
+  height: auto;
 }
 
-.feature-title {
-  display: block;
-  font-size: 32rpx;
-  font-weight: bold;
+.container button {
+  width: 80%;
+  height:200rpx;
+  margin: 20rpx auto;
+  background: #efc758;
   color: #000000;
-  margin-bottom: 16rpx;
-}
-
-.feature-desc {
-  display: block;
-  font-size: 26rpx;
-  color: rgba(0, 0, 0, 0.8);
-  line-height: 1.4;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 60rpx;
-}
-
-/* 政策文件按钮样式 */
-.policy-btn {
-  background: #f1a464;
-  color: #ffffff;
-  border: 2rpx solid #f1a464;
+  border: none;
   border-radius: 16rpx;
-  padding: 24rpx 48rpx;
+  padding: 30rpx;
   font-size: 32rpx;
-  font-weight: 600;
-  box-shadow: 0 4rpx 12rpx rgba(241, 164, 100, 0.2);
-  transition: all 0.3s ease;
-}
-
-.policy-btn:active {
-  transform: translateY(2rpx);
-  box-shadow: 0 2rpx 8rpx rgba(241, 164, 100, 0.3);
+  display: block;
 }

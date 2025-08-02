@@ -1,5 +1,6 @@
 {
   "usingComponents": {},
+  "navigationBarTitleText": "智绘龙门",
   "navigationBarBackgroundColor": "#f9e286",
   "navigationBarTextStyle": "black"
 }

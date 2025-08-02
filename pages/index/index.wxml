@@ -1,14 +1,14 @@
 <!--index.wxml-->
 <view class="container">
-
-  <view class="welcome">
-    <text class="title">智绘龙门阵</text>
-    <text class="subtitle">欢迎使用权限管理系统</text>
+  <text>欢迎使用智绘龙门数据管理系统</text>
+  
+  <!-- 首页背景图片 -->
+  <view class="background-image-container">
+    <image class="background-image" src="./images/首页背景.jpg" mode="asectFit" binderror="imageError" bindload="imageLoad"></image>
   </view>
   
-  <view class="button-container">
-    <button class="policy-btn" bindtap="goToPolicyDocuments">政策文件</button>
-  </view>
-  
+  <button bindtap="goToTypicalCase" style="position: relative; left: -1rpx; top: 45rpx; width: 585rpx; height: 114rpx; display: block; box-sizing: border-box">典型案例</button>
+  <button bindtap="goToBuildList" style="position: relative; left: -2rpx; top: 118rpx; width: 585rpx; height: 114rpx; display: block; box-sizing: border-box">15项共建清单</button>
+  <button bindtap="goToPolicyDocuments" style="position: relative; left: -1rpx; top: 193rpx; width: 585rpx; height: 114rpx; display: block; box-sizing: border-box">政策文件</button>
 </view>
 
