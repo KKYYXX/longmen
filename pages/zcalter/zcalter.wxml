@@ -1,4 +1,50 @@
-<view class="zcalter-container">
-  <button class="addbutton" bindtap="goToZcalterAdd">增加文件</button>
-  <button class="deletebutton" bindtap="goToZcalterDelete">删除文件</button>
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="highlight-shape shape-1"></view>
+  <view class="highlight-shape shape-2"></view>
+  
+  <!-- 顶部标题区 -->
+  <view class="header">
+    <view class="modification-icon">
+      <view class="icon-backing">
+        <text class="file-icon">✏️</text>
+      </view>
+    </view>
+    
+    <view class="title-box">
+      <text class="page-title">文件修改</text>
+      <text class="subtitle">文件管理 · 精准操作</text>
+    </view>
+  </view>
+  
+  <!-- 核心功能按钮区 -->
+  <view class="btn-container">
+    <!-- 增加文件按钮 -->
+    <view class="function-card" bindtap="goToZcalterAdd">
+      <view class="card-content">
+        <text class="card-title">增加文件</text>
+        <text class="card-desc">添加新的政策文件到系统</text>
+      </view>
+      <view class="icon-circle add-icon-circle">
+        <view class="card-icon add-icon">
+          <text class="icon-text">➕</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 删除文件按钮 -->
+    <view class="function-card" bindtap="goToZcalterDelete">
+      <view class="card-content">
+        <text class="card-title">删除文件</text>
+        <text class="card-desc">移除过期或无效的政策文件</text>
+      </view>
+      <view class="icon-circle delete-icon-circle">
+        <view class="card-icon delete-icon">
+          <text class="icon-text">🗑️</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+
 </view> 

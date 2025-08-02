@@ -23,7 +23,8 @@
     "navigationBarTitleText": "个人登录系统",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#fffbe6",
-    "enablePullDownRefresh": false
+    "enablePullDownRefresh": false,
+    "disableScroll": false
   },
   "tabBar": {
     "color": "#7A7E83",

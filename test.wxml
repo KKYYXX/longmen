@@ -1,0 +1,4 @@
+<view class="container">
+  <text>测试页面</text>
+  <button bindtap="goToPolicyDocuments">政策文件</button>
+</view> 

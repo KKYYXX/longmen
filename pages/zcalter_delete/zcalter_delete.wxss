@@ -14,11 +14,6 @@
   border-bottom: 1rpx solid #e9ecef;
 }
 
-.page-title {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #333333;
-}
 
 /* 搜索区域 */
 .search-section {
@@ -41,7 +36,10 @@
   height: 80rpx;
   font-size: 28rpx;
   color: #333333;
-  padding: 0;
+  padding: 0 20rpx;
+  line-height: 80rpx;
+  display: flex;
+  align-items: center;
 }
 
 .search-btn {
@@ -123,6 +121,10 @@
   background: #e74c3c;
   color: #ffffff;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .delete-btn:active {

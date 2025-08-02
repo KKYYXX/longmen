@@ -37,8 +37,15 @@ Page({
   },
 
   goToPolicyDocuments() {
+    // 使用switchTab替代navigateTo，避免页面栈问题
     wx.navigateTo({
-      url: '/pages/zcdocuments/zcdocuments'
+      url: '/pages/zcdocuments/zcdocuments',
+      success: () => {
+        // 页面跳转成功
+      },
+      fail: (err) => {
+        console.error('页面跳转失败:', err);
+      }
     });
   }
 })

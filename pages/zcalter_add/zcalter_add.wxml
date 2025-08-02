@@ -1,7 +1,6 @@
 <!-- 增加文件页面 -->
 <view class="zcalter-add-container">
   <view class="page-header">
-    <text class="page-title">增加文件</text>
   </view>
   
   <view class="form-container">

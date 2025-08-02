@@ -5,12 +5,17 @@ Page({
   },
 
   onLoad() {
+    // 页面加载时检查登录状态
     this.checkLoginStatus();
   },
 
   onShow() {
     // 每次显示页面时检查登录状态
     this.checkLoginStatus();
+  },
+
+  onReady() {
+    // 页面初次渲染完成
   },
 
   // 检查登录状态
@@ -26,9 +31,17 @@ Page({
 
   // 查询按钮点击事件
   goToZcquery() {
-    wx.navigateTo({
-      url: '/pages/zcquery/zcquery'
+    wx.showToast({
+      title: '正在进入查询...',
+      icon: 'success',
+      duration: 1500
     });
+    
+    setTimeout(() => {
+      wx.navigateTo({
+        url: '/pages/zcquery/zcquery'
+      });
+    }, 800);
   },
 
   // 删改按钮点击事件

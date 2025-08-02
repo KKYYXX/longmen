@@ -1,39 +1,238 @@
 /**index.wxss**/
-.container {
-  padding: 40rpx;
-  text-align: center;
+page {
+  background-color: #FFFFF0;
+  color: #444;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
 
-.container text {
-  display: block;
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #b66328;
-  margin-bottom: 40rpx;
-}
-
-/* 背景图片区域 */
-.background-image-container {
-  width: 750rpx;
-  text-align: center;
-  margin-bottom: 40rpx;
-}
-
-.background-image {
+.app-container {
   width: 100%;
-  max-width: 750rpx;
-  height: auto;
+  min-height: 100vh;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
 
-.container button {
-  width: 80%;
-  height:200rpx;
-  margin: 20rpx auto;
-  background: #efc758;
-  color: #000000;
-  border: none;
-  border-radius: 16rpx;
-  padding: 30rpx;
-  font-size: 32rpx;
+/* 背景颗粒质感 */
+.grain-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(#ffeebf 1px, transparent 1px);
+  background-size: 40rpx 40rpx;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 顶部导航栏 */
+.header {
+  background: linear-gradient(to right, #FFECB3, #FFE082);
+  padding: 48rpx 40rpx 36rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.03);
+  position: relative;
+  z-index: 2;
+}
+
+.city-emblem {
+  width: 160rpx;
+  height: 160rpx;
+  background: linear-gradient(135deg, #FFFDE7, #FFECB3);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 24rpx;
+  z-index: 1;
+  border: 2rpx solid rgba(255, 228, 130, 0.2);
+}
+
+.emblem-icon {
+  font-size: 80rpx;
+}
+
+.app-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #5c5032;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 2rpx rgba(255, 255, 255, 0.7);
+  z-index: 1;
+}
+
+.app-subtitle {
+  font-size: 28rpx;
+  color: #7a6c47;
+  margin-bottom: 16rpx;
+  z-index: 1;
+  font-weight: 500;
+}
+
+/* 装饰元素 */
+.decoration {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.decoration-1 {
+  top: 20rpx;
+  right: 60rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: radial-gradient(#ffeebf, transparent 70%);
+}
+
+.decoration-2 {
+  bottom: -30rpx;
+  left: 40rpx;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: radial-gradient(#ffefca, transparent 70%);
+  opacity: 0.3;
+}
+
+/* 主要内容区 */
+.content {
+  padding: 50rpx 40rpx;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 253, 231, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+/* 功能卡片 */
+.feature-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 36rpx;
+  padding: 44rpx 40rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 
+    0 8rpx 30rpx rgba(0, 0, 0, 0.03),
+    inset 0 0 0 2rpx rgba(255, 236, 179, 0.4);
+  transition: all 0.35s ease;
+  color: #5c5032;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card:active {
+  transform: translateY(-8rpx);
+  box-shadow: 
+    0 16rpx 40rpx rgba(0, 0, 0, 0.05),
+    inset 0 0 0 2rpx rgba(255, 236, 179, 0.5);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.icon-container {
+  width: 120rpx;
+  height: 120rpx;
+  background: rgba(255, 250, 228, 0.8);
+  border-radius: 28rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 40rpx;
+  box-shadow: 
+    0 4rpx 12rpx rgba(0, 0, 0, 0.04),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.8);
+}
+
+.feature-card:nth-child(1) .icon-container {
+  background: rgba(255, 251, 235, 0.8);
+}
+
+.feature-card:nth-child(2) .icon-container {
+  background: rgba(255, 249, 230, 0.8);
+}
+
+.feature-card:nth-child(3) .icon-container {
+  background: rgba(255, 246, 212, 0.8);
+}
+
+.feature-icon {
+  font-size: 56rpx;
+}
+
+.feature-info {
+  flex: 1;
+}
+
+.feature-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  color: #5c5032;
+  display: block;
+}
+
+.feature-desc {
+  font-size: 25rpx;
+  color: #7a6c47;
+  opacity: 0.85;
+  line-height: 1.4;
+  display: block;
+}
+
+/* 装饰性背景元素 */
+.decoration-3 {
+  bottom: 200rpx;
+  left: -80rpx;
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 50%;
+  background: radial-gradient(#fffdf0, transparent 70%);
+  opacity: 0.2;
+}
+
+.decoration-4 {
+  top: 30%;
+  right: -60rpx;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  background: radial-gradient(#ffedba, transparent 70%);
+  opacity: 0.2;
+}
+
+/* 水印 */
+.watermark {
+  position: absolute;
+  bottom: 110rpx;
+  width: 100%;
+  text-align: center;
+  font-size: 22rpx;
+  color: #c0b69c;
+  letter-spacing: 1rpx;
+  z-index: 1;
+}
+
+/* 底部区域 */
+.footer {
+  background: rgba(250, 250, 245, 0.8);
+  padding: 28rpx 40rpx;
+  text-align: center;
+  border-top: 2rpx solid rgba(238, 238, 238, 0.6);
+  z-index: 2;
+}
+
+.gov-seal {
+  font-size: 25rpx;
+  color: #6a6143;
+  margin-top: 8rpx;
+  font-weight: 500;
   display: block;
 }
