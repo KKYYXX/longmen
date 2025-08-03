@@ -32,16 +32,121 @@ Page({
   // 查询按钮点击事件
   goToZcquery() {
     wx.showToast({
-      title: '正在进入查询...',
+      title: '正在查询...',
+      icon: 'loading',
+      duration: 1000
+    });
+
+    // 调用后端接口获取文件列表
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/zcdocuments',
+      method: 'GET',
+      timeout: 10000, // 10秒超时
+      success: (res) => {
+        wx.hideToast();
+        console.log('请求成功:', res);
+        
+        if (res.data.success) {
+          const fileList = res.data.data;
+          const totalCount = res.data.total_count;
+          
+          // 将文件数据存储到本地缓存
+          wx.setStorageSync('zc_file_list', fileList);
+          wx.setStorageSync('zc_total_count', totalCount);
+          
+          // 跳转到查询页面
+          wx.navigateTo({
+            url: '/pages/zcquery/zcquery'
+          });
+        } else {
+          wx.showToast({
+            title: '查询失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideToast();
+        
+        console.error('请求失败详情:', err);
+        console.error('错误状态码:', err.statusCode);
+        console.error('错误信息:', err.errMsg);
+        
+        // 检查是否在开发模式下，如果是则使用测试数据
+        if (this.isDevelopmentMode()) {
+          console.log('使用测试数据模式');
+          this.useTestData();
+          return;
+        }
+        
+        // 根据错误类型显示不同的提示
+        if (err.errMsg && err.errMsg.includes('timeout')) {
+          wx.showModal({
+            title: '连接超时',
+            content: '后端服务器响应超时，请检查服务器是否正常运行',
+            showCancel: false,
+            confirmText: '确定'
+          });
+        } else if (err.statusCode === 404) {
+          wx.showModal({
+            title: '接口不存在',
+            content: `接口返回404错误，请检查后端路由是否正确注册。\n\n错误详情：${err.errMsg}`,
+            showCancel: false,
+            confirmText: '确定'
+          });
+        } else {
+          wx.showModal({
+            title: '网络错误',
+            content: `无法连接到后端服务器，错误信息：${err.errMsg || '未知错误'}\n\n状态码：${err.statusCode}`,
+            showCancel: false,
+            confirmText: '确定'
+          });
+        }
+      }
+    });
+  },
+
+  // 检查是否为开发模式
+  isDevelopmentMode() {
+    // 可以通过环境变量或其他方式判断
+    return true; // 临时设置为true，方便测试
+  },
+
+  // 使用测试数据
+  useTestData() {
+    const testData = [
+      {
+        id: 1,
+        file_name: 'git代管.docx',
+        file_size: 111,
+        file_url: 'D:\\111.docx',
+        uploaded_at: '2025-08-03 13:27:47'
+      },
+      {
+        id: 2,
+        file_name: '项目文档.pdf',
+        file_size: 2048,
+        file_url: 'C:\\Documents\\项目文档.pdf',
+        uploaded_at: '2025-08-02 10:15:30'
+      },
+    ];
+
+    // 存储测试数据
+    wx.setStorageSync('zc_file_list', testData);
+    wx.setStorageSync('zc_total_count', testData.length);
+
+    wx.showToast({
+      title: '使用测试数据',
       icon: 'success',
       duration: 1500
     });
-    
+
+    // 跳转到查询页面
     setTimeout(() => {
       wx.navigateTo({
         url: '/pages/zcquery/zcquery'
       });
-    }, 800);
+    }, 1500);
   },
 
   // 删改按钮点击事件

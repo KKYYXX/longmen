@@ -1,2 +1,54 @@
-<!--pages/项目进度修改权限人员/项目进度修改权限人员.wxml-->
-<text>pages/项目进度修改权限人员/项目进度修改权限人员.wxml</text>
+<view class="page-container">
+  <view class="form-container">
+    <!-- 内容区域，包含表单和按钮 -->
+    <view class="button-container">
+      <button class="action-btn" bindtap="onAddClick">添加</button>
+      <button class="action-btn delete-btn" bindtap="onDeleteUser">删除</button>
+    </view>
+
+    <view class="container">
+      <!-- 目前人员按钮 -->
+      <button bindtap="onViewUsers">目前人员</button>
+
+      <!-- 显示用户列表 -->
+      <view wx:if="{{userList.length > 0}}" class="user-list">
+        <view class="user-item" wx:for="{{userList}}" wx:key="index">
+          <text>{{item.name}} - {{item.phone}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 弹窗遮罩层 -->
+  <view class="modal-overlay" wx:if="{{showModal}}" bindtap="onModalClose">
+    <view class="modal-content" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">{{modalTitle}}</text>
+      </view>
+      
+      <view class="modal-body">
+        <view class="input-group">
+          <text class="input-label">姓名:</text>
+          <input class="input-field" 
+                 placeholder="请输入姓名" 
+                 value="{{inputName}}" 
+                 bindinput="onNameInput"
+                 data-field="inputName" />
+        </view>
+        
+        <view class="input-group">
+          <text class="input-label">电话:</text>
+          <input class="input-field" 
+                 placeholder="请输入电话号码" 
+                 value="{{inputPhone}}" 
+                 bindinput="onPhoneInput"
+                 data-field="inputPhone" />
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="modal-btn confirm-btn" bindtap="onConfirm">确认</button>
+      </view>
+    </view>
+  </view>
+</view>

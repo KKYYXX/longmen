@@ -51,6 +51,19 @@
   color: #ffffff;
 }
 
+/* 文件统计信息 */
+.file-stats {
+  padding: 20rpx 40rpx;
+  background: #ffffff;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.stats-text {
+  font-size: 28rpx;
+  color: #666666;
+  font-weight: 500;
+}
+
 /* 文件列表 */
 .file-list {
   padding: 20rpx 0;
@@ -121,23 +134,19 @@
   align-items: center;
 }
 
-.expand-icon {
-  font-size: 24rpx;
-  color: #999999;
-  transition: transform 0.3s ease;
-}
 
 .expand-icon.expanded {
   transform: rotate(180deg);
 }
 
 /* 文件内容 */
+/*
 .file-content {
   background: #f8f9fa;
   border-top: 1rpx solid #e9ecef;
   padding: 30rpx 40rpx;
-}
-
+}*/
+/*
 .content-header {
   display: flex;
   align-items: center;
@@ -194,7 +203,7 @@
   color: #333333;
   line-height: 1.6;
   word-break: break-all;
-}
+}*/
 
 /* 加载更多 */
 .load-more {

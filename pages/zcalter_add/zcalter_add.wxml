@@ -15,11 +15,7 @@
         <view class="picker-text">{{fileTypes[fileTypeIndex]}}</view>
       </picker>
     </view>
-    
-    <view class="form-item">
-      <text class="form-label">文件描述</text>
-      <textarea class="form-textarea" placeholder="请输入文件描述" value="{{fileDescription}}" bindinput="onDescriptionInput" />
-    </view>
+ 
     
     <view class="form-item">
       <text class="form-label">上传文件</text>

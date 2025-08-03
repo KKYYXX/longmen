@@ -1,1 +1,220 @@
 /* pages/项目进度修改权限人员/项目进度修改权限人员.wxss */
+/* 页面容器 */
+.page-container {
+  background: #f0f0f0; /* 背景色 */
+  height: 100vh; /* 充满屏幕 */
+  display: flex;
+  flex-direction: column; /* 使内容垂直排列 */
+  padding: 20rpx;
+}
+
+/* 表单容器 */
+.form-container {
+  flex-grow: 1; /* 让内容区域占满剩余空间 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 按钮容器 */
+.button-container {
+  display: flex;
+  justify-content: center; /* 水平居中按钮 */
+  align-items: center; /* 垂直居中按钮 */
+  width: 100%;
+  padding: 10rpx;
+  position: absolute; /* 绝对定位 */
+  bottom: 20rpx; /* 固定底部 */
+}
+
+/* 按钮样式 */
+.action-btn {
+  width: 200rpx; /* 宽度 */
+  height: 60rpx; /* 高度 */
+  border-radius: 30rpx; /* 圆角效果 */
+  background-color: #4CAF50; /* 添加按钮颜色 */
+  color: white;
+  font-size: 28rpx;
+  border: none;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  margin: 0 15rpx; /* 按钮之间的间距 */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 悬停效果 */
+.action-btn:hover {
+  background-color: #45a049; /* 鼠标悬停时按钮变色 */
+  transform: translateY(-3rpx);
+}
+
+/* 删除按钮的特定样式 */
+.delete-btn {
+  background-color: #f44336; /* 删除按钮颜色 */
+}
+
+.delete-btn:hover {
+  background-color: #e53935; /* 删除按钮悬停效果 */
+}
+
+/* 按钮点击效果 */
+.action-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.center-btn {
+  font-size: 30px; /* 可以根据需求调整大小 */
+  padding: 20px 40px;
+  background-color: #5388c0; /* 按钮的背景色 */
+  color: white;
+  border-radius: 8px; /* 按钮的圆角 */
+  border: none;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.center-btn {
+  font-size: 30px; /* 可以根据需求调整大小 */
+  padding: 20px 40px;
+  background-color: #4085ce; /* 按钮的背景色 */
+  color: white;
+  border-radius: 8px; /* 按钮的圆角 */
+  border: none;
+}
+
+.container {
+  padding: 20px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.user-list {
+  margin-top: 20px;
+}
+
+.user-item {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 20rpx;
+  border: 2rpx solid #333;
+  width: 600rpx;
+  max-width: 90%;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 40rpx 40rpx 20rpx 40rpx;
+  text-align: center;
+  border-bottom: 1rpx solid #eee;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-body {
+  padding: 40rpx;
+}
+
+.input-group {
+  margin-bottom: 30rpx;
+}
+
+.input-label {
+  display: block;
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 15rpx;
+  font-weight: 500;
+}
+
+.input-field {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #007AFF;
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  font-size: 30rpx;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  border-color: #0056CC;
+  outline: none;
+}
+
+.modal-footer {
+  padding: 20rpx 40rpx 40rpx 40rpx;
+  text-align: center;
+}
+
+.modal-btn {
+  width: 100%;
+  height: 80rpx;
+  border-radius: 40rpx;
+  border: none;
+  font-size: 32rpx;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #45a049;
+  transform: translateY(-2rpx);
+}
+
+.confirm-btn:active {
+  transform: translateY(0);
+}
