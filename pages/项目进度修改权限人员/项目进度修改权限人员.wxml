@@ -1,54 +1,62 @@
-<view class="page-container">
-  <view class="form-container">
-    <!-- 内容区域，包含表单和按钮 -->
-    <view class="button-container">
-      <button class="action-btn" bindtap="onAddClick">添加</button>
-      <button class="action-btn delete-btn" bindtap="onDeleteUser">删除</button>
+<view class="app-container">
+  <!-- 头部标题 -->
+  <view class="header">
+    <view class="app-title">记录管理系统</view>
+    <view class="app-subtitle">当前人员名单</view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <view class="search-box">
+      <icon class="search-icon" type="search" size="18" />
+      <input class="search-input" placeholder="搜索姓名/手机号" bindinput="onSearchInput" />
     </view>
+    <view class="search-count">共 {{ filteredRecords.length }} 条记录</view>
+  </view>
 
-    <view class="container">
-      <!-- 目前人员按钮 -->
-      <button bindtap="onViewUsers">目前人员</button>
-
-      <!-- 显示用户列表 -->
-      <view wx:if="{{userList.length > 0}}" class="user-list">
-        <view class="user-item" wx:for="{{userList}}" wx:key="index">
-          <text>{{item.name}} - {{item.phone}}</text>
+  <!-- 列表记录内容 -->
+  <scroll-view class="records-container" scroll-y="true">
+    <block wx:for="{{ filteredRecords }}" wx:key="index">
+      <view class="record-card">
+        <view class="record-header">
+          <view class="record-name">{{ item.name }}</view>
+          <view class="record-time">{{ item.time }}</view>
         </view>
+        <view class="record-details">
+          <view class="record-phone">
+            <icon class="phone-icon" type="phone" size="20" />
+            {{ item.phone }}
+          </view>
+          <view class="delete-btn" bindtap="onDeleteRecord" data-index="{{ index }}">删除</view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="add-record" bindtap="toggleAddModal">
+    +
+    <view class="fab-text">新增记录</view>
+  </view>
+
+  <!-- 模态框 -->
+  <view wx:if="{{ showModal }}" class="modal-overlay">
+    <view class="modal-content">
+      <view class="input-row">
+        <view class="input-label">姓名</view>
+        <input class="input-field" placeholder="请输入姓名" bindinput="onNameInput" />
+      </view>
+      <view class="input-row">
+        <view class="input-label">手机号</view>
+        <input class="input-field" placeholder="请输入手机号" bindinput="onPhoneInput" />
+      </view>
+      <view class="button-group">
+        <view class="modal-btn cancel-btn" bindtap="cancelAdd">取消</view>
+        <view class="modal-btn confirm-btn" bindtap="confirmAdd">确认</view>
       </view>
     </view>
   </view>
 
-  <!-- 弹窗遮罩层 -->
-  <view class="modal-overlay" wx:if="{{showModal}}" bindtap="onModalClose">
-    <view class="modal-content" catchtap="onModalContentTap">
-      <view class="modal-header">
-        <text class="modal-title">{{modalTitle}}</text>
-      </view>
-      
-      <view class="modal-body">
-        <view class="input-group">
-          <text class="input-label">姓名:</text>
-          <input class="input-field" 
-                 placeholder="请输入姓名" 
-                 value="{{inputName}}" 
-                 bindinput="onNameInput"
-                 data-field="inputName" />
-        </view>
-        
-        <view class="input-group">
-          <text class="input-label">电话:</text>
-          <input class="input-field" 
-                 placeholder="请输入电话号码" 
-                 value="{{inputPhone}}" 
-                 bindinput="onPhoneInput"
-                 data-field="inputPhone" />
-        </view>
-      </view>
-      
-      <view class="modal-footer">
-        <button class="modal-btn confirm-btn" bindtap="onConfirm">确认</button>
-      </view>
-    </view>
-  </view>
+  <!-- 顶部提示 -->
+  <view wx:if="{{ showNotification }}" class="notification">操作成功</view>
 </view>

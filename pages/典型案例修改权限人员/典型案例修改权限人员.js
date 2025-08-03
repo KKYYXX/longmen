@@ -1,280 +1,139 @@
-// pages/典型案例修改权限人员/典型案例修改权限人员.js
 Page({
-  /**
-   * 页面的初始数据
-   */
   data: {
-    name: '',  // 用户姓名
-    phone: '',  // 用户电话
-    userList: [],  // 用于存储接口返回的用户列表
-    showModal: false,  // 控制弹窗显示
-    modalTitle: '',  // 弹窗标题
-    inputName: '',  // 弹窗输入的姓名
-    inputPhone: '',  // 弹窗输入的电话
-    currentAction: ''  // 当前操作类型：'add' 或 'delete'
+    allRecords: [],           // 原始数据
+    filteredRecords: [],      // 过滤后显示的数据
+    searchQuery: '',          // 搜索关键词
+    showModal: false,         // 控制新增记录模态框
+    showNotification: false,  // 顶部通知显示
+    newName: '',
+    newPhone: ''
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-    // 页面加载时可做其他初始化
+  onLoad() {
+    this.fetchRecords()
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  },
-
-  /**
-   * 点击"添加"按钮的事件处理
-   */
-  onAddClick: function() {
-    this.setData({
-      showModal: true,
-      modalTitle: '添加用户',
-      inputName: '',
-      inputPhone: '',
-      currentAction: 'add'
-    });
-  },
-
-  /**
-   * 点击"删除"按钮的事件处理
-   */
-  onDeleteUser: function() {
-    this.setData({
-      showModal: true,
-      modalTitle: '删除用户',
-      inputName: '',
-      inputPhone: '',
-      currentAction: 'delete'
-    });
-  },
-
-  /**
-   * 处理姓名输入
-   */
-  onNameInput: function(e) {
-    this.setData({
-      inputName: e.detail.value
-    });
-  },
-
-  /**
-   * 处理电话输入
-   */
-  onPhoneInput: function(e) {
-    this.setData({
-      inputPhone: e.detail.value
-    });
-  },
-
-  /**
-   * 关闭弹窗
-   */
-  onModalClose: function() {
-    this.setData({
-      showModal: false,
-      inputName: '',
-      inputPhone: ''
-    });
-  },
-
-  /**
-   * 阻止弹窗内容点击事件冒泡
-   */
-  onModalContentTap: function() {
-    // 阻止事件冒泡，防止点击内容区域时关闭弹窗
-  },
-
-  /**
-   * 确认按钮点击事件
-   */
-  onConfirm: function() {
-    const { inputName, inputPhone, currentAction } = this.data;
-    
-    // 验证输入
-    if (!inputName.trim()) {
-      wx.showToast({
-        title: '请输入姓名',
-        icon: 'none'
-      });
-      return;
-    }
-    
-    if (!inputPhone.trim()) {
-      wx.showToast({
-        title: '请输入电话号码',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (currentAction === 'add') {
-      this.addUser(inputName, inputPhone);
-    } else if (currentAction === 'delete') {
-      this.deleteUser(inputName, inputPhone);
-    }
-  },
-
-  /**
-   * 添加用户
-   */
-  addUser: function(name, phone) {
+  fetchRecords() {
+    // 连接你的 /user/query_15 接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/alter_model_add',
-      method: 'POST',
-      data: {
-        name: name,
-        phone: phone
-      },
-      success: (res) => {
-        if (res.statusCode === 200) {
-          wx.showToast({
-            title: '添加成功',
-            icon: 'success'
-          });
-          this.setData({
-            showModal: false,
-            inputName: '',
-            inputPhone: '',
-            userList: res.data
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '添加失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (error) => {
-        wx.showToast({
-          title: '请求失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
-
-  /**
-   * 删除用户
-   */
-  deleteUser: function(name, phone) {
-    wx.request({
-      url: 'http://127.0.0.1:5000/app/user/alter_model_delete',
-      method: 'POST',
-      data: {
-        name: name,
-        phone: phone
-      },
-      success: (res) => {
-        if (res.statusCode === 200) {
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success'
-          });
-          this.setData({
-            showModal: false,
-            inputName: '',
-            inputPhone: '',
-            userList: res.data
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '删除失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: () => {
-        wx.showToast({
-          title: '请求失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
-
-  /**
-   * 处理输入框内容变化
-   */
-  onInputChange: function(e) {
-    const { field } = e.target.dataset;  // 获取字段名，name 或 phone
-    this.setData({
-      [field]: e.detail.value
-    });
-  },
-
-  /**
-   * 点击"目前人员"按钮，获取并显示用户名单
-   */
-  onViewUsers: function() {
-    wx.request({
-      url: 'http://127.0.0.1:5000/app/user/alter_model',  // 替换为你的实际接口地址
+      url: 'http://127.0.0.1:5000/app/user/alter_model', // 👈 替换成你的接口
       method: 'GET',
-      success: (res) => {
-        if (res.statusCode === 200) {
+      success: res => {
+        if (res.data.success) {
+          const records = res.data.data || []
           this.setData({
-            userList: res.data  // 更新页面的用户名单
-          });
+            allRecords: records,
+            filteredRecords: records
+          })
         } else {
-          wx.showToast({
-            title: '加载失败',
-            icon: 'none'
-          });
+          this.showToast('加载失败')
         }
       },
       fail: () => {
-        wx.showToast({
-          title: '请求失败',
-          icon: 'none'
-        });
+        this.showToast('服务器连接失败')
       }
-    });
+    })
+  },
+
+  onSearchInput(e) {
+    const query = e.detail.value.toLowerCase()
+    const filtered = this.data.allRecords.filter(item =>
+      item.name.toLowerCase().includes(query) || item.phone.includes(query)
+    )
+    this.setData({
+      searchQuery: query,
+      filteredRecords: filtered
+    })
+  },
+
+  toggleAddModal() {
+    this.setData({
+      showModal: true,
+      newName: '',
+      newPhone: ''
+    })
+  },
+
+  cancelAdd() {
+    this.setData({ showModal: false })
+  },
+
+  onNameInput(e) {
+    this.setData({ newName: e.detail.value })
+  },
+
+  onPhoneInput(e) {
+    this.setData({ newPhone: e.detail.value })
+  },
+
+  confirmAdd() {
+    const { newName, newPhone } = this.data
+    if (!newName || !newPhone) {
+      this.showToast('请填写完整信息')
+      return
+    }
+
+    // 模拟后端保存逻辑
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/user/alter_model_add', // 👈 替换成你的新增接口
+      method: 'POST',
+      header: { 'content-type': 'application/json' },
+      data: {
+        name: newName,
+        phone: newPhone
+      },
+      success: res => {
+        if (res.data.success) {
+          this.fetchRecords()
+          this.setData({ showModal: false })
+          this.showToast('添加成功')
+        } else {
+          this.showToast(res.data.message || '添加失败')
+        }
+      },
+      fail: () => {
+        this.showToast('服务器错误')
+      }
+    })
+  },
+
+  onDeleteRecord(e) {
+    const index = e.currentTarget.dataset.index
+    const record = this.data.filteredRecords[index]
+    if (!record || !record.phone) return
+
+    wx.showModal({
+      title: '确认删除',
+      content: `是否删除 ${record.name}？`,
+      confirmText: '删除',
+      success: res => {
+        if (res.confirm) {
+          wx.request({
+            url: 'http://127.0.0.1:5000/app/user/alter_model_delete', // 👈 替换成你的删除接口
+            method: 'POST',
+            header: { 'content-type': 'application/json' },
+            data: { phone: record.phone },
+            success: res => {
+              if (res.data.success) {
+                this.fetchRecords()
+                this.showToast('删除成功')
+              } else {
+                this.showToast('删除失败')
+              }
+            },
+            fail: () => {
+              this.showToast('服务器错误')
+            }
+          })
+        }
+      }
+    })
+  },
+
+  showToast(message) {
+    this.setData({ showNotification: true })
+    setTimeout(() => {
+      this.setData({ showNotification: false })
+    }, 2000)
   }
-});
+})
