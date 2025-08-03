@@ -1,5 +1,7 @@
 {
-  "navigationBarTitleText": "十五项项目",
-  "navigationBarBackgroundColor": "#FFB74D",
-  "navigationBarTextStyle": "white"
+  "navigationBarTitleText": "资料管理",
+  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTextStyle": "black",
+  "disableScroll": false,
+  "enablePullDownRefresh": false
 }

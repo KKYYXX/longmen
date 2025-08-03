@@ -1,334 +1,54 @@
-<view class="add-case-container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <text class="page-title">添加典型案例</text>
-    <text class="page-subtitle">此页面将包含案例信息录入表单，支持上传图片、视频、文件等功能</text>
-  </view>
-
-  <!-- 步骤指示器 -->
-  <view class="step-indicator">
-    <view class="step-item {{currentStep >= 1 ? 'active' : ''}}">
-      <view class="step-number">1</view>
-      <text class="step-text">基本信息</text>
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <view class="header">
+    <view class="icon-wrapper">
+      <view class="icon-circle">
+        <text class="icon">📁</text>
+      </view>
     </view>
-    <view class="step-line {{currentStep >= 2 ? 'active' : ''}}"></view>
-    <view class="step-item {{currentStep >= 2 ? 'active' : ''}}">
-      <view class="step-number">2</view>
-      <text class="step-text">详细内容</text>
-    </view>
-    <view class="step-line {{currentStep >= 3 ? 'active' : ''}}"></view>
-    <view class="step-item {{currentStep >= 3 ? 'active' : ''}}">
-      <view class="step-number">3</view>
-      <text class="step-text">媒体文件</text>
-    </view>
-    <view class="step-line {{currentStep >= 4 ? 'active' : ''}}"></view>
-    <view class="step-item {{currentStep >= 4 ? 'active' : ''}}">
-      <view class="step-number">4</view>
-      <text class="step-text">确认提交</text>
+    <view class="title-box">
+      <text class="title">典型案例添加</text>
+      <text class="subtitle">核心功能·简洁操作</text>
     </view>
   </view>
 
-  <!-- 步骤1：基本信息 -->
-  <view class="step-content" wx:if="{{currentStep === 1}}">
-    <view class="form-section">
-      <view class="form-group">
-        <label class="form-label">案例标题 *</label>
-        <input
-          class="form-input"
-          placeholder="请输入案例标题"
-          value="{{caseData.title}}"
-          bindinput="onTitleInput"
-        />
-      </view>
-
-      <view class="form-group">
-        <label class="form-label">案例分类 *</label>
-        <picker
-          class="form-picker"
-          range="{{categories}}"
-          bindchange="onCategoryChange"
-        >
-          <view class="picker-display">
-            {{caseData.category || '请选择案例分类'}}
-          </view>
-        </picker>
-      </view>
-
-      <view class="form-group">
-        <label class="form-label">案例摘要</label>
-        <textarea
-          class="form-textarea"
-          placeholder="请输入案例摘要（200字以内）"
-          maxlength="200"
-          value="{{caseData.summary}}"
-          bindinput="onSummaryInput"
-        />
-      </view>
-
-      <view class="form-group">
-        <label class="form-label">联系人信息</label>
-        <input
-          class="form-input"
-          placeholder="请输入联系人姓名和电话"
-          value="{{caseData.contact}}"
-          bindinput="onContactInput"
-        />
-      </view>
-    </view>
-
-    <view class="button-group">
-      <button class="cancel-btn" bindtap="cancel">取消</button>
-      <button class="next-btn" bindtap="nextStep">下一步</button>
-    </view>
-  </view>
-
-  <!-- 步骤2：详细内容 -->
-  <view class="step-content" wx:if="{{currentStep === 2}}">
-    <view class="form-section">
-      <view class="form-group">
-        <label class="form-label">详细内容 *</label>
-        <textarea
-          class="form-textarea large"
-          placeholder="请详细描述案例的背景、实施过程、具体做法等"
-          value="{{caseData.content}}"
-          bindinput="onContentInput"
-        />
-      </view>
-
-      <view class="form-group">
-        <label class="form-label">主要成效</label>
-        <textarea
-          class="form-textarea"
-          placeholder="请描述案例取得的主要成效和效果"
-          value="{{caseData.achievements}}"
-          bindinput="onAchievementsInput"
-        />
-      </view>
-
-      <view class="form-group">
-        <label class="form-label">经验总结</label>
-        <textarea
-          class="form-textarea"
-          placeholder="请总结案例的经验做法和启示"
-          value="{{caseData.experience}}"
-          bindinput="onExperienceInput"
-        />
-      </view>
-
-      <view class="form-group">
-        <label class="form-label">案例来源</label>
-        <input
-          class="form-input"
-          placeholder="请输入案例提供单位或个人"
-          value="{{caseData.author}}"
-          bindinput="onAuthorInput"
-        />
-      </view>
-    </view>
-
-    <view class="button-group">
-      <button class="back-btn" bindtap="prevStep">上一步</button>
-      <button class="next-btn" bindtap="nextStep">下一步</button>
-    </view>
-  </view>
-
-  <!-- 步骤3：媒体文件 -->
-  <view class="step-content" wx:if="{{currentStep === 3}}">
-    <view class="form-section">
-      <!-- 图片上传 -->
-      <view class="media-group">
-        <view class="media-header">
-          <text class="media-title">📷 相关图片</text>
-          <button class="add-media-btn" bindtap="chooseImages">添加图片</button>
+  <view class="btn-container">
+    <view class="function-card" bindtap="uploadFiles">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">文件上传</text>
+          <text class="card-desc">上传PDF和DOC文档，支持图片内容</text>
         </view>
-        <view class="media-list" wx:if="{{selectedImages.length > 0}}">
-          <view
-            class="media-item image-item"
-            wx:for="{{selectedImages}}"
-            wx:key="url"
-            wx:for-index="index"
-          >
-            <image class="media-preview" src="{{item.url}}" mode="aspectFill" />
-            <view class="media-info">
-              <text class="media-name">{{item.name}}</text>
-              <text class="media-size">{{item.sizeText}}</text>
-            </view>
-            <view class="media-actions">
-              <text class="remove-btn" bindtap="removeImage" data-index="{{index}}">删除</text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 视频上传 -->
-      <view class="media-group">
-        <view class="media-header">
-          <text class="media-title">🎥 相关视频</text>
-          <button class="add-media-btn" bindtap="chooseVideos">添加视频</button>
-        </view>
-        <view class="media-list" wx:if="{{selectedVideos.length > 0}}">
-          <view
-            class="media-item video-item"
-            wx:for="{{selectedVideos}}"
-            wx:key="url"
-            wx:for-index="index"
-          >
-            <video class="media-preview video-preview" src="{{item.url}}" />
-            <view class="media-info">
-              <text class="media-name">{{item.name}}</text>
-              <text class="media-size">{{item.sizeText}}</text>
-              <text class="media-duration">{{item.duration}}秒</text>
-            </view>
-            <view class="media-actions">
-              <text class="remove-btn" bindtap="removeVideo" data-index="{{index}}">删除</text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 文档上传 -->
-      <view class="media-group">
-        <view class="media-header">
-          <text class="media-title">📄 项目报告</text>
-          <button class="add-media-btn" bindtap="chooseReports">添加文档</button>
-        </view>
-        <view class="media-list" wx:if="{{selectedReports.length > 0}}">
-          <view
-            class="media-item report-item"
-            wx:for="{{selectedReports}}"
-            wx:key="url"
-            wx:for-index="index"
-          >
-            <view class="report-icon">📄</view>
-            <view class="media-info">
-              <text class="media-name">{{item.name}}</text>
-              <text class="media-type">{{item.type}}文档</text>
-              <text class="media-size">{{item.sizeText}}</text>
-            </view>
-            <view class="media-actions">
-              <text class="remove-btn" bindtap="removeReport" data-index="{{index}}">删除</text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 相关链接 -->
-      <view class="media-group">
-        <view class="media-header">
-          <text class="media-title">🔗 相关链接</text>
-          <button class="add-media-btn" bindtap="addLink">添加链接</button>
-        </view>
-        <view class="media-list" wx:if="{{links.length > 0}}">
-          <view
-            class="media-item link-item"
-            wx:for="{{links}}"
-            wx:key="url"
-            wx:for-index="index"
-          >
-            <view class="link-icon">🔗</view>
-            <view class="media-info">
-              <text class="media-name">{{item.name}}</text>
-              <text class="link-url">{{item.url}}</text>
-            </view>
-            <view class="media-actions">
-              <text class="remove-btn" bindtap="removeLink" data-index="{{index}}">删除</text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 标签管理 -->
-      <view class="media-group">
-        <view class="media-header">
-          <text class="media-title">🏷️ 案例标签</text>
-          <button class="add-media-btn" bindtap="showTagInput">添加标签</button>
-        </view>
-
-        <view class="tag-input-section" wx:if="{{showTagInput}}">
-          <input
-            class="tag-input"
-            placeholder="请输入标签名称"
-            value="{{tagInput}}"
-            bindinput="onTagInput"
-          />
-          <button class="tag-add-btn" bindtap="addTag">添加</button>
-        </view>
-
-        <view class="tag-list" wx:if="{{caseData.tags.length > 0}}">
-          <view
-            class="tag-item"
-            wx:for="{{caseData.tags}}"
-            wx:key="*this"
-            wx:for-index="index"
-          >
-            <text class="tag-text">{{item}}</text>
-            <text class="tag-remove" bindtap="removeTag" data-index="{{index}}">×</text>
-          </view>
+        <view class="icon-circle upload-icon-circle">
+          <text class="icon">📄</text>
         </view>
       </view>
     </view>
 
-    <view class="button-group">
-      <button class="back-btn" bindtap="prevStep">上一步</button>
-      <button class="next-btn" bindtap="nextStep">下一步</button>
-    </view>
-  </view>
-
-  <!-- 步骤4：确认提交 -->
-  <view class="step-content" wx:if="{{currentStep === 4}}">
-    <view class="preview-section">
-      <view class="preview-title">📋 案例预览</view>
-
-      <view class="preview-item">
-        <text class="preview-label">案例标题：</text>
-        <text class="preview-value">{{caseData.title}}</text>
-      </view>
-
-      <view class="preview-item">
-        <text class="preview-label">案例分类：</text>
-        <text class="preview-value">{{caseData.category}}</text>
-      </view>
-
-      <view class="preview-item" wx:if="{{caseData.summary}}">
-        <text class="preview-label">案例摘要：</text>
-        <text class="preview-value">{{caseData.summary}}</text>
-      </view>
-
-      <view class="preview-item" wx:if="{{caseData.content}}">
-        <text class="preview-label">详细内容：</text>
-        <text class="preview-value">{{caseData.content}}</text>
-      </view>
-
-      <view class="preview-stats">
-        <view class="stat-item">
-          <text class="stat-number">{{selectedImages.length}}</text>
-          <text class="stat-label">张图片</text>
+    <view class="function-card" bindtap="uploadNewsLinks">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">新闻链接</text>
+          <text class="card-desc">上传相关新闻链接和报道</text>
         </view>
-        <view class="stat-item">
-          <text class="stat-number">{{selectedVideos.length}}</text>
-          <text class="stat-label">个视频</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-number">{{selectedReports.length}}</text>
-          <text class="stat-label">个文档</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-number">{{links.length}}</text>
-          <text class="stat-label">个链接</text>
-        </view>
-      </view>
-
-      <view class="preview-tags" wx:if="{{caseData.tags.length > 0}}">
-        <text class="preview-label">标签：</text>
-        <view class="preview-tag-list">
-          <text class="preview-tag" wx:for="{{caseData.tags}}" wx:key="*this">{{item}}</text>
+        <view class="icon-circle link-icon-circle">
+          <text class="icon">🔗</text>
         </view>
       </view>
     </view>
 
-    <view class="button-group">
-      <button class="back-btn" bindtap="prevStep">上一步</button>
-      <button class="submit-btn" bindtap="submitCase">提交案例</button>
+    <view class="function-card" bindtap="uploadVideos">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">视频上传</text>
+          <text class="card-desc">上传相关视频文件</text>
+        </view>
+        <view class="icon-circle video-icon-circle">
+          <text class="icon">🎥</text>
+        </view>
+      </view>
     </view>
   </view>
 </view>
