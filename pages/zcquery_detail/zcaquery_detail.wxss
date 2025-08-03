@@ -1,0 +1,180 @@
+/* pages/zcquery_detail/zcaquery_detail.wxss */
+
+.detail-container {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+/* 文件信息卡片 */
+.file-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.file-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.file-icon {
+  font-size: 60rpx;
+  margin-right: 30rpx;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10rpx;
+  word-break: break-all;
+}
+
+.file-type {
+  font-size: 28rpx;
+  color: #666666;
+  background: #f1f3f4;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  display: inline-block;
+}
+
+/* 文件详情 */
+.file-details {
+  border-top: 1rpx solid #e9ecef;
+  padding-top: 30rpx;
+}
+
+.detail-item {
+  display: flex;
+  margin-bottom: 20rpx;
+  align-items: flex-start;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #666666;
+  min-width: 160rpx;
+  flex-shrink: 0;
+}
+
+.value {
+  font-size: 28rpx;
+  color: #333333;
+  flex: 1;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.local-file {
+  color: #f1a464;
+  font-weight: bold;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.action-btn {
+  background: #ffffff;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  padding: 30rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+  background: #f8f9fa;
+}
+
+.btn-icon {
+  font-size: 40rpx;
+  margin-bottom: 10rpx;
+}
+
+.btn-text {
+  font-size: 24rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.preview-btn {
+  border-color: #efc758;
+}
+
+.preview-btn .btn-icon {
+  color: #efc758;
+}
+
+.download-btn {
+  border-color: #f1a464;
+}
+
+.download-btn .btn-icon {
+  color: #f1a464;
+}
+
+.share-btn {
+  border-color: #6c757d;
+}
+
+.share-btn .btn-icon {
+  color: #6c757d;
+}
+
+.copy-btn {
+  border-color: #28a745;
+}
+
+.copy-btn .btn-icon {
+  color: #28a745;
+}
+
+/* 提示信息 */
+.tips-section {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  border-left: 6rpx solid #17a2b8;
+}
+
+.tips-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.tips-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+}
+
+.tips-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #17a2b8;
+}
+
+.tips-content {
+  font-size: 28rpx;
+  color: #666666;
+  line-height: 1.6;
+}

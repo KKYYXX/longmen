@@ -2,7 +2,7 @@ Page({
   data: {
     fileName: '',
     fileTypeIndex: 0,
-    fileTypes: ['PDF文档', 'Word文档', '图片文件', '其他文件'],
+    fileTypes: ['PDF文档', 'Word文档'],
     fileDescription: '',
     selectedFile: null
   },
@@ -20,14 +20,7 @@ Page({
       fileTypeIndex: e.detail.value
     });
   },
-/*
-  // 文件描述输入
-  onDescriptionInput(e) {
-    this.setData({
-      fileDescription: e.detail.value
-    });
-  },
-*/
+
   // 选择文件
   chooseFile() {
     wx.chooseMessageFile({

@@ -5,99 +5,52 @@ Page({
     loading: false,
     hasMore: true,
     page: 1,
-    pageSize: 10
+    pageSize: 10,
+    totalCount: 0
   },
 
   onLoad() {
-    this.loadFileList();
+    this.loadFileListFromCache();
   },
-
+  
   onShow() {
     // 页面显示时刷新数据
     this.refreshData();
   },
 
-  // 加载文件列表
-  loadFileList(isRefresh = false) {
-    if (this.data.loading) return;
-
-    this.setData({
-      loading: true
-    });
-
-    const page = isRefresh ? 1 : this.data.page;
+  // 从本地缓存加载文件列表
+  loadFileListFromCache() {
+    const fileList = wx.getStorageSync('zc_file_list') || [];
+    const totalCount = wx.getStorageSync('zc_total_count') || 0;
     
-    // 模拟从后端获取数据
-    // 实际项目中这里应该调用wx.request()获取数据
-    setTimeout(() => {
-      const mockData = this.getMockFileData(page);
-      
-      if (isRefresh) {
-        this.setData({
-          fileList: mockData,
-          page: 1,
-          hasMore: mockData.length === this.data.pageSize
-        });
-      } else {
-        this.setData({
-          fileList: [...this.data.fileList, ...mockData],
-          page: page + 1,
-          hasMore: mockData.length === this.data.pageSize
-        });
-      }
-      
-      this.setData({
-        loading: false
-      });
-    }, 500);
+    // 处理文件数据，添加展示所需的字段
+    const processedFileList = fileList.map(file => ({
+      id: file.id,
+      fileName: file.file_name, // 使用后端返回的file_name字段
+      fileSize: this.formatFileSize(file.file_size),
+      updateDate: file.uploaded_at || '',
+      fileUrl: file.file_url,
+      expanded: false
+    }));
+    
+    this.setData({
+      fileList: processedFileList,
+      totalCount: totalCount
+    });
   },
 
-  // 模拟数据 - 实际项目中应该从后端获取
-  getMockFileData(page) {
-    const mockFiles = [
-      {
-        id: page * 10 + 1,
-        fileName: '政策文件_2024年第一季度.pdf',
-        fileSize: '2.5MB',
-        updateDate: '2024-01-15',
-        content: '这是2024年第一季度的政策文件内容，包含了最新的政策规定和实施细则...',
-        expanded: false
-      },
-      {
-        id: page * 10 + 2,
-        fileName: '项目申报指南.docx',
-        fileSize: '1.8MB',
-        updateDate: '2024-01-10',
-        content: '项目申报指南详细说明了申报流程、所需材料、注意事项等...',
-        expanded: false
-      },
-      {
-        id: page * 10 + 3,
-        fileName: '典型案例分析报告.xlsx',
-        fileSize: '3.2MB',
-        updateDate: '2024-01-08',
-        content: '典型案例分析报告包含了多个成功案例的详细分析和经验总结...',
-        expanded: false
-      },
-      {
-        id: page * 10 + 4,
-        fileName: '管理制度汇编.pdf',
-        fileSize: '5.1MB',
-        updateDate: '2024-01-05',
-        content: '管理制度汇编涵盖了各项管理制度的详细规定和操作流程...',
-        expanded: false
-      },
-      {
-        id: page * 10 + 5,
-        fileName: '年度工作总结.docx',
-        fileSize: '2.8MB',
-        updateDate: '2024-01-01',
-        content: '年度工作总结回顾了过去一年的工作成果、存在的问题和下一步计划...',
-        expanded: false
-      }
-    ];
-
-    return mockFiles.slice(0, this.data.pageSize);
+  // 格式化文件大小
+  formatFileSize(sizeInBytes) {
+    if (!sizeInBytes) return '0 KB';
+    
+    const size = parseInt(sizeInBytes);
+    if (size < 1024) {
+      return size + ' B';
+    } else if (size < 1024 * 1024) {
+      return (size / 1024).toFixed(2) + ' KB';
+    } else {
+      return (size / 1024 / 1024).toFixed(2) + ' MB';
+    }
   },
 
   // 搜索输入
@@ -111,104 +64,45 @@ Page({
   onSearch() {
     const keyword = this.data.searchKeyword.trim();
     if (!keyword) {
-      this.refreshData();
+      this.loadFileListFromCache();
       return;
     }
 
-    // 模拟搜索功能
+    // 从缓存中搜索
+    const allFiles = wx.getStorageSync('zc_file_list') || [];
+    const filteredList = allFiles.filter(file => 
+      file.file_name.toLowerCase().includes(keyword.toLowerCase())
+    );
+
+    const processedFileList = filteredList.map(file => ({
+      id: file.id,
+      fileName: file.file_name,
+      fileSize: this.formatFileSize(file.file_size),
+      updateDate: file.uploaded_at || '',
+      fileUrl: file.file_url,
+      expanded: false
+    }));
+
     this.setData({
-      loading: true
+      fileList: processedFileList
     });
-
-    setTimeout(() => {
-      const filteredList = this.data.fileList.filter(item => 
-        item.fileName.toLowerCase().includes(keyword.toLowerCase()) ||
-        item.content.toLowerCase().includes(keyword.toLowerCase())
-      );
-
-      this.setData({
-        fileList: filteredList,
-        loading: false
-      });
-    }, 300);
   },
 
   // 点击文件项
   onFileTap(e) {
     const index = e.currentTarget.dataset.index;
-    const fileList = this.data.fileList;
+    const file = this.data.fileList[index];
     
-    // 切换展开状态
-    fileList[index].expanded = !fileList[index].expanded;
-    
-    this.setData({
-      fileList: fileList
+    // 跳转到文件详情页面
+    wx.navigateTo({
+      url: `/pages/zcquery_detail/zcquery_detail?file_name=${encodeURIComponent(file.fileName)}&file_url=${encodeURIComponent(file.fileUrl)}`
     });
-  },
-
-  // 下载文件
-  onDownload(e) {
-    const file = e.currentTarget.dataset.file;
-    
-    wx.showLoading({
-      title: '下载中...'
-    });
-
-    // 模拟下载过程
-    setTimeout(() => {
-      wx.hideLoading();
-      wx.showToast({
-        title: '下载成功',
-        icon: 'success'
-      });
-    }, 2000);
-  },
-
-  // 分享文件
-  onShare(e) {
-    const file = e.currentTarget.dataset.file;
-    
-    wx.showActionSheet({
-      itemList: ['分享给好友', '复制链接', '生成二维码'],
-      success: (res) => {
-        switch (res.tapIndex) {
-          case 0:
-            wx.showToast({
-              title: '分享给好友',
-              icon: 'success'
-            });
-            break;
-          case 1:
-            wx.setClipboardData({
-              data: `https://example.com/file/${file.id}`,
-              success: () => {
-                wx.showToast({
-                  title: '链接已复制',
-                  icon: 'success'
-                });
-              }
-            });
-            break;
-          case 2:
-            wx.showToast({
-              title: '二维码已生成',
-              icon: 'success'
-            });
-            break;
-        }
-      }
-    });
-  },
-
-  // 加载更多
-  onLoadMore() {
-    if (!this.data.hasMore || this.data.loading) return;
-    this.loadFileList();
   },
 
   // 刷新数据
   refreshData() {
-    this.loadFileList(true);
+    // 重新从缓存加载数据
+    this.loadFileListFromCache();
   },
 
   // 下拉刷新
@@ -217,8 +111,9 @@ Page({
     wx.stopPullDownRefresh();
   },
 
-  // 上拉加载更多
+  // 上拉加载更多（由于数据已经全部加载，这里可以禁用或重新请求）
   onReachBottom() {
-    this.onLoadMore();
+    // 如果数据量很大，可以在这里实现分页加载
+    // 目前数据已经全部加载，所以这里不做处理
   }
 }); 
