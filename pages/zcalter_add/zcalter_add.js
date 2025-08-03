@@ -20,14 +20,14 @@ Page({
       fileTypeIndex: e.detail.value
     });
   },
-
+/*
   // 文件描述输入
   onDescriptionInput(e) {
     this.setData({
       fileDescription: e.detail.value
     });
   },
-
+*/
   // 选择文件
   chooseFile() {
     wx.chooseMessageFile({

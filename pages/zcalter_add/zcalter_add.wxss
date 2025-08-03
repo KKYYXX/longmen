@@ -56,12 +56,7 @@
   outline: none;
 }
 
-.form-textarea {
-  height: 200rpx;
-  resize: none;
-  align-items: flex-start;
-  padding-top: 24rpx;
-}
+
 
 .form-picker {
   width: 100%;
