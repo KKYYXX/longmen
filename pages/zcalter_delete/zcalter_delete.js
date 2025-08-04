@@ -1,52 +1,77 @@
 Page({
   data: {
     searchKeyword: '',
-    fileList: []
+    fileList: [],
+    loading: false,
+    totalCount: 0
   },
 
   onLoad() {
     this.loadFileList();
   },
 
-  // 加载文件列表
-  loadFileList() {
-    // 模拟从后端获取文件列表
-    const mockFiles = [
-      {
-        id: 1,
-        fileName: '政策文件_2024年第一季度.pdf',
-        fileSize: '2.5MB',
-        updateDate: '2024-01-15'
-      },
-      {
-        id: 2,
-        fileName: '项目申报指南.docx',
-        fileSize: '1.8MB',
-        updateDate: '2024-01-10'
-      },
-      {
-        id: 3,
-        fileName: '典型案例分析报告.xlsx',
-        fileSize: '3.2MB',
-        updateDate: '2024-01-08'
-      },
-      {
-        id: 4,
-        fileName: '管理制度汇编.pdf',
-        fileSize: '5.1MB',
-        updateDate: '2024-01-05'
-      },
-      {
-        id: 5,
-        fileName: '年度工作总结.docx',
-        fileSize: '2.8MB',
-        updateDate: '2024-01-01'
-      }
-    ];
+  onShow() {
+    // 页面显示时刷新数据
+    this.refreshData();
+  },
 
-    this.setData({
-      fileList: mockFiles
+  // 从后端加载文件列表
+  loadFileList() {
+    this.setData({ loading: true });
+
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/zcdocuments',
+      method: 'GET',
+      success: (res) => {
+        if (res.data.success) {
+          const fileList = res.data.data.map(file => ({
+            id: file.id,
+            fileName: file.file_name,
+            fileSize: this.formatFileSize(file.file_size),
+            updateDate: file.uploaded_at || '',
+            fileUrl: file.file_url
+          }));
+
+          this.setData({
+            fileList: fileList,
+            totalCount: res.data.total_count,
+            loading: false
+          });
+
+          // 缓存数据到本地
+          wx.setStorageSync('zc_file_list', res.data.data);
+          wx.setStorageSync('zc_total_count', res.data.total_count);
+        } else {
+          wx.showToast({
+            title: '加载失败',
+            icon: 'error'
+          });
+          this.setData({ loading: false });
+        }
+      },
+      fail: (err) => {
+        console.error('请求失败:', err);
+        wx.showToast({
+          title: '网络错误',
+          icon: 'error'
+        });
+        this.setData({ loading: false });
+      }
     });
+  },
+
+  // 格式化文件大小
+  formatFileSize(sizeInBytes) {
+    if (!sizeInBytes) return '0 KB';
+    
+    const size = parseInt(sizeInBytes);
+    if (size < 1024) {
+      return size + ' B';
+    } else if (size < 1024 * 1024) {
+      return (size / 1024).toFixed(2) + ' KB';
+    } else {
+      return (size / 1024 / 1024).toFixed(2) + ' MB';
+    }
   },
 
   // 搜索输入
@@ -64,46 +89,22 @@ Page({
       return;
     }
 
-    // 模拟搜索功能
-    const allFiles = [
-      {
-        id: 1,
-        fileName: '政策文件_2024年第一季度.pdf',
-        fileSize: '2.5MB',
-        updateDate: '2024-01-15'
-      },
-      {
-        id: 2,
-        fileName: '项目申报指南.docx',
-        fileSize: '1.8MB',
-        updateDate: '2024-01-10'
-      },
-      {
-        id: 3,
-        fileName: '典型案例分析报告.xlsx',
-        fileSize: '3.2MB',
-        updateDate: '2024-01-08'
-      },
-      {
-        id: 4,
-        fileName: '管理制度汇编.pdf',
-        fileSize: '5.1MB',
-        updateDate: '2024-01-05'
-      },
-      {
-        id: 5,
-        fileName: '年度工作总结.docx',
-        fileSize: '2.8MB',
-        updateDate: '2024-01-01'
-      }
-    ];
-
-    const filteredList = allFiles.filter(item => 
-      item.fileName.toLowerCase().includes(keyword.toLowerCase())
+    // 从缓存中搜索
+    const allFiles = wx.getStorageSync('zc_file_list') || [];
+    const filteredList = allFiles.filter(file => 
+      file.file_name.toLowerCase().includes(keyword.toLowerCase())
     );
 
+    const processedFileList = filteredList.map(file => ({
+      id: file.id,
+      fileName: file.file_name,
+      fileSize: this.formatFileSize(file.file_size),
+      updateDate: file.uploaded_at || '',
+      fileUrl: file.file_url
+    }));
+
     this.setData({
-      fileList: filteredList
+      fileList: processedFileList
     });
   },
 
@@ -131,20 +132,56 @@ Page({
       title: '删除中...'
     });
 
-    // 模拟删除过程
-    setTimeout(() => {
-      wx.hideLoading();
-      
-      // 从列表中移除文件
-      const fileList = this.data.fileList.filter(item => item.id !== file.id);
-      this.setData({
-        fileList: fileList
-      });
+    wx.request({
+      url: `http://127.0.0.1:5000/app/api/zcdocuments/${file.id}`,
+      method: 'DELETE',
+      success: (res) => {
+        wx.hideLoading();
+        
+        if (res.data.success) {
+          // 从列表中移除文件
+          const fileList = this.data.fileList.filter(item => item.id !== file.id);
+          this.setData({
+            fileList: fileList,
+            totalCount: this.data.totalCount - 1
+          });
 
-      wx.showToast({
-        title: '删除成功',
-        icon: 'success'
-      });
-    }, 1000);
+          // 更新本地缓存
+          const cachedFiles = wx.getStorageSync('zc_file_list') || [];
+          const updatedCachedFiles = cachedFiles.filter(item => item.id !== file.id);
+          wx.setStorageSync('zc_file_list', updatedCachedFiles);
+          wx.setStorageSync('zc_total_count', this.data.totalCount - 1);
+
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success'
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '删除失败',
+            icon: 'error'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('删除请求失败:', err);
+        wx.showToast({
+          title: '网络错误',
+          icon: 'error'
+        });
+      }
+    });
+  },
+
+  // 刷新数据
+  refreshData() {
+    this.loadFileList();
+  },
+
+  // 下拉刷新
+  onPullDownRefresh() {
+    this.refreshData();
+    wx.stopPullDownRefresh();
   }
 }); 

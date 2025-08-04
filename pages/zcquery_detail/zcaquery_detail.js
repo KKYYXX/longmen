@@ -7,6 +7,7 @@ Page({
     fileSize: '',
     uploadTime: '',
     isLocalFile: false
+
   },
 
   onLoad(options) {
@@ -25,6 +26,8 @@ Page({
       
       // 获取文件类型
       this.getFileType(fileName);
+
+
     }
   },
 
@@ -40,14 +43,6 @@ Page({
       case 'doc':
       case 'docx':
         fileType = 'Word文档';
-        break;
-      case 'xls':
-      case 'xlsx':
-        fileType = 'Excel表格';
-        break;
-      case 'ppt':
-      case 'pptx':
-        fileType = 'PowerPoint演示';
         break;
       default:
         fileType = '未知文件类型';

@@ -1,31 +1,55 @@
 <!-- 增加文件页面 -->
 <view class="zcalter-add-container">
   <view class="page-header">
+    <text class="page-title">增加文件</text>
+    <text class="page-subtitle">上传新的政策文件</text>
   </view>
   
   <view class="form-container">
     <view class="form-item">
       <text class="form-label">文件名称</text>
-      <input class="form-input" placeholder="请输入文件名称" value="{{fileName}}" bindinput="onFileNameInput" />
+      <input 
+        class="form-input" 
+        placeholder="请输入文件名称" 
+        value="{{fileName}}" 
+        bindinput="onFileNameInput"
+        maxlength="100"
+      />
     </view>
     
     <view class="form-item">
       <text class="form-label">文件类型</text>
-      <picker class="form-picker" range="{{fileTypes}}" value="{{fileTypeIndex}}" bindchange="onFileTypeChange">
+      <picker 
+        class="form-picker" 
+        range="{{fileTypes}}" 
+        value="{{fileTypeIndex}}" 
+        bindchange="onFileTypeChange"
+      >
         <view class="picker-text">{{fileTypes[fileTypeIndex]}}</view>
       </picker>
     </view>
  
-    
     <view class="form-item">
       <text class="form-label">上传文件</text>
-      <button class="upload-btn" bindtap="chooseFile">选择文件</button>
-      <text class="file-info" wx:if="{{selectedFile}}">已选择: {{selectedFile.name}}</text>
+      <button class="upload-btn" bindtap="chooseFile" disabled="{{uploading}}">
+        {{uploading ? '上传中...' : '选择文件'}}
+      </button>
+      <view class="file-info" wx:if="{{selectedFile}}">
+        <view class="file-name">文件名: {{selectedFile.name}}</view>
+        <view class="file-size">大小: {{selectedFile.sizeMB}} MB</view>
+        <view class="file-type">类型: {{selectedFile.extensionUpper}}</view>
+      </view>
     </view>
   </view>
   
   <view class="action-buttons">
-    <button class="submit-btn" bindtap="submitForm">提交</button>
-    <button class="cancel-btn" bindtap="goBack">取消</button>
+    <button 
+      class="submit-btn" 
+      bindtap="submitForm" 
+      disabled="{{uploading || !fileNameTrimmed || !selectedFile}}"
+    >
+      {{uploading ? '上传中...' : '提交'}}
+    </button>
+    <button class="cancel-btn" bindtap="goBack" disabled="{{uploading}}">取消</button>
   </view>
 </view> 
