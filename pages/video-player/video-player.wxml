@@ -1,0 +1,50 @@
+<view class="video-container">
+  <view class="video-header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="video-title">
+      <text class="title-text">{{videoTitle}}</text>
+    </view>
+  </view>
+
+  <view class="video-player-container">
+    <video 
+      class="video-player"
+      src="{{videoUrl}}"
+      title="{{videoTitle}}"
+      poster=""
+      play-btn-position="center"
+      enable-play-gesture="true"
+      auto-play="false"
+      loop="false"
+      muted="false"
+      initial-time="0"
+      direction="0"
+      show-fullscreen-btn="true"
+      show-play-btn="true"
+      show-center-play-btn="true"
+      enable-progress-gesture="true"
+      show-progress="true"
+      codec="hardware"
+      http-cache="true"
+      vslide-gesture="true"
+      vslide-gesture-in-fullscreen="true"
+      ad-unit-id=""
+      bindload="onVideoLoad"
+      binderror="onVideoError"
+      bindplay="onVideoPlay"
+      bindpause="onVideoPause"
+      bindended="onVideoEnded"
+      bindtimeupdate="onVideoTimeUpdate"
+      bindfullscreenchange="onVideoFullscreenChange"
+      bindtap="onVideoTap"
+      bindlongtap="onVideoLongTap">
+    </video>
+  </view>
+
+  <view class="video-info">
+    <text class="info-title">{{videoTitle}}</text>
+    <text class="info-desc">点击视频区域开始播放</text>
+  </view>
+</view> 

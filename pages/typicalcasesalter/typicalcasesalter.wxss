@@ -163,6 +163,7 @@ page {
 
 .card-content {
   flex: 1;
+  padding-left: 10rpx;
 }
 
 .card-title {
@@ -170,14 +171,31 @@ page {
   font-weight: 700;
   color: #5c5032;
   margin-bottom: 16rpx;
-  display: block;
+  position: relative;
+  display: inline-block;
+}
+
+.card-title::after {
+  content: "";
+  position: absolute;
+  bottom: -6rpx;
+  left: 0;
+  width: 60rpx;
+  height: 4rpx;
+  background: #FFDD8F;
+  transition: all 0.3s ease;
+}
+
+.function-card:active .card-title::after {
+  width: 100%;
+  background: #FFE082;
 }
 
 .card-desc {
   font-size: 28rpx;
   color: #7d6f4f;
   opacity: 0.8;
-  max-width: 300rpx;
+  max-width: 320rpx;
   display: block;
 }
 
@@ -189,49 +207,75 @@ page {
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.function-card:active .icon-circle {
-  transform: scale(1.15);
+.icon-circle::before {
+  content: "";
+  position: absolute;
+  top: -10rpx;
+  left: -10rpx;
+  width: calc(100% + 20rpx);
+  height: calc(100% + 20rpx);
+  background: conic-gradient(rgba(255, 255, 255, 0.8), rgba(255, 229, 172, 0.4), rgba(255, 255, 255, 0.8));
+  border-radius: 50%;
+  animation: rotate 2s linear infinite;
+  z-index: -1;
 }
 
 .add-icon-circle {
-  background: rgba(227, 244, 255, 0.5);
-  box-shadow: 0 0 0 20rpx rgba(173, 214, 255, 0.2);
+  background: rgba(229, 252, 230, 0.5);
+  box-shadow: 0 0 0 20rpx rgba(173, 233, 176, 0.2);
 }
 
 .delete-icon-circle {
-  background: rgba(255, 235, 238, 0.5);
-  box-shadow: 0 0 0 20rpx rgba(255, 183, 77, 0.2);
+  background: rgba(255, 232, 230, 0.5);
+  box-shadow: 0 0 0 20rpx rgba(255, 182, 177, 0.2);
 }
 
 .card-icon {
-  font-size: 70rpx;
-  color: #7d6f4f;
+  font-size: 60rpx;
   transition: transform 0.3s ease;
+  background: white;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6rpx 16rpx rgba(0,0,0,0.08);
+}
+
+.icon-text {
+  font-size: 50rpx;
 }
 
 .add-icon {
-  color: #4a90e2;
+  color: #43a047;
 }
 
 .delete-icon {
-  color: #f44336;
+  color: #e53935;
 }
 
 /* 动画效果 */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20rpx); }
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 .function-card:nth-child(1) {
-  animation: float 5s ease-in-out infinite;
+  animation: pulse 3s ease-in-out infinite;
 }
 
 .function-card:nth-child(2) {
-  animation: float 5s ease-in-out 1s infinite;
+  animation: pulse 3s ease-in-out 0.5s infinite;
 }
 
 /* 响应式调整 */

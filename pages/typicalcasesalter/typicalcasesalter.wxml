@@ -17,24 +17,24 @@
   <view class="btn-container">
     <view class="function-card" bindtap="addCase">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">增加案例</text>
-          <text class="card-desc">添加新的典型案例</text>
-        </view>
-        <view class="icon-circle add-icon-circle">
-          <text class="icon">➕</text>
+        <text class="card-title">增加案例</text>
+        <text class="card-desc">添加新的典型案例</text>
+      </view>
+      <view class="icon-circle add-icon-circle">
+        <view class="card-icon add-icon">
+          <text class="icon-text">➕</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="deleteCase">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">删除案例</text>
-          <text class="card-desc">删除现有典型案例</text>
-        </view>
-        <view class="icon-circle delete-icon-circle">
-          <text class="icon">🗑️</text>
+        <text class="card-title">删除案例</text>
+        <text class="card-desc">删除现有典型案例</text>
+      </view>
+      <view class="icon-circle delete-icon-circle">
+        <view class="card-icon delete-icon">
+          <text class="icon-text">🗑️</text>
         </view>
       </view>
     </view>

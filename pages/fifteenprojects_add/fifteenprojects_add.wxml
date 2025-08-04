@@ -17,36 +17,36 @@
   <view class="btn-container">
     <view class="function-card" bindtap="uploadFiles">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">文件上传</text>
-          <text class="card-desc">上传PDF和DOC文档，支持图片内容</text>
-        </view>
-        <view class="icon-circle upload-icon-circle">
-          <text class="icon">📄</text>
+        <text class="card-title">文件上传</text>
+        <text class="card-desc">上传PDF和DOC文档，支持图片内容</text>
+      </view>
+      <view class="icon-circle upload-icon-circle">
+        <view class="card-icon upload-icon">
+          <text class="icon-text">📄</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="uploadNewsLinks">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">新闻链接</text>
-          <text class="card-desc">上传相关新闻链接和报道</text>
-        </view>
-        <view class="icon-circle link-icon-circle">
-          <text class="icon">🔗</text>
+        <text class="card-title">新闻链接</text>
+        <text class="card-desc">上传相关新闻链接和报道</text>
+      </view>
+      <view class="icon-circle link-icon-circle">
+        <view class="card-icon link-icon">
+          <text class="icon-text">🔗</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="uploadVideos">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">视频上传</text>
-          <text class="card-desc">上传相关视频文件</text>
-        </view>
-        <view class="icon-circle video-icon-circle">
-          <text class="icon">🎥</text>
+        <text class="card-title">视频上传</text>
+        <text class="card-desc">从相册或聊天记录选择视频</text>
+      </view>
+      <view class="icon-circle video-icon-circle">
+        <view class="card-icon video-icon">
+          <text class="icon-text">🎥</text>
         </view>
       </view>
     </view>

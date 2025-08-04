@@ -11,6 +11,8 @@
     "pages/zcquery_detail/zcaquery_detail",
     "pages/typicalcases/typicalcases",
     "pages/typicalcasesquery/typicalcasesquery",
+    "pages/typicalcasesquery/typicalcasesquery_detail",
+    "pages/video-player/video-player",
     "pages/typicalcasesalter/typicalcasesalter",
     "pages/typicalcases_add/typicalcases_add",
     "pages/typicalcases_delete/typicalcases_delete",

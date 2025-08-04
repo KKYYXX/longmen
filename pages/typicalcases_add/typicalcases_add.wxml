@@ -14,41 +14,144 @@
     </view>
   </view>
 
+  <!-- 典型案例名称输入 -->
+  <view class="case-name-container">
+    <view class="input-group">
+      <text class="input-label">典型案例名称</text>
+      <input class="case-name-input" 
+             placeholder="请输入典型案例名称" 
+             value="{{caseName}}"
+             bindinput="onCaseNameInput"
+             maxlength="50"/>
+      <text class="input-tip">{{caseName.length}}/50</text>
+    </view>
+  </view>
+
   <view class="btn-container">
     <view class="function-card" bindtap="uploadFiles">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">文件上传</text>
-          <text class="card-desc">上传PDF和DOC文档，支持图片内容</text>
-        </view>
-        <view class="icon-circle upload-icon-circle">
-          <text class="icon">📄</text>
+        <text class="card-title">文件上传</text>
+        <text class="card-desc">上传PDF和DOC文档</text>
+      </view>
+      <view class="icon-circle upload-icon-circle">
+        <view class="card-icon upload-icon">
+          <text class="icon-text">📄</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="uploadNewsLinks">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">新闻链接</text>
-          <text class="card-desc">上传相关新闻链接和报道</text>
-        </view>
-        <view class="icon-circle link-icon-circle">
-          <text class="icon">🔗</text>
+        <text class="card-title">新闻链接</text>
+        <text class="card-desc">上传相关新闻链接和报道</text>
+      </view>
+      <view class="icon-circle link-icon-circle">
+        <view class="card-icon link-icon">
+          <text class="icon-text">🔗</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="uploadVideos">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">视频上传</text>
-          <text class="card-desc">上传相关视频文件</text>
-        </view>
-        <view class="icon-circle video-icon-circle">
-          <text class="icon">🎥</text>
+        <text class="card-title">视频上传</text>
+        <text class="card-desc">从相册或聊天记录选择视频</text>
+      </view>
+      <view class="icon-circle video-icon-circle">
+        <view class="card-icon video-icon">
+          <text class="icon-text">🎥</text>
         </view>
       </view>
     </view>
+  </view>
+
+  <!-- 预览按钮 -->
+  <view class="preview-btn-container" wx:if="{{uploadedFiles.length > 0 || newsLinks.length > 0 || uploadedVideos.length > 0}}">
+    <view class="preview-btn" bindtap="previewAllContent">
+      <text class="preview-btn-text">👁️ 预览上传效果</text>
+    </view>
+  </view>
+
+  <!-- 预览区域 -->
+  <view class="preview-container" wx:if="{{uploadedFiles.length > 0 || newsLinks.length > 0 || uploadedVideos.length > 0}}">
+    <view class="preview-header">
+      <text class="preview-title">上传预览</text>
+      <text class="preview-subtitle">确认无误后点击提交</text>
+    </view>
+
+    <!-- 文件预览 -->
+    <view class="preview-section" wx:if="{{uploadedFiles.length > 0}}">
+      <view class="section-title">
+        <text class="title-text">📄 文件 ({{uploadedFiles.length}})</text>
+        <text class="clear-btn" bindtap="clearFiles">清空</text>
+      </view>
+      <view class="file-list">
+        <view class="file-item" wx:for="{{uploadedFiles}}" wx:key="id">
+          <view class="file-info">
+            <text class="file-name">{{item.name}}</text>
+            <text class="file-size">{{item.sizeFormatted}}</text>
+          </view>
+          <view class="file-actions">
+            <text class="preview-btn" bindtap="previewFile" data-file="{{item}}">打开</text>
+            <text class="delete-btn" bindtap="deleteFile" data-id="{{item.id}}">删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 新闻链接预览 -->
+    <view class="preview-section" wx:if="{{newsLinks.length > 0}}">
+      <view class="section-title">
+        <text class="title-text">🔗 新闻链接 ({{newsLinks.length}})</text>
+        <text class="clear-btn" bindtap="clearNewsLinks">清空</text>
+      </view>
+      <view class="link-list">
+        <view class="link-item" wx:for="{{newsLinks}}" wx:key="id">
+          <view class="link-info">
+            <text class="link-title">{{item.title}}</text>
+            <text class="link-url">{{item.url}}</text>
+          </view>
+          <view class="link-actions">
+            <text class="preview-btn" bindtap="openNewsLink" data-link="{{item}}">查看</text>
+            <text class="delete-btn" bindtap="deleteNewsLink" data-id="{{item.id}}">删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 视频预览 -->
+    <view class="preview-section" wx:if="{{uploadedVideos.length > 0}}">
+      <view class="section-title">
+        <text class="title-text">🎥 视频 ({{uploadedVideos.length}})</text>
+        <text class="clear-btn" bindtap="clearVideos">清空</text>
+      </view>
+      <view class="video-list">
+        <view class="video-item" wx:for="{{uploadedVideos}}" wx:key="id">
+          <view class="video-info">
+            <text class="video-name">{{item.name}}</text>
+            <text class="video-size">{{item.sizeFormatted}}</text>
+          </view>
+          <view class="video-actions">
+            <text class="preview-btn" bindtap="previewVideo" data-video="{{item}}">播放</text>
+            <text class="delete-btn" bindtap="deleteVideo" data-id="{{item.id}}">删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-section">
+      <view class="submit-btn" bindtap="submitAllContent">
+        <text class="submit-text">提交所有内容</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 上传进度 -->
+  <view class="upload-progress" wx:if="{{isUploading}}">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{fileUploadProgress}}%"></view>
+    </view>
+    <text class="progress-text">上传中... {{fileUploadProgress}}%</text>
   </view>
 </view>
