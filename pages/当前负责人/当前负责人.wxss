@@ -38,7 +38,7 @@
 
 /* 主要内容区域 */
 .manager-content {
-  background: #ffffff;
+  background: #f0ecde;
   border-radius: 20rpx;
   box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.12);
   padding: 60rpx 40rpx;
@@ -84,16 +84,16 @@
 }
 
 .info-label {
-  font-size: 32rpx;
+  font-size: 45rpx;
   font-weight: bold;
-  color: #333;
+  color: rgb(12, 12, 12);
   min-width: 120rpx;
   margin-right: 20rpx;
 }
 
 .info-value {
-  font-size: 32rpx;
-  color: #666;
+  font-size: 40rpx;
+  color: rgba(12, 2, 2, 0.959)(39, 38, 38, 0.904)(39, 38, 38, 0.904);
   flex: 1;
 }
 

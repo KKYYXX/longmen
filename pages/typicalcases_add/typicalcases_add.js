@@ -1,241 +1,204 @@
 Page({
   data: {
-    currentStep: 1,
-    caseData: {
-      title: '',
-      category: '',
-      summary: '',
-      content: '',
-      achievements: '',
-      experience: '',
-      author: '',
-      contact: '',
-      tags: []
-    },
-    categories: ['基础设施建设', '环保治理', '民生改善', '科技创新', '产业发展', '其他'],
-    selectedImages: [],
-    selectedVideos: [],
-    selectedReports: [],
-    links: [],
-    tagInput: '',
-    showTagInput: false
+    // 文件上传相关
+    uploadedFiles: [],
+    fileUploadProgress: 0,
+    
+    // 新闻链接相关
+    newsLinks: [],
+    
+    // 视频上传相关
+    uploadedVideos: [],
+    videoUploadProgress: 0,
+    
+    // 上传状态
+    isUploading: false
   },
 
   onLoad() {
-    console.log('添加典型案例页面加载');
+    console.log('典型案例添加页面加载');
+    this.initPage();
   },
 
-  // 步骤导航
-  nextStep() {
-    // 第一步验证
-    if (this.data.currentStep === 1) {
-      if (!this.data.caseData.title.trim()) {
-        wx.showToast({
-          title: '请输入案例标题',
-          icon: 'none'
-        });
-        return;
+  // 初始化页面
+  initPage() {
+    // 检查用户权限
+    this.checkUserPermission();
+  },
+
+  // 检查用户权限
+  checkUserPermission() {
+    // TODO: 调用后端接口检查用户是否有添加典型案例的权限
+    // 接口：GET /api/user/permissions
+    wx.request({
+      url: 'http://127.0.0.1:5000/api/user/permissions',
+      method: 'GET',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+      },
+      success: (res) => {
+        if (res.data.success && res.data.permissions.includes('add_typical_case')) {
+          console.log('用户有添加典型案例权限');
+        } else {
+          wx.showModal({
+            title: '权限不足',
+            content: '您没有添加典型案例的权限，请联系管理员。',
+            showCancel: false,
+            success: () => {
+              wx.navigateBack();
+            }
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('检查权限失败:', err);
+        // 开发环境下允许继续操作
       }
-      if (!this.data.caseData.category) {
-        wx.showToast({
-          title: '请选择案例分类',
-          icon: 'none'
-        });
-        return;
+    });
+  },
+
+  // 文件上传功能
+  uploadFiles() {
+    wx.showActionSheet({
+      itemList: ['选择PDF文档', '选择Word文档', '选择Excel文档', '选择图片文档'],
+      success: (res) => {
+        const fileTypes = ['pdf', 'doc', 'xlsx', 'image'];
+        const selectedType = fileTypes[res.tapIndex];
+        
+        if (selectedType === 'image') {
+          this.chooseImageFiles();
+        } else {
+          this.chooseDocumentFiles(selectedType);
+        }
       }
-    }
-
-    if (this.data.currentStep < 4) {
-      this.setData({
-        currentStep: this.data.currentStep + 1
-      });
-    }
-  },
-
-  prevStep() {
-    if (this.data.currentStep > 1) {
-      this.setData({
-        currentStep: this.data.currentStep - 1
-      });
-    }
-  },
-
-  // 基本信息输入
-  onTitleInput(e) {
-    this.setData({
-      'caseData.title': e.detail.value
     });
   },
 
-  onCategoryChange(e) {
-    this.setData({
-      'caseData.category': this.data.categories[e.detail.value]
-    });
-  },
-
-  onSummaryInput(e) {
-    this.setData({
-      'caseData.summary': e.detail.value
-    });
-  },
-
-  onContentInput(e) {
-    this.setData({
-      'caseData.content': e.detail.value
-    });
-  },
-
-  onAchievementsInput(e) {
-    this.setData({
-      'caseData.achievements': e.detail.value
-    });
-  },
-
-  onExperienceInput(e) {
-    this.setData({
-      'caseData.experience': e.detail.value
-    });
-  },
-
-  onAuthorInput(e) {
-    this.setData({
-      'caseData.author': e.detail.value
-    });
-  },
-
-  onContactInput(e) {
-    this.setData({
-      'caseData.contact': e.detail.value
-    });
-  },
-
-  // 图片选择
-  chooseImages() {
+  // 选择图片文件
+  chooseImageFiles() {
     wx.chooseMedia({
       count: 9,
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: (res) => {
-        const images = res.tempFiles.map(file => ({
-          name: `图片_${Date.now()}.jpg`,
-          url: file.tempFilePath,
-          size: file.size,
-          sizeText: `${(file.size / 1024 / 1024).toFixed(2)}MB`
-        }));
-
-        this.setData({
-          selectedImages: [...this.data.selectedImages, ...images]
-        });
+        this.uploadFilesToServer(res.tempFiles, 'image');
       }
     });
   },
 
-  // 删除图片
-  removeImage(e) {
-    const index = e.currentTarget.dataset.index;
-    const images = this.data.selectedImages;
-    images.splice(index, 1);
-    this.setData({
-      selectedImages: images
-    });
-  },
-
-  // 视频选择
-  chooseVideos() {
-    wx.chooseMedia({
-      count: 3,
-      mediaType: ['video'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const videos = res.tempFiles.map(file => ({
-          name: `视频_${Date.now()}.mp4`,
-          url: file.tempFilePath,
-          size: file.size,
-          sizeText: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
-          duration: file.duration || 0
-        }));
-
-        this.setData({
-          selectedVideos: [...this.data.selectedVideos, ...videos]
-        });
-      }
-    });
-  },
-
-  // 删除视频
-  removeVideo(e) {
-    const index = e.currentTarget.dataset.index;
-    const videos = this.data.selectedVideos;
-    videos.splice(index, 1);
-    this.setData({
-      selectedVideos: videos
-    });
-  },
-
-  // 选择文档
-  chooseReports() {
-    // 模拟文档选择
-    wx.showActionSheet({
-      itemList: ['选择PDF文档', '选择Word文档', '选择Excel文档'],
-      success: (res) => {
-        const types = ['PDF', 'Word', 'Excel'];
-        const extensions = ['.pdf', '.docx', '.xlsx'];
-        const selectedType = types[res.tapIndex];
-        const extension = extensions[res.tapIndex];
-
-        const fileSize = Math.floor(Math.random() * 5000000) + 100000; // 随机大小
-        const report = {
-          name: `${selectedType}文档_${Date.now()}${extension}`,
-          url: `/temp/reports/document${extension}`,
-          type: selectedType,
-          size: fileSize,
-          sizeText: `${(fileSize / 1024 / 1024).toFixed(2)}MB`
-        };
-
-        this.setData({
-          selectedReports: [...this.data.selectedReports, report]
-        });
-
-        wx.showToast({
-          title: `已添加${selectedType}文档`,
-          icon: 'success'
-        });
-      }
-    });
-  },
-
-  // 删除文档
-  removeReport(e) {
-    const index = e.currentTarget.dataset.index;
-    const reports = this.data.selectedReports;
-    reports.splice(index, 1);
-    this.setData({
-      selectedReports: reports
-    });
-  },
-
-  // 添加链接
-  addLink() {
+  // 选择文档文件
+  chooseDocumentFiles(fileType) {
+    // 模拟文档选择，实际项目中需要调用原生API
     wx.showModal({
-      title: '添加相关链接',
+      title: '文档选择',
+      content: `请选择${fileType.toUpperCase()}格式的文档文件`,
+      success: (res) => {
+        if (res.confirm) {
+          // 模拟文件数据
+          const mockFiles = [{
+            name: `文档_${Date.now()}.${fileType}`,
+            size: Math.floor(Math.random() * 5000000) + 100000,
+            tempFilePath: `/temp/documents/document.${fileType}`,
+            type: fileType
+          }];
+          this.uploadFilesToServer(mockFiles, fileType);
+        }
+      }
+    });
+  },
+
+  // 上传文件到服务器
+  uploadFilesToServer(files, fileType) {
+    this.setData({
+      isUploading: true,
+      fileUploadProgress: 0
+    });
+
+    // 显示上传进度
+    const progressTimer = setInterval(() => {
+      if (this.data.fileUploadProgress < 90) {
+        this.setData({
+          fileUploadProgress: this.data.fileUploadProgress + 10
+        });
+      }
+    }, 200);
+
+    // 调用后端接口上传文件
+    // 接口：POST /api/typical-cases/upload-files
+    wx.uploadFile({
+      url: 'http://127.0.0.1:5000/api/typical-cases/upload-files',
+      filePath: files[0].tempFilePath,
+      name: 'file',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+      },
+      formData: {
+        fileType: fileType,
+        caseId: Date.now() // 临时案例ID
+      },
+      success: (res) => {
+        clearInterval(progressTimer);
+        this.setData({
+          fileUploadProgress: 100,
+          isUploading: false
+        });
+
+        const result = JSON.parse(res.data);
+        if (result.success) {
+          // 添加到已上传文件列表
+          const uploadedFile = {
+            id: result.fileId,
+            name: files[0].name,
+            url: result.fileUrl,
+            type: fileType,
+            size: files[0].size,
+            uploadTime: new Date().toISOString()
+          };
+
+          this.setData({
+            uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
+          });
+
+          wx.showToast({
+            title: '文件上传成功',
+            icon: 'success'
+          });
+        } else {
+          wx.showToast({
+            title: result.message || '文件上传失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        clearInterval(progressTimer);
+        this.setData({
+          isUploading: false
+        });
+        console.error('文件上传失败:', err);
+        wx.showToast({
+          title: '文件上传失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 新闻链接上传功能
+  uploadNewsLinks() {
+    wx.showModal({
+      title: '添加新闻链接',
       editable: true,
-      placeholderText: '请输入链接名称',
+      placeholderText: '请输入新闻标题',
       success: (res) => {
         if (res.confirm && res.content.trim()) {
           wx.showModal({
             title: '输入链接地址',
             editable: true,
-            placeholderText: '请输入链接URL',
+            placeholderText: '请输入新闻链接URL',
             success: (urlRes) => {
               if (urlRes.confirm && urlRes.content.trim()) {
-                const link = {
-                  name: res.content.trim(),
-                  url: urlRes.content.trim()
-                };
-
-                this.setData({
-                  links: [...this.data.links, link]
-                });
+                this.addNewsLink(res.content.trim(), urlRes.content.trim());
               }
             }
           });
@@ -244,171 +207,409 @@ Page({
     });
   },
 
-  // 删除链接
-  removeLink(e) {
-    const index = e.currentTarget.dataset.index;
-    const links = this.data.links;
-    links.splice(index, 1);
-    this.setData({
-      links: links
-    });
-  },
-
-  // 标签管理
-  showTagInput() {
-    this.setData({
-      showTagInput: true
-    });
-  },
-
-  onTagInput(e) {
-    this.setData({
-      tagInput: e.detail.value
-    });
-  },
-
-  addTag() {
-    const tag = this.data.tagInput.trim();
-    if (tag && !this.data.caseData.tags.includes(tag)) {
-      this.setData({
-        'caseData.tags': [...this.data.caseData.tags, tag],
-        tagInput: '',
-        showTagInput: false
-      });
-    }
-  },
-
-  removeTag(e) {
-    const index = e.currentTarget.dataset.index;
-    const tags = this.data.caseData.tags;
-    tags.splice(index, 1);
-    this.setData({
-      'caseData.tags': tags
-    });
-  },
-
-  // 预览功能
-  previewCase() {
-    const { caseData, selectedImages, selectedVideos, selectedReports, links } = this.data;
-
-    // 验证必填字段
-    if (!caseData.title.trim()) {
+  // 添加新闻链接
+  addNewsLink(title, url) {
+    // 验证URL格式
+    if (!this.isValidUrl(url)) {
       wx.showToast({
-        title: '请输入案例标题',
+        title: '请输入有效的链接地址',
         icon: 'none'
       });
       return;
     }
 
-    if (!caseData.category) {
+    // 调用后端接口保存新闻链接
+    // 接口：POST /api/typical-cases/add-news-link
+    wx.request({
+      url: 'http://127.0.0.1:5000/api/typical-cases/add-news-link',
+      method: 'POST',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        title: title,
+        url: url,
+        caseId: Date.now() // 临时案例ID
+      },
+      success: (res) => {
+        if (res.data.success) {
+          const newsLink = {
+            id: res.data.linkId,
+            title: title,
+            url: url,
+            addTime: new Date().toISOString()
+          };
+
+          this.setData({
+            newsLinks: [...this.data.newsLinks, newsLink]
+          });
+
+          wx.showToast({
+            title: '新闻链接添加成功',
+            icon: 'success'
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '新闻链接添加失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('添加新闻链接失败:', err);
+        wx.showToast({
+          title: '新闻链接添加失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 验证URL格式
+  isValidUrl(string) {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  },
+
+  // 视频上传功能
+  uploadVideos() {
+    wx.chooseMedia({
+      count: 3,
+      mediaType: ['video'],
+      sourceType: ['album', 'camera'],
+      maxDuration: 300, // 最大5分钟
+      success: (res) => {
+        this.uploadVideosToServer(res.tempFiles);
+      }
+    });
+  },
+
+  // 上传视频到服务器
+  uploadVideosToServer(videos) {
+    this.setData({
+      isUploading: true,
+      videoUploadProgress: 0
+    });
+
+    // 显示上传进度
+    const progressTimer = setInterval(() => {
+      if (this.data.videoUploadProgress < 90) {
+        this.setData({
+          videoUploadProgress: this.data.videoUploadProgress + 10
+        });
+      }
+    }, 300);
+
+    // 调用后端接口上传视频
+    // 接口：POST /api/typical-cases/upload-videos
+    wx.uploadFile({
+      url: 'http://127.0.0.1:5000/api/typical-cases/upload-videos',
+      filePath: videos[0].tempFilePath,
+      name: 'video',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+      },
+      formData: {
+        caseId: Date.now() // 临时案例ID
+      },
+      success: (res) => {
+        clearInterval(progressTimer);
+        this.setData({
+          videoUploadProgress: 100,
+          isUploading: false
+        });
+
+        const result = JSON.parse(res.data);
+        if (result.success) {
+          // 添加到已上传视频列表
+          const uploadedVideo = {
+            id: result.videoId,
+            name: videos[0].name || `视频_${Date.now()}.mp4`,
+            url: result.videoUrl,
+            size: videos[0].size,
+            duration: videos[0].duration,
+            uploadTime: new Date().toISOString()
+          };
+
+          this.setData({
+            uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
+          });
+
+          wx.showToast({
+            title: '视频上传成功',
+            icon: 'success'
+          });
+        } else {
+          wx.showToast({
+            title: result.message || '视频上传失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        clearInterval(progressTimer);
+        this.setData({
+          isUploading: false
+        });
+        console.error('视频上传失败:', err);
+        wx.showToast({
+          title: '视频上传失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 删除已上传的文件
+  deleteFile(e) {
+    const fileId = e.currentTarget.dataset.id;
+    
+    // 调用后端接口删除文件
+    // 接口：DELETE /api/typical-cases/delete-file/{fileId}
+    wx.request({
+      url: `http://127.0.0.1:5000/api/typical-cases/delete-file/${fileId}`,
+      method: 'DELETE',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+      },
+      success: (res) => {
+        if (res.data.success) {
+          const files = this.data.uploadedFiles.filter(file => file.id !== fileId);
+          this.setData({
+            uploadedFiles: files
+          });
+          wx.showToast({
+            title: '文件删除成功',
+            icon: 'success'
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '文件删除失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('删除文件失败:', err);
+        wx.showToast({
+          title: '文件删除失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 删除新闻链接
+  deleteNewsLink(e) {
+    const linkId = e.currentTarget.dataset.id;
+    
+    // 调用后端接口删除新闻链接
+    // 接口：DELETE /api/typical-cases/delete-news-link/{linkId}
+    wx.request({
+      url: `http://127.0.0.1:5000/api/typical-cases/delete-news-link/${linkId}`,
+      method: 'DELETE',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+      },
+      success: (res) => {
+        if (res.data.success) {
+          const links = this.data.newsLinks.filter(link => link.id !== linkId);
+          this.setData({
+            newsLinks: links
+          });
+          wx.showToast({
+            title: '新闻链接删除成功',
+            icon: 'success'
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '新闻链接删除失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('删除新闻链接失败:', err);
+        wx.showToast({
+          title: '新闻链接删除失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 删除已上传的视频
+  deleteVideo(e) {
+    const videoId = e.currentTarget.dataset.id;
+    
+    // 调用后端接口删除视频
+    // 接口：DELETE /api/typical-cases/delete-video/{videoId}
+    wx.request({
+      url: `http://127.0.0.1:5000/api/typical-cases/delete-video/${videoId}`,
+      method: 'DELETE',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+      },
+      success: (res) => {
+        if (res.data.success) {
+          const videos = this.data.uploadedVideos.filter(video => video.id !== videoId);
+          this.setData({
+            uploadedVideos: videos
+          });
+          wx.showToast({
+            title: '视频删除成功',
+            icon: 'success'
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '视频删除失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('删除视频失败:', err);
+        wx.showToast({
+          title: '视频删除失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 预览文件
+  previewFile(e) {
+    const file = e.currentTarget.dataset.file;
+    if (file.type === 'image') {
+      wx.previewImage({
+        urls: [file.url],
+        current: file.url
+      });
+    } else {
+      wx.showModal({
+        title: '文件预览',
+        content: `文件：${file.name}\n大小：${(file.size / 1024 / 1024).toFixed(2)}MB\n类型：${file.type}`,
+        showCancel: false
+      });
+    }
+  },
+
+  // 预览视频
+  previewVideo(e) {
+    const video = e.currentTarget.dataset.video;
+    wx.navigateTo({
+      url: `/pages/video-player/video-player?url=${encodeURIComponent(video.url)}&title=${encodeURIComponent(video.name)}`
+    });
+  },
+
+  // 打开新闻链接
+  openNewsLink(e) {
+    const link = e.currentTarget.dataset.link;
+    wx.setClipboardData({
+      data: link.url,
+      success: () => {
+        wx.showToast({
+          title: '链接已复制到剪贴板',
+          icon: 'success'
+        });
+      }
+    });
+  },
+
+  // 提交所有内容
+  submitAllContent() {
+    if (this.data.uploadedFiles.length === 0 && 
+        this.data.newsLinks.length === 0 && 
+        this.data.uploadedVideos.length === 0) {
       wx.showToast({
-        title: '请选择案例分类',
+        title: '请至少上传一个文件、链接或视频',
         icon: 'none'
       });
       return;
     }
-
-    // 显示预览信息
-    const previewInfo = `
-标题：${caseData.title}
-分类：${caseData.category}
-摘要：${caseData.summary || '无'}
-图片：${selectedImages.length}张
-视频：${selectedVideos.length}个
-文档：${selectedReports.length}个
-链接：${links.length}个
-标签：${caseData.tags.join(', ') || '无'}
-    `;
 
     wx.showModal({
-      title: '案例预览',
-      content: previewInfo,
-      confirmText: '确认提交',
-      cancelText: '继续编辑',
+      title: '确认提交',
+      content: `文件：${this.data.uploadedFiles.length}个\n新闻链接：${this.data.newsLinks.length}个\n视频：${this.data.uploadedVideos.length}个\n\n确定要提交这些内容吗？`,
       success: (res) => {
         if (res.confirm) {
-          this.submitCase();
+          this.submitToServer();
         }
       }
     });
   },
 
-  // 提交案例
-  submitCase() {
+  // 提交到服务器
+  submitToServer() {
     wx.showLoading({
       title: '提交中...'
     });
 
-    // 构建新案例数据
-    const newCase = {
-      id: Date.now(), // 使用时间戳作为ID
-      title: this.data.caseData.title,
-      category: this.data.caseData.category,
-      summary: this.data.caseData.summary || '暂无摘要',
-      content: this.data.caseData.content || '暂无详细内容',
-      achievements: this.data.caseData.achievements || '暂无成效描述',
-      experience: this.data.caseData.experience || '暂无经验总结',
-      author: this.data.caseData.author || '未知来源',
-      contact: this.data.caseData.contact || '暂无联系方式',
-      tags: this.data.caseData.tags || [],
-      createDate: new Date().toISOString().split('T')[0], // 格式：2024-07-30
-      updateDate: new Date().toISOString().split('T')[0],
-      images: this.data.selectedImages || [],
-      videos: this.data.selectedVideos || [],
-      reports: this.data.selectedReports || [],
-      links: this.data.links || [],
-      status: '已发布'
-    };
-
-    // 模拟提交过程
-    setTimeout(() => {
-      try {
-        // 获取现有案例列表
-        const existingCases = wx.getStorageSync('typicalCases') || [];
-
-        // 添加新案例到列表开头
-        existingCases.unshift(newCase);
-
-        // 保存到本地存储
-        wx.setStorageSync('typicalCases', existingCases);
-
-        wx.hideLoading();
-        wx.showModal({
-          title: '提交成功',
-          content: `典型案例"${newCase.title}"已成功添加！\n\n您可以在典型案例查询页面查看。`,
-          showCancel: false,
-          success: () => {
-            // 返回上一页并刷新数据
-            wx.navigateBack({
-              success: () => {
-                // 通知其他页面数据已更新
-                wx.setStorageSync('caseListNeedRefresh', true);
-              }
-            });
-          }
-        });
-      } catch (error) {
-        wx.hideLoading();
-        wx.showModal({
-          title: '提交失败',
-          content: '保存案例时出现错误，请重试。',
-          showCancel: false
-        });
-        console.error('保存案例失败:', error);
-      }
-    }, 1500);
-  },
-
-  // 取消操作
-  cancel() {
-    wx.showModal({
-      title: '确认取消',
-      content: '取消后将丢失已填写的内容，确定要取消吗？',
+    // 调用后端接口提交所有内容
+    // 接口：POST /api/typical-cases/submit-content
+    wx.request({
+      url: 'http://127.0.0.1:5000/api/typical-cases/submit-content',
+      method: 'POST',
+      header: {
+        'Authorization': `Bearer ${wx.getStorageSync('token')}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        files: this.data.uploadedFiles,
+        newsLinks: this.data.newsLinks,
+        videos: this.data.uploadedVideos,
+        submitTime: new Date().toISOString()
+      },
       success: (res) => {
-        if (res.confirm) {
-          wx.navigateBack();
+        wx.hideLoading();
+        if (res.data.success) {
+          wx.showModal({
+            title: '提交成功',
+            content: '所有内容已成功提交到服务器！',
+            showCancel: false,
+            success: () => {
+              wx.navigateBack();
+            }
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '提交失败',
+            icon: 'none'
+          });
         }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('提交失败:', err);
+        wx.showToast({
+          title: '提交失败',
+          icon: 'none'
+        });
       }
     });
+  },
+
+  // 返回上一页
+  goBack() {
+    if (this.data.uploadedFiles.length > 0 || 
+        this.data.newsLinks.length > 0 || 
+        this.data.uploadedVideos.length > 0) {
+      wx.showModal({
+        title: '确认返回',
+        content: '返回将丢失已上传的内容，确定要返回吗？',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateBack();
+          }
+        }
+      });
+    } else {
+      wx.navigateBack();
+    }
   }
-});
+}); 

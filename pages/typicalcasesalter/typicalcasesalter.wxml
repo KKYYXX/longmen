@@ -1,4 +1,42 @@
-<view class="typicalcases-alter-container">
-  <button class="addbutton" bindtap="goToTypicalCasesAdd">增加案例</button>
-  <button class="deletebutton" bindtap="goToTypicalCasesDelete">删除案例</button>
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <view class="header">
+    <view class="icon-wrapper">
+      <view class="icon-circle">
+        <text class="icon">📝</text>
+      </view>
+    </view>
+    <view class="title-box">
+      <text class="title">典型案例修改</text>
+      <text class="subtitle">核心功能·简洁操作</text>
+    </view>
+  </view>
+
+  <view class="btn-container">
+    <view class="function-card" bindtap="addCase">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">增加案例</text>
+          <text class="card-desc">添加新的典型案例</text>
+        </view>
+        <view class="icon-circle add-icon-circle">
+          <text class="icon">➕</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-card" bindtap="deleteCase">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">删除案例</text>
+          <text class="card-desc">删除现有典型案例</text>
+        </view>
+        <view class="icon-circle delete-icon-circle">
+          <text class="icon">🗑️</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>

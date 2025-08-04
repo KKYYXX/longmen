@@ -1,220 +1,261 @@
-/* pages/项目进度修改权限人员/项目进度修改权限人员.wxss */
-/* 页面容器 */
-.page-container {
-  background: #f0f0f0; /* 背景色 */
-  height: 100vh; /* 充满屏幕 */
+.app-container {
+  width: 90%;
+  max-width: 750rpx;
+  max-height: 95vh;
+  background-color: #FFF5E1;
+  box-shadow: 0 12rpx 30rpx rgba(0, 0, 0, 0.12);
+  border-radius: 24rpx;
+  overflow: hidden;
   display: flex;
-  flex-direction: column; /* 使内容垂直排列 */
-  padding: 20rpx;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 80rpx;
+  margin: 0 auto;
 }
 
-/* 表单容器 */
-.form-container {
-  flex-grow: 1; /* 让内容区域占满剩余空间 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.header {
+  padding: 50rpx 40rpx 30rpx;
+  background: linear-gradient(135deg, #F2D084 0%, #C18C5D 100%);
+  color: #ffffff;
+  text-align: center;
+  border-radius: 0 0 30rpx 30rpx;
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.12);
 }
 
-/* 按钮容器 */
-.button-container {
-  display: flex;
-  justify-content: center; /* 水平居中按钮 */
-  align-items: center; /* 垂直居中按钮 */
-  width: 100%;
-  padding: 10rpx;
-  position: absolute; /* 绝对定位 */
-  bottom: 20rpx; /* 固定底部 */
+.app-title {
+  font-size: 52rpx;
+  font-weight: 700;
+  margin-bottom: 10rpx;
+  letter-spacing: 1rpx;
 }
 
-/* 按钮样式 */
-.action-btn {
-  width: 200rpx; /* 宽度 */
-  height: 60rpx; /* 高度 */
-  border-radius: 30rpx; /* 圆角效果 */
-  background-color: #4CAF50; /* 添加按钮颜色 */
-  color: white;
+.app-subtitle {
   font-size: 28rpx;
-  border: none;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1); /* 阴影效果 */
-  margin: 0 15rpx; /* 按钮之间的间距 */
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  opacity: 0.92;
+  font-weight: 300;
+}
+
+.search-section {
+  padding: 40rpx 40rpx 30rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-bottom: 1rpx solid rgba(0,0,0,0.05);
+}
+
+.search-box {
+  background: #ffffff;
+  border-radius: 50rpx;
+  padding: 24rpx 40rpx;
   display: flex;
   align-items: center;
-  justify-content: center;
+  box-shadow: 0 6rpx 24rpx rgba(0,0,0,0.08);
 }
 
-/* 悬停效果 */
-.action-btn:hover {
-  background-color: #45a049; /* 鼠标悬停时按钮变色 */
-  transform: translateY(-3rpx);
+.search-icon {
+  color: #666;
+  margin-right: 20rpx;
+  font-size: 32rpx;
 }
 
-/* 删除按钮的特定样式 */
+.search-input {
+  border: none;
+  outline: none;
+  font-size: 32rpx;
+  color: #333;
+  background: transparent;
+  width: 100%;
+  padding: 10rpx 0;
+}
+
+.search-count {
+  text-align: right;
+  font-size: 26rpx;
+  margin-top: 16rpx;
+  padding-right: 10rpx;
+  color: #666;
+}
+
+.records-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30rpx 40rpx;
+  max-height: 580px; /* 可保留，因无法用 rpx 适配 scroll 容器高度 */
+}
+
+.record-card {
+  background: #ffffff;
+  border-radius: 32rpx;
+  padding: 40rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.08);
+  border-top: 8rpx solid #5EB7B7;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.record-name {
+  font-weight: 700;
+  font-size: 38rpx;
+  color: #333;
+}
+
+.record-time {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 300;
+}
+
+.record-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.record-phone {
+  font-size: 34rpx;
+  color: #333;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.phone-icon {
+  margin-right: 20rpx;
+  color: #5EB7B7;
+  font-size: 36rpx;
+}
+
 .delete-btn {
-  background-color: #f44336; /* 删除按钮颜色 */
+  background-color: #fff0f0;
+  border: 4rpx solid #ffd0d0;
+  border-radius: 20rpx;
+  padding: 20rpx 36rpx;
+  color: #ff6b6b;
+  font-weight: 600;
+  transition: all 0.25s ease;
 }
 
-.delete-btn:hover {
-  background-color: #e53935; /* 删除按钮悬停效果 */
-}
-
-/* 按钮点击效果 */
-.action-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-.container {
+.add-record {
+  position: absolute;
+  bottom: 50rpx;
+  right: 50rpx;
+  width: 130rpx;
+  height: 130rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5EB7B7 0%, #499999 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 56rpx;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  box-shadow: 0 10rpx 36rpx rgba(0,0,0,0.25);
+  z-index: 10;
 }
 
-.center-btn {
-  font-size: 30px; /* 可以根据需求调整大小 */
-  padding: 20px 40px;
-  background-color: #5388c0; /* 按钮的背景色 */
+.fab-text {
+  font-size: 24rpx;
+  position: absolute;
+  top: -60rpx;
+  right: 0;
+  background: #499999;
   color: white;
-  border-radius: 8px; /* 按钮的圆角 */
-  border: none;
+  padding: 10rpx 20rpx;
+  border-radius: 40rpx;
+  opacity: 0;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.center-btn {
-  font-size: 30px; /* 可以根据需求调整大小 */
-  padding: 20px 40px;
-  background-color: #4085ce; /* 按钮的背景色 */
-  color: white;
-  border-radius: 8px; /* 按钮的圆角 */
-  border: none;
-}
-
-.container {
-  padding: 20px;
-}
-
-button {
-  padding: 10px;
-  background-color: #007aff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-
-.user-list {
-  margin-top: 20px;
-}
-
-.user-item {
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-}
-
-/* 弹窗样式 */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 110;
 }
 
 .modal-content {
-  background-color: white;
-  border-radius: 20rpx;
-  border: 2rpx solid #333;
-  width: 600rpx;
-  max-width: 90%;
-  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: 40rpx 40rpx 20rpx 40rpx;
-  text-align: center;
-  border-bottom: 1rpx solid #eee;
-}
-
-.modal-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.modal-body {
-  padding: 40rpx;
-}
-
-.input-group {
-  margin-bottom: 30rpx;
+  background-color: #ffffff;
+  border-radius: 40rpx;
+  padding: 70rpx;
+  width: 85%;
+  max-width: 680rpx;
+  box-shadow: 0 40rpx 80rpx rgba(0,0,0,0.25);
 }
 
 .input-label {
-  display: block;
-  font-size: 32rpx;
+  font-weight: 600;
   color: #333;
-  margin-bottom: 15rpx;
-  font-weight: 500;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
 }
 
 .input-field {
   width: 100%;
-  height: 80rpx;
-  border: 2rpx solid #007AFF;
-  border-radius: 10rpx;
-  padding: 0 20rpx;
-  font-size: 30rpx;
-  background-color: white;
-  box-sizing: border-box;
+  padding: 32rpx;
+  border: 2rpx solid #e1e1e1;
+  border-radius: 24rpx;
+  font-size: 32rpx;
+  background-color: #fcfcfc;
 }
 
-.input-field:focus {
-  border-color: #0056CC;
-  outline: none;
+.input-row {
+  margin-bottom: 50rpx;
 }
 
-.modal-footer {
-  padding: 20rpx 40rpx 40rpx 40rpx;
-  text-align: center;
+.button-group {
+  display: flex;
+  gap: 36rpx;
+  margin-top: 60rpx;
 }
 
 .modal-btn {
-  width: 100%;
-  height: 80rpx;
-  border-radius: 40rpx;
-  border: none;
+  flex: 1;
+  padding: 32rpx 48rpx;
+  border-radius: 24rpx;
+  font-weight: 600;
   font-size: 32rpx;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background-color: #f6f6f6;
+  color: #999;
+  border: 4rpx solid #e6e6e6;
 }
 
 .confirm-btn {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, #5EB7B7 0%, #499999 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.notification {
+  position: fixed;
+  top: 60rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #5EB7B7;
   color: white;
+  padding: 30rpx 60rpx;
+  border-radius: 100rpx;
+  box-shadow: 0 12rpx 40rpx rgba(0,0,0,0.2);
+  font-weight: 600;
+  z-index: 120;
+  opacity: 0;
+  min-width: 500rpx;
+  text-align: center;
 }
 
-.confirm-btn:hover {
-  background-color: #45a049;
-  transform: translateY(-2rpx);
-}
-
-.confirm-btn:active {
-  transform: translateY(0);
+.notification.show {
+  opacity: 1;
+  top: 80rpx;
 }

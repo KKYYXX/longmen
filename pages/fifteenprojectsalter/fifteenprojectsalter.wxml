@@ -1,19 +1,66 @@
-<view class="fifteen-projects-alter-container">
-  <!-- 增加功能区域 -->
-  <view class="add-section">
-    <text class="section-title">增加功能</text>
-    <view class="button-group">
-      <button class="add-column-btn" bindtap="goToAddColumn">新增列</button>
-      <button class="add-project-btn" bindtap="goToAddProject">新增项目</button>
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <view class="header">
+    <view class="icon-wrapper">
+      <view class="icon-circle">
+        <text class="icon">📝</text>
+      </view>
+    </view>
+    <view class="title-box">
+      <text class="title">十五项项目修改</text>
+      <text class="subtitle">核心功能·简洁操作</text>
     </view>
   </view>
 
-  <!-- 修改功能区域 -->
-  <view class="modify-section">
-    <text class="section-title">修改功能</text>
-    <view class="button-group">
-      <button class="modify-btn" bindtap="goToModifyProjects">修改项目</button>
-      <button class="delete-btn" bindtap="goToFifteenProjectsDelete">删除项目</button>
+  <view class="btn-container">
+    <view class="function-card" bindtap="addColumn">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">新增列</text>
+          <text class="card-desc">添加新的项目列</text>
+        </view>
+        <view class="icon-circle add-icon-circle">
+          <text class="icon">➕</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-card" bindtap="addProject">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">新增项目</text>
+          <text class="card-desc">添加新的项目</text>
+        </view>
+        <view class="icon-circle project-icon-circle">
+          <text class="icon">📊</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-card" bindtap="modifyProject">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">修改项目</text>
+          <text class="card-desc">修改现有项目</text>
+        </view>
+        <view class="icon-circle modify-icon-circle">
+          <text class="icon">✏️</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-card" bindtap="deleteProject">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">删除项目</text>
+          <text class="card-desc">删除现有项目</text>
+        </view>
+        <view class="icon-circle delete-icon-circle">
+          <text class="icon">🗑️</text>
+        </view>
+      </view>
     </view>
   </view>
 </view>

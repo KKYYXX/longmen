@@ -1,5 +1,7 @@
 {
-  "navigationBarTitleText": "典型案例",
-  "navigationBarBackgroundColor": "#FFA726",
-  "navigationBarTextStyle": "white"
+  "navigationBarTitleText": "资料管理",
+  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTextStyle": "black",
+  "disableScroll": false,
+  "enablePullDownRefresh": false
 }

@@ -1,4 +1,44 @@
-<view class="fifteenprojects-container">
-  <button class="querybutton" bindtap="goToFifteenProjectsQuery">查询</button>
-  <button class="alterbuttton" bindtap="goToFifteenProjectsAlter">删改</button>
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot spot-1"></view>
+  <view class="light-spot spot-2"></view>
+  
+  <!-- 顶部标题区 -->
+  <view class="header">
+    <view class="icon-wrapper">
+      <view class="icon-wrapper-inner">
+        <text class="file-icon">📊</text>
+      </view>
+    </view>
+    
+    <view class="title-box">
+      <text class="page-title">十五项项目管理</text>
+      <text class="subtitle">核心功能 · 简洁操作</text>
+    </view>
+  </view>
+  
+  <!-- 核心功能按钮区 -->
+  <view class="btn-container">
+    <!-- 查询按钮 -->
+    <view class="function-card" bindtap="goToFifteenProjectsQuery">
+      <view class="card-content">
+        <text class="card-title">项目查询</text>
+        <text class="card-desc">快速检索所需项目信息</text>
+      </view>
+      <view class="icon-circle query-icon-circle">
+        <text class="card-icon query-icon">🔍</text>
+      </view>
+    </view>
+    
+    <!-- 修改按钮 -->
+    <view class="function-card" bindtap="goToFifteenProjectsAlter">
+      <view class="card-content">
+        <text class="card-title">项目修改</text>
+        <text class="card-desc">更新项目信息</text>
+      </view>
+      <view class="icon-circle edit-icon-circle">
+        <text class="card-icon edit-icon">✏️</text>
+      </view>
+    </view>
+  </view>
 </view>

@@ -1,10 +1,54 @@
-<view class="add-container">
-  <view class="page-header">
-    <text class="page-title">添加十五项项目</text>
-  </view>
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
   
-  <view class="content">
-    <text class="placeholder-text">添加十五项项目功能正在开发中...</text>
-    <text class="note-text">此页面将包含项目信息录入表单，支持上传图片、视频、文件等功能</text>
+  <view class="header">
+    <view class="icon-wrapper">
+      <view class="icon-circle">
+        <text class="icon">📁</text>
+      </view>
+    </view>
+    <view class="title-box">
+      <text class="title">十五项项目添加</text>
+      <text class="subtitle">核心功能·简洁操作</text>
+    </view>
+  </view>
+
+  <view class="btn-container">
+    <view class="function-card" bindtap="uploadFiles">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">文件上传</text>
+          <text class="card-desc">上传PDF和DOC文档，支持图片内容</text>
+        </view>
+        <view class="icon-circle upload-icon-circle">
+          <text class="icon">📄</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-card" bindtap="uploadNewsLinks">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">新闻链接</text>
+          <text class="card-desc">上传相关新闻链接和报道</text>
+        </view>
+        <view class="icon-circle link-icon-circle">
+          <text class="icon">🔗</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-card" bindtap="uploadVideos">
+      <view class="card-content">
+        <view class="text-content">
+          <text class="card-title">视频上传</text>
+          <text class="card-desc">上传相关视频文件</text>
+        </view>
+        <view class="icon-circle video-icon-circle">
+          <text class="icon">🎥</text>
+        </view>
+      </view>
+    </view>
   </view>
 </view>

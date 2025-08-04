@@ -10,9 +10,9 @@
 /* 搜索区域 */
 .search-section {
   padding: 30rpx;
-  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
   border-bottom: 1rpx solid #FFE082;
-  box-shadow: 0 4rpx 20rpx rgba(255, 167, 38, 0.2);
+  box-shadow: 0 4rpx 20rpx rgba(249, 226, 134, 0.2);
 }
 
 /* 时间筛选 */
@@ -72,7 +72,7 @@
 
 .search-icon {
   font-size: 32rpx;
-  color: #FFA726;
+  color: #f9e286;
 }
 
 /* 案例列表 */
@@ -84,9 +84,9 @@
   background: #ffffff;
   border-radius: 16rpx;
   margin-bottom: 25rpx;
-  box-shadow: 0 4rpx 15rpx rgba(255, 167, 38, 0.15);
-  border-left: 6rpx solid #FFA726;
-  border: 2rpx solid rgba(255, 183, 77, 0.2);
+  box-shadow: 0 4rpx 15rpx rgba(249, 226, 134, 0.15);
+  border-left: 6rpx solid #f9e286;
+  border: 2rpx solid rgba(249, 226, 134, 0.2);
   overflow: hidden;
   transition: all 0.3s ease;
 }
@@ -112,7 +112,7 @@
 .case-icon {
   font-size: 48rpx;
   margin-right: 20rpx;
-  color: #FFA726;
+  color: #f9e286;
 }
 
 .case-details {
@@ -136,7 +136,7 @@
 }
 
 .case-progress {
-  color: #FFA726;
+  color: #f9e286;
   font-weight: 500;
 }
 
@@ -260,14 +260,14 @@
 
 .progress-fill {
   height: 100%;
-  background: #FFA726;
+  background: #f9e286;
   border-radius: 6rpx;
   transition: width 0.3s ease;
 }
 
 .progress-text {
   font-size: 24rpx;
-  color: #FFA726;
+  color: #f9e286;
   font-weight: 500;
 }
 
@@ -280,7 +280,7 @@
 }
 
 .load-more {
-  color: #FFA726;
+  color: #f9e286;
   cursor: pointer;
 }
 
@@ -294,8 +294,8 @@
 
 /* 案例分类 */
 .case-category {
-  background: #FFA726;
-  color: white;
+  background: #f9e286;
+  color: #333333;
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
   font-size: 20rpx;
@@ -308,7 +308,7 @@
   border-radius: 12rpx;
   padding: 20rpx;
   margin-bottom: 20rpx;
-  border-left: 4rpx solid #FFA726;
+  border-left: 4rpx solid #f9e286;
 }
 
 /* 媒体区域 */
@@ -382,7 +382,7 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  border: 2rpx solid #FFA726;
+  border: 2rpx solid #f9e286;
   border-radius: 8rpx;
   padding: 20rpx;
   margin-bottom: 15rpx;
@@ -390,7 +390,7 @@
 }
 
 .link-item:active {
-  background: rgba(255, 167, 38, 0.1);
+  background: rgba(249, 226, 134, 0.1);
 }
 
 .link-icon {
@@ -413,7 +413,7 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  border: 2rpx solid #FF8F00;
+  border: 2rpx solid #f9e286;
   border-radius: 8rpx;
   padding: 20rpx;
   margin-bottom: 15rpx;
@@ -421,7 +421,7 @@
 }
 
 .report-item:active {
-  background: rgba(255, 143, 0, 0.1);
+  background: rgba(249, 226, 134, 0.1);
 }
 
 .report-icon {
@@ -437,7 +437,7 @@
 
 .download-icon {
   font-size: 24rpx;
-  color: #FF8F00;
+  color: #f9e286;
 }
 
 /* 案例底部 */
@@ -460,11 +460,11 @@
 
 .tag-item {
   background: #FFE082;
-  color: #FF8F00;
+  color: #333333;
   padding: 6rpx 12rpx;
   border-radius: 16rpx;
   font-size: 20rpx;
-  border: 1rpx solid #FFA726;
+  border: 1rpx solid #f9e286;
 }
 
 .contact-info {
@@ -476,7 +476,7 @@
 
 .contact-text {
   font-size: 24rpx;
-  color: #FF8F00;
+  color: #333333;
   font-weight: 500;
 }
 
@@ -495,5 +495,5 @@
 
 .empty-text {
   font-size: 28rpx;
-  color: #FF8F00;
+  color: #333333;
 }

@@ -1,31 +1,242 @@
 /* 典型案例删改页面样式 */
+page {
+  background: linear-gradient(135deg, #fffef8, #fffdf0);
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
 
-.typicalcases-alter-container {
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #FFFFFF, #FFFFF8);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border: 2rpx solid rgba(255, 236, 179, 0.4);
+}
+
+.texture-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(255, 248, 192, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 240, 168, 0.1) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.light-spot {
+  position: absolute;
+  width: 400rpx;
+  height: 400rpx;
+  background: radial-gradient(circle, rgba(255, 252, 202, 0.3), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spot-1 {
+  top: -100rpx;
+  right: -100rpx;
+}
+
+.spot-2 {
+  bottom: -60rpx;
+  left: -60rpx;
+}
+
+/* 顶部标题区 */
+.header {
+  background: linear-gradient(to right, #FFECB3, #FFE082);
+  padding: 84rpx 50rpx 50rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(150, 127, 73, 0.1);
+  position: relative;
+  z-index: 10;
+  border-bottom: 2rpx solid rgba(255, 224, 130, 0.4);
+}
+
+.title-box {
+  position: relative;
+  z-index: 2;
+}
+
+.page-title {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #5c5032;
+  margin-bottom: 20rpx;
+  letter-spacing: 1.6rpx;
+  text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.05);
+  display: block;
+}
+
+.subtitle {
+  font-size: 30rpx;
+  color: #7d6f4f;
+  opacity: 0.9;
+  display: block;
+}
+
+.icon-wrapper {
+  position: absolute;
+  top: -160rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180rpx;
+  height: 180rpx;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 48rpx;
+  box-shadow: 0 16rpx 50rpx rgba(150, 127, 73, 0.18);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 15;
+}
+
+.icon-wrapper-inner {
+  width: 140rpx;
+  height: 140rpx;
+  background: linear-gradient(120deg, #FFECB3, #FFFBE6);
+  border-radius: 36rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 20rpx rgba(0,0,0,0.04);
+}
+
+.file-icon {
+  color: #7d6f4f;
+  font-size: 72rpx;
+}
+
+/* 核心按钮区域 */
+.btn-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 40rpx;
-  box-sizing: border-box;
-  background: linear-gradient(180deg, #fffbf0 0%, #ffffff 30%, #fff8e1 100%);
+  padding: 0 60rpx;
+  position: relative;
+  z-index: 5;
 }
 
-.addbutton, .deletebutton {
-  margin: 80rpx 0;
-  width: 600rpx;
-  height: 250rpx;
-  line-height: 250rpx;
-  font-size: 38rpx;
-  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 20rpx;
-  box-shadow: 0 6rpx 20rpx rgba(255, 167, 38, 0.3);
+.function-card {
+  width: 100%;
+  max-width: 560rpx;
+  height: 280rpx;
+  padding: 0 50rpx;
+  margin: 40rpx 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 52rpx;
+  box-shadow: 
+    0 20rpx 50rpx rgba(150, 127, 73, 0.15),
+    inset 0 0 10rpx rgba(255, 236, 179, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.function-card:active {
+  transform: translateY(-20rpx);
+  box-shadow: 
+    0 40rpx 90rpx rgba(150, 127, 73, 0.25),
+    inset 0 0 0 2rpx rgba(255, 214, 112, 0.5);
+}
+
+.function-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent 40%, rgba(255, 255, 255, 0.6) 100%);
+  z-index: -1;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #5c5032;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.card-desc {
+  font-size: 28rpx;
+  color: #7d6f4f;
+  opacity: 0.8;
+  max-width: 300rpx;
+  display: block;
+}
+
+.icon-circle {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
   transition: all 0.3s ease;
 }
 
-.addbutton:active, .deletebutton:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 4rpx 15rpx rgba(255, 167, 38, 0.4);
+.function-card:active .icon-circle {
+  transform: scale(1.15);
+}
+
+.add-icon-circle {
+  background: rgba(227, 244, 255, 0.5);
+  box-shadow: 0 0 0 20rpx rgba(173, 214, 255, 0.2);
+}
+
+.delete-icon-circle {
+  background: rgba(255, 235, 238, 0.5);
+  box-shadow: 0 0 0 20rpx rgba(255, 183, 77, 0.2);
+}
+
+.card-icon {
+  font-size: 70rpx;
+  color: #7d6f4f;
+  transition: transform 0.3s ease;
+}
+
+.add-icon {
+  color: #4a90e2;
+}
+
+.delete-icon {
+  color: #f44336;
+}
+
+/* 动画效果 */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20rpx); }
+}
+
+.function-card:nth-child(1) {
+  animation: float 5s ease-in-out infinite;
+}
+
+.function-card:nth-child(2) {
+  animation: float 5s ease-in-out 1s infinite;
+}
+
+/* 响应式调整 */
+@media (max-height: 700px) {
+  .btn-container {
+    padding-top: 40rpx;
+  }
 }
