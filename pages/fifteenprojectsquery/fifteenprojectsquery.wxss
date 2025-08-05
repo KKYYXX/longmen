@@ -139,57 +139,52 @@
 }
 
 .project-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
   padding: 10rpx;
 }
 
-.expand-icon {
-  font-size: 24rpx;
-  color: #6c757d;
-  transition: transform 0.3s ease;
+.view-icon {
+  font-size: 20px;
+  color: rgba(92,80,50,0.7);
 }
 
-.expand-icon.expanded {
-  transform: rotate(180deg);
+.view-text {
+  font-size: 12px;
+  color: rgba(92,80,50,0.6);
 }
 
-/* 项目内容 */
-.project-content {
-  padding: 0 30rpx 30rpx 30rpx;
-  border-top: 1rpx solid #e9ecef;
-  background: #f8f9fa;
+/* 项目类型 */
+.project-type {
+  font-size: 12px;
+  color: rgba(92,80,50,0.6);
+  background: rgba(255,248,192,0.5);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 5px;
+  display: inline-block;
 }
 
-/* 基本信息区域 */
-.info-section {
-  background: #ffffff;
-  border-radius: 12rpx;
-  padding: 30rpx;
-  margin: 20rpx 0;
-  border: 1rpx solid #e9ecef;
+/* 项目简介 */
+.project-summary {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255,236,179,0.5);
 }
 
-.info-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20rpx;
+.summary-text {
+  font-size: 14px;
+  color: rgba(92,80,50,0.8);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.info-item:last-child {
-  margin-bottom: 0;
-}
-
-.info-label {
-  font-size: 26rpx;
-  color: #6c757d;
-  min-width: 140rpx;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 26rpx;
-  color: #333333;
-  flex: 1;
-}
+/* 移除了展开功能相关的样式 */
 
 /* 详细信息区域 */
 .detail-section {

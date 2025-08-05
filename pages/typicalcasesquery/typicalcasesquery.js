@@ -15,87 +15,177 @@ Page({
     this.loadCases();
   },
 
-  async loadCases() {
+  onShow() {
+    // 页面显示时重新加载数据，以防其他页面有更新
+    this.loadCases();
+  },
+
+  loadCases() {
     this.setData({ loading: true });
-    
+
+    // 使用开发模式，从本地存储和默认数据加载
+    const apiConfig = require('../../config/api.js');
+
+    if (apiConfig.isMockEnabled()) {
+      // 开发模式：从本地存储和默认数据加载
+      setTimeout(() => {
+        const storedCases = wx.getStorageSync('typicalCases') || [];
+        const defaultCases = this.getDefaultCases();
+        const allCases = [...defaultCases, ...storedCases];
+
+        // 为每个案例添加统计信息和格式化数据
+        const casesWithStats = allCases.map(caseItem => ({
+          ...caseItem,
+          title: caseItem.caseName || caseItem.title,
+          type: caseItem.category || '典型案例',
+          description: caseItem.description || caseItem.summary || '暂无描述',
+          uploadTime: caseItem.uploadTime || caseItem.createDate,
+          fileCount: (caseItem.files && caseItem.files.length) || 0,
+          videoCount: (caseItem.videos && caseItem.videos.length) || 0,
+          linkCount: (caseItem.links && caseItem.links.length) || 0,
+          files: caseItem.files || [],
+          videos: caseItem.videos || [],
+          links: caseItem.links || []
+        }));
+
+        this.setData({
+          allCases: casesWithStats,
+          filteredCases: casesWithStats,
+          loading: false
+        });
+        this.filterCases();
+      }, 500);
+      return;
+    }
+
+    // 生产模式：调用后端接口
     try {
       const dbService = require('../../utils/databaseService.js');
       const db = new dbService();
-      
-      const result = await db.getTypicalCases({
+
+      db.getTypicalCases({
         keyword: this.data.searchKeyword,
         filter: this.data.currentFilter
-      });
-      
-      if (result.success) {
+      }).then(result => {
+        if (result.success) {
+          this.setData({
+            allCases: result.cases,
+            filteredCases: result.cases,
+            loading: false
+          });
+        } else {
+          wx.showToast({
+            title: result.message || '加载失败',
+            icon: 'none'
+          });
+          this.setData({ loading: false });
+        }
+      }).catch(error => {
+        console.error('加载案例失败:', error);
+        // 如果数据库服务失败，使用默认数据
+        const defaultCases = this.getDefaultCases();
         this.setData({
-          allCases: result.cases,
-          filteredCases: result.cases,
+          allCases: defaultCases,
+          filteredCases: defaultCases,
           loading: false
         });
-      } else {
-        wx.showToast({
-          title: result.message || '加载失败',
-          icon: 'none'
-        });
-        this.setData({ loading: false });
-      }
+        this.filterCases();
+      });
     } catch (error) {
       console.error('加载案例失败:', error);
-      // 如果数据库服务失败，使用模拟数据
-      const mockCases = this.generateMockCases();
+      // 如果数据库服务失败，使用默认数据
+      const defaultCases = this.getDefaultCases();
       this.setData({
-        allCases: mockCases,
-        filteredCases: mockCases,
+        allCases: defaultCases,
+        filteredCases: defaultCases,
         loading: false
       });
       this.filterCases();
     }
   },
 
-  generateMockCases() {
+  // 获取默认案例数据
+  getDefaultCases() {
     return [
       {
         id: 1,
+        caseName: '智慧城市建设典型案例',
         title: '智慧城市建设典型案例',
-        type: '城市管理',
-        description: '通过数字化手段提升城市管理效率，实现智慧化治理',
-        uploadTime: '2024-01-15',
-        fileCount: 2,
-        linkCount: 1,
-        videoCount: 1,
+        category: '基础设施建设',
+        type: '基础设施建设',
+        createDate: '2024-01-15',
+        uploadTime: '2024-01-15 10:30:00',
+        updateDate: '2024-07-20',
+        description: '通过物联网、大数据、人工智能等技术，构建智慧城市管理平台，实现城市治理现代化，提升市民生活质量。',
+        summary: '通过物联网、大数据、人工智能等技术，构建智慧城市管理平台，实现城市治理现代化，提升市民生活质量。',
+        author: '市信息化办公室',
+        contact: '张主任 - 13800138000',
         files: [
-          { name: '项目报告.pdf', size: '2.5MB' },
-          { name: '技术方案.docx', size: '1.8MB' }
-        ],
-        links: [
-          { title: '相关新闻报道', url: 'https://example.com/news1' }
+          { name: '智慧城市建设方案.pdf', size: '2.5MB', sizeFormatted: '2.5MB' },
+          { name: '技术架构图.png', size: '1.2MB', sizeFormatted: '1.2MB' }
         ],
         videos: [
-          { name: '项目演示.mp4', size: '15.2MB' }
+          { name: '智慧城市演示视频.mp4', duration: '5:30' }
+        ],
+        links: [
+          { title: '智慧城市官方网站', url: 'https://smartcity.example.com' }
         ]
       },
       {
         id: 2,
-        title: '环保技术创新项目',
-        type: '环境保护',
-        description: '采用新型环保技术，实现废物资源化利用',
-        uploadTime: '2024-01-10',
-        fileCount: 1,
-        linkCount: 2,
-        videoCount: 1,
+        caseName: '绿色能源示范园区建设案例',
+        title: '绿色能源示范园区建设案例',
+        category: '环保治理',
+        type: '环保治理',
+        createDate: '2024-02-10',
+        uploadTime: '2024-02-10 14:20:00',
+        updateDate: '2024-07-18',
+        description: '建设集太阳能、风能、储能于一体的绿色能源示范园区，实现清洁能源的高效利用和智能管理。',
+        summary: '建设集太阳能、风能、储能于一体的绿色能源示范园区，实现清洁能源的高效利用和智能管理。',
+        author: '市发改委',
+        contact: '李处长 - 13900139000',
         files: [
-          { name: '技术专利.pdf', size: '3.2MB' }
-        ],
-        links: [
-          { title: '环保政策解读', url: 'https://example.com/policy' },
-          { title: '技术应用案例', url: 'https://example.com/case' }
+          { name: '绿色能源规划书.docx', size: '3.1MB', sizeFormatted: '3.1MB' },
+          { name: '能源效率报告.xlsx', size: '800KB', sizeFormatted: '800KB' }
         ],
         videos: [
-          { name: '技术演示.mp4', size: '8.5MB' }
+          { name: '园区建设纪录片.mp4', duration: '8:45' }
+        ],
+        links: [
+          { title: '绿色能源政策解读', url: 'https://greenenergy.example.com' }
+        ]
+      },
+      {
+        id: 3,
+        caseName: '数字化教育改革实践案例',
+        title: '数字化教育改革实践案例',
+        category: '民生改善',
+        type: '民生改善',
+        createDate: '2024-03-05',
+        uploadTime: '2024-03-05 09:15:00',
+        updateDate: '2024-07-15',
+        description: '运用数字技术改革传统教育模式，建设智慧校园，推进教育公平和质量提升。',
+        summary: '运用数字技术改革传统教育模式，建设智慧校园，推进教育公平和质量提升。',
+        author: '市教育局',
+        contact: '王局长 - 13700137000',
+        files: [
+          { name: '数字化教育方案.pdf', size: '4.2MB', sizeFormatted: '4.2MB' },
+          { name: '教学效果评估.pptx', size: '6.8MB', sizeFormatted: '6.8MB' }
+        ],
+        videos: [
+          { name: '智慧课堂演示.mp4', duration: '12:20' }
+        ],
+        links: [
+          { title: '数字化教育平台', url: 'https://education.example.com' },
+          { title: '在线学习资源', url: 'https://learning.example.com' }
         ]
       }
     ];
+  },
+
+  generateMockCases() {
+    // 保持向后兼容，调用新的方法
+    return this.getDefaultCases();
   },
 
   onSearchInput(e) {
@@ -158,8 +248,9 @@ Page({
 
   previewCase(e) {
     const caseData = e.currentTarget.dataset.case;
+    // 跳转到文档展示页面，显示完整的案例内容
     wx.navigateTo({
-      url: `/pages/typicalcasesquery/typicalcasesquery_detail?id=${caseData.id}`
+      url: `/pages/case_document/case_document?id=${caseData.id}`
     });
   },
 

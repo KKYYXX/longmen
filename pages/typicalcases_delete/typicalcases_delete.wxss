@@ -10,9 +10,9 @@
 .page-header {
   text-align: center;
   padding: 60rpx 40rpx 40rpx;
-  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
-  color: white;
-  box-shadow: 0 4rpx 20rpx rgba(255, 167, 38, 0.3);
+  background: linear-gradient(135deg, #FFF8C0 0%, #FFDD8F 100%);
+  color: #5c5032;
+  box-shadow: 0 4rpx 20rpx rgba(255, 221, 143, 0.3);
 }
 
 .page-title {
