@@ -1,0 +1,159 @@
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 主要内容 -->
+  <view class="main-content" wx:if="{{!loading && caseData}}">
+    <!-- 头部信息 -->
+    <view class="header">
+      <view class="back-btn" bindtap="navigateBack">
+        <text class="back-icon">←</text>
+      </view>
+      <view class="title-box">
+        <text class="title">案例详情</text>
+        <text class="subtitle">{{caseData.caseName}}</text>
+      </view>
+      <view class="share-btn" bindtap="shareCase">
+        <text class="share-icon">📤</text>
+      </view>
+    </view>
+
+    <!-- 案例基本信息 -->
+    <view class="case-info">
+      <view class="info-card">
+        <view class="info-header">
+          <text class="case-title">{{caseData.caseName}}</text>
+          <text class="case-time">{{caseData.uploadTime}}</text>
+        </view>
+        <view class="case-description">
+          <text class="description-text">{{caseData.description}}</text>
+        </view>
+        <view class="case-stats">
+          <view class="stat-item">
+            <text class="stat-icon">📄</text>
+            <text class="stat-text">{{caseData.fileCount || 0}}个文件</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-icon">🎥</text>
+            <text class="stat-text">{{caseData.videoCount || 0}}个视频</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-icon">🔗</text>
+            <text class="stat-text">{{caseData.linkCount || 0}}个链接</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 标签页切换 -->
+    <view class="tab-container">
+      <view class="tab-header">
+        <view class="tab-item {{activeTab === 'files' ? 'active' : ''}}" 
+              bindtap="switchTab" data-tab="files">
+          <text class="tab-icon">📄</text>
+          <text class="tab-text">文件</text>
+        </view>
+        <view class="tab-item {{activeTab === 'videos' ? 'active' : ''}}" 
+              bindtap="switchTab" data-tab="videos">
+          <text class="tab-icon">🎥</text>
+          <text class="tab-text">视频</text>
+        </view>
+        <view class="tab-item {{activeTab === 'links' ? 'active' : ''}}" 
+              bindtap="switchTab" data-tab="links">
+          <text class="tab-icon">🔗</text>
+          <text class="tab-text">新闻</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 文件列表 -->
+    <view class="content-tab" wx:if="{{activeTab === 'files'}}">
+      <view class="file-list" wx:if="{{caseData.files && caseData.files.length > 0}}">
+        <view class="file-item" wx:for="{{caseData.files}}" wx:key="id">
+          <view class="file-info">
+            <view class="file-icon">
+              <text class="icon">📄</text>
+            </view>
+            <view class="file-details">
+              <text class="file-name">{{item.fileName}}</text>
+              <text class="file-size">{{item.fileSize}}KB</text>
+            </view>
+          </view>
+          <view class="file-actions">
+            <text class="action-btn preview-btn" bindtap="previewFile" data-file="{{item}}">预览</text>
+            <text class="action-btn download-btn" bindtap="downloadFile" data-file="{{item}}">下载</text>
+          </view>
+        </view>
+      </view>
+      <view class="empty-state" wx:else>
+        <text class="empty-icon">📭</text>
+        <text class="empty-title">暂无文件</text>
+        <text class="empty-desc">该案例还没有上传任何文件</text>
+      </view>
+    </view>
+
+    <!-- 视频列表 -->
+    <view class="content-tab" wx:if="{{activeTab === 'videos'}}">
+      <view class="video-list" wx:if="{{caseData.videos && caseData.videos.length > 0}}">
+        <view class="video-item" wx:for="{{caseData.videos}}" wx:key="id">
+          <view class="video-info">
+            <view class="video-icon">
+              <text class="icon">🎥</text>
+            </view>
+            <view class="video-details">
+              <text class="video-name">{{item.videoName}}</text>
+              <text class="video-size">{{item.videoSize}}KB</text>
+            </view>
+          </view>
+          <view class="video-actions">
+            <text class="action-btn play-btn" bindtap="playVideo" data-video="{{item}}">播放</text>
+          </view>
+        </view>
+      </view>
+      <view class="empty-state" wx:else>
+        <text class="empty-icon">📭</text>
+        <text class="empty-title">暂无视频</text>
+        <text class="empty-desc">该案例还没有上传任何视频</text>
+      </view>
+    </view>
+
+    <!-- 新闻链接列表 -->
+    <view class="content-tab" wx:if="{{activeTab === 'links'}}">
+      <view class="link-list" wx:if="{{caseData.links && caseData.links.length > 0}}">
+        <view class="link-item" wx:for="{{caseData.links}}" wx:key="id">
+          <view class="link-info">
+            <view class="link-icon">
+              <text class="icon">🔗</text>
+            </view>
+            <view class="link-details">
+              <text class="link-title">{{item.linkTitle}}</text>
+              <text class="link-url">{{item.linkUrl}}</text>
+            </view>
+          </view>
+          <view class="link-actions">
+            <text class="action-btn open-btn" bindtap="openLink" data-link="{{item}}">打开</text>
+          </view>
+        </view>
+      </view>
+      <view class="empty-state" wx:else>
+        <text class="empty-icon">📭</text>
+        <text class="empty-title">暂无链接</text>
+        <text class="empty-desc">该案例还没有添加任何新闻链接</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:if="{{!loading && !caseData}}">
+    <text class="error-icon">❌</text>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">无法获取案例详情，请重试</text>
+    <text class="retry-btn" bindtap="loadCaseDetail">重新加载</text>
+  </view>
+</view> 

@@ -219,20 +219,48 @@ Page({
 
   // 上传视频
   uploadVideo() {
-    wx.chooseVideo({
-      sourceType: ['album', 'camera'],
-      maxDuration: 60,
-      camera: 'back',
+    // 显示选择来源的弹窗
+    wx.showActionSheet({
+      itemList: ['从相册选择', '从聊天记录选择', '拍摄视频'],
       success: (res) => {
-        this.addItem({
-          type: '视频',
-          name: `视频${this.data.addedItems.length + 1}.mp4`,
-          path: res.tempFilePath
-        });
+        let sourceType = [];
+        switch (res.tapIndex) {
+          case 0: // 相册
+            sourceType = ['album'];
+            break;
+          case 1: // 聊天记录
+            sourceType = ['album']; // 微信会自动显示聊天记录选项
+            break;
+          case 2: // 拍摄
+            sourceType = ['camera'];
+            break;
+          default:
+            return;
+        }
+        
+        wx.chooseVideo({
+          sourceType: sourceType,
+          maxDuration: 60,
+          camera: 'back',
+          success: (res) => {
+            this.addItem({
+              type: '视频',
+              name: `视频${this.data.addedItems.length + 1}.mp4`,
+              path: res.tempFilePath
+            });
 
-        wx.showToast({
-          title: '已添加视频',
-          icon: 'success'
+            wx.showToast({
+              title: '已添加视频',
+              icon: 'success'
+            });
+          },
+          fail: (err) => {
+            console.error('选择视频失败:', err);
+            wx.showToast({
+              title: '选择视频失败',
+              icon: 'none'
+            });
+          }
         });
       }
     });
