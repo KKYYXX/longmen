@@ -256,4 +256,45 @@ page {
   .btn-container {
     padding-top: 40rpx;
   }
-} 
+}
+/*
+//调试区域样式 
+.debug-container {
+  margin: 40rpx 60rpx;
+  padding: 30rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  border: 2rpx solid rgba(255, 193, 7, 0.3);
+  position: relative;
+  z-index: 5;
+}
+
+.debug-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ff9800;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.debug-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.debug-btn {
+  background: linear-gradient(135deg, #ff9800, #ffb74d);
+  color: white;
+  border: none;
+  border-radius: 10rpx;
+  padding: 15rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.debug-btn:active {
+  transform: scale(0.95);
+  background: linear-gradient(135deg, #f57c00, #ff9800);
+} */

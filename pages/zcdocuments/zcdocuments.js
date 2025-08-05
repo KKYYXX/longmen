@@ -185,49 +185,104 @@ Page({
       title: '验证权限中...'
     });
 
-    // 模拟调用后端API验证权限
-    // 实际项目中这里应该调用wx.request()获取后端数据
-    setTimeout(() => {
-      wx.hideLoading();
-      
-      // 模拟权限验证结果
-      // 这里应该根据实际的后端API返回结果进行判断
-      const hasPermission = this.checkPermissionFromBackend();
-      
-      if (hasPermission) {
-        // 有权限，跳转到删改页面
-        wx.navigateTo({
-          url: '/pages/zcalter/zcalter'
+    // 调用后端API验证权限
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/user/alter_zc',
+      method: 'GET',
+      timeout: 10000,
+      success: (res) => {
+        wx.hideLoading();
+        console.log('权限验证响应:', res);
+        
+        if (res.statusCode === 200) {
+          const authorizedUsers = res.data;
+          const userInfo = this.data.userInfo;
+          
+          // 检查当前用户是否在授权名单中
+          const hasPermission = this.checkUserInAuthorizedList(userInfo, authorizedUsers);
+          
+          if (hasPermission) {
+            // 有权限，跳转到删改页面
+            wx.navigateTo({
+              url: '/pages/zcalter/zcalter'
+            });
+          } else {
+            // 没有权限，显示提示
+            this.showNoPermissionModal();
+          }
+        } else {
+          console.error('权限验证失败:', res);
+          wx.showToast({
+            title: '权限验证失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('权限验证请求失败:', err);
+        
+        // 检查是否在开发模式下，如果是则使用测试数据
+        if (this.isDevelopmentMode()) {
+          console.log('使用测试权限验证模式');
+          this.useTestPermissionCheck();
+          return;
+        }
+        
+        wx.showModal({
+          title: '网络错误',
+          content: '无法连接到服务器进行权限验证',
+          showCancel: false,
+          confirmText: '确定'
         });
-      } else {
-        // 没有权限，显示提示
-        this.showNoPermissionModal();
       }
-    }, 1000);
+    });
   },
 
-  // 模拟从后端获取权限信息
-  // 实际项目中这里应该调用真实的后端API
-  checkPermissionFromBackend() {
-    // 临时设置：任何登录用户都有删改权限，便于测试zcalter页面
-    const userInfo = this.data.userInfo;
-    if (!userInfo) {
+  // 检查用户是否在授权名单中
+  checkUserInAuthorizedList(userInfo, authorizedUsers) {
+    if (!userInfo || !authorizedUsers || !Array.isArray(authorizedUsers)) {
+      console.log('权限检查失败：用户信息或授权列表无效');
+      console.log('用户信息:', userInfo);
+      console.log('授权列表:', authorizedUsers);
       return false;
     }
 
-    // 测试阶段：任何登录用户都有权限
-    return true;
+    console.log('当前用户信息:', userInfo);
+    console.log('授权用户列表:', authorizedUsers);
+
+    // 遍历授权用户列表，检查姓名和手机号是否匹配
+    for (const authorizedUser of authorizedUsers) {
+      console.log('检查授权用户:', authorizedUser);
+      if (authorizedUser.name === userInfo.name && authorizedUser.phone === userInfo.phone) {
+        console.log('权限验证成功！用户匹配:', authorizedUser);
+        return true;
+      }
+    }
     
-    // 正式环境下的权限检查逻辑（注释掉，等后端完成后启用）
-    // const allowedRoles = ['admin', 'editor', 'manager'];
-    // return allowedRoles.includes(userInfo.role);
+    console.log('权限验证失败：用户不在授权列表中');
+    return false;
+  },
+
+  // 开发模式下的测试权限检查
+  useTestPermissionCheck() {
+    const userInfo = this.data.userInfo;
+    if (!userInfo) {
+      this.showNoPermissionModal();
+      return;
+    }
+
+    // 测试阶段：任何登录用户都有权限
+    wx.navigateTo({
+      url: '/pages/zcalter/zcalter'
+    });
   },
 
   // 显示无权限提示框
   showNoPermissionModal() {
     wx.showModal({
       title: '权限不足',
-      content: '您没有删改政策文件的权限',
+      content: '您暂无修改政策文件的权限',
       showCancel: false,
       confirmText: '确定',
       success: (res) => {
@@ -266,7 +321,7 @@ Page({
       });
     });
   },
-
+/*
   // 测试方法：清除登录状态（用于测试）
   clearLoginStatus() {
     wx.removeStorageSync('userInfo');
@@ -297,5 +352,27 @@ Page({
         icon: 'none'
       });
     }
-  }
+  },
+
+  // 测试方法：显示当前用户信息（用于调试）
+  showCurrentUserInfo() {
+    const userInfo = this.data.userInfo;
+    const isLoggedIn = this.data.isLoggedIn;
+    
+    console.log('当前登录状态:', isLoggedIn);
+    console.log('当前用户信息:', userInfo);
+    
+    wx.showModal({
+      title: '当前用户信息',
+      content: `登录状态: ${isLoggedIn ? '已登录' : '未登录'}\n姓名: ${userInfo ? userInfo.name : '无'}\n手机: ${userInfo ? userInfo.phone : '无'}`,
+      showCancel: false,
+      confirmText: '确定'
+    });
+  },
+
+  // 测试方法：手动测试权限验证
+  testPermissionCheck() {
+    console.log('开始手动测试权限验证...');
+    this.checkUserPermission();
+  }*/
 }); 
