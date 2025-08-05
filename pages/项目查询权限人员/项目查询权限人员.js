@@ -14,17 +14,16 @@ Page({
   },
 
   fetchRecords() {
-    // 连接你的 /user/query_15 接口
+    // 调用后端 /user/query_15 接口获取项目查询权限人员列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/query_15', // 👈 替换成你的接口
+      url: 'http://127.0.0.1:5000/app/user/query_15', // 直接调用后端接口
       method: 'GET',
       success: res => {
-        console.log('接口完整响应:', res); // 打印整个响应对象
-        // 原来的打印
-        console.log('接口原始数据:', res.data && res.data.data ? res.data.data : '不存在 data.data 字段'); 
-        if (res.data && res.data.success) {
-          // 根据实际结构调整，比如接口直接返回数组，就不用 res.data.data
-          const records = res.data || []; // 直接取 res.data，因为接口返回的数组就在 data 里 
+        console.log('接口完整响应:', res);
+        if (res.statusCode === 200) {
+          // 后端返回的是数组格式，包含name和phone字段
+          const records = res.data || [];
+          console.log('获取到的人员数据:', records);
           this.setData({
             allRecords: records,
             filteredRecords: records
@@ -33,7 +32,8 @@ Page({
           this.showToast('加载失败')
         }
       },
-      fail: () => {
+      fail: (err) => {
+        console.error('请求失败:', err);
         this.showToast('服务器连接失败')
       }
     })
@@ -77,20 +77,20 @@ Page({
       return
     }
 
-    // 模拟后端保存逻辑
+    // 调用后端添加接口
     wx.request({
       header: {
-        'content-type': 'application/x-www-form-urlencoded'  // 匹配后端 form 接收方式
+        'content-type': 'application/x-www-form-urlencoded'
       },
       data: {
         name: newName,
         phone: newPhone
       },
-      url: 'http://127.0.0.1:5000/app/user/query_15_add', // 👈 替换成你的新增接口
+      url: 'http://127.0.0.1:5000/app/user/query_15_add',
       method: 'POST',
       success: res => {
-        if (res.data.success) {
-          this.fetchRecords()
+        if (res.statusCode === 200) {
+          this.fetchRecords() // 重新获取数据
           this.setData({ showModal: false })
           this.showToast('添加成功')
         } else {
@@ -98,7 +98,7 @@ Page({
         }
       },
       fail: (err) => {
-        console.error('请求失败详情：', err)  // 打印错误详情到控制台
+        console.error('请求失败详情：', err)
         this.showToast('服务器错误')
       }
     })
@@ -107,7 +107,10 @@ Page({
   onDeleteRecord(e) {
     const index = e.currentTarget.dataset.index
     const record = this.data.filteredRecords[index]
-    if (!record || !record.phone) return
+    if (!record || !record.name || !record.phone) {
+      this.showToast('记录信息不完整')
+      return
+    }
 
     wx.showModal({
       title: '确认删除',
@@ -115,20 +118,27 @@ Page({
       confirmText: '删除',
       success: res => {
         if (res.confirm) {
+          // 调用后端删除接口，传递name和phone
           wx.request({
-            url: 'http://127.0.0.1:5000/app/user/query_15_delete', // 👈 替换成你的删除接口
+            url: 'http://127.0.0.1:5000/app/user/query_15_delete',
             method: 'POST',
-            header: { 'content-type': 'application/json' },
-            data: { phone: record.phone },
+            header: { 
+              'content-type': 'application/x-www-form-urlencoded' 
+            },
+            data: { 
+              name: record.name,
+              phone: record.phone 
+            },
             success: res => {
-              if (res.data.success) {
-                this.fetchRecords()
+              if (res.statusCode === 200) {
+                this.fetchRecords() // 重新获取数据
                 this.showToast('删除成功')
               } else {
-                this.showToast('删除失败')
+                this.showToast(res.data.message || '删除失败')
               }
             },
-            fail: () => {
+            fail: (err) => {
+              console.error('删除请求失败:', err)
               this.showToast('服务器错误')
             }
           })
