@@ -112,6 +112,51 @@ page {
   font-size: 72rpx;
 }
 
+/* 典型案例名称输入 */
+.case-name-container {
+  padding: 40rpx 60rpx 20rpx;
+  position: relative;
+  z-index: 5;
+}
+
+.input-group {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+  padding: 30rpx;
+  box-shadow: 0 8rpx 24rpx rgba(150, 127, 73, 0.15);
+  border: 2rpx solid rgba(255, 236, 179, 0.3);
+  position: relative;
+}
+
+.input-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5c5032;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.case-name-input {
+  width: 100%;
+  height: 80rpx;
+  font-size: 30rpx;
+  color: #5c5032;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16rpx;
+  padding: 0 20rpx;
+  border: 2rpx solid rgba(255, 236, 179, 0.5);
+  box-sizing: border-box;
+}
+
+.input-tip {
+  position: absolute;
+  right: 30rpx;
+  bottom: 30rpx;
+  font-size: 22rpx;
+  color: #7d6f4f;
+  opacity: 0.7;
+}
+
 /* 核心按钮区域 */
 .btn-container {
   flex: 1;
@@ -229,6 +274,211 @@ page {
   color: #f44336;
 }
 
+/* 预览区域样式 */
+.preview-container {
+  background: rgba(255, 255, 255, 0.95);
+  margin: 40rpx 60rpx;
+  border-radius: 32rpx;
+  padding: 40rpx;
+  box-shadow: 0 16rpx 40rpx rgba(150, 127, 73, 0.15);
+  position: relative;
+  z-index: 5;
+}
+
+.preview-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.preview-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #5c5032;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.preview-subtitle {
+  font-size: 24rpx;
+  color: #7d6f4f;
+  opacity: 0.8;
+  display: block;
+}
+
+.preview-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 2rpx solid rgba(255, 236, 179, 0.5);
+}
+
+.title-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5c5032;
+}
+
+.clear-btn {
+  font-size: 24rpx;
+  color: #f44336;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.file-list, .link-list, .video-list {
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.file-item, .link-item, .video-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(255, 236, 179, 0.3);
+}
+
+.file-info, .link-info, .video-info {
+  flex: 1;
+}
+
+.file-name, .link-title, .video-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #5c5032;
+  display: block;
+  margin-bottom: 6rpx;
+}
+
+.file-size, .link-url, .video-size {
+  font-size: 22rpx;
+  color: #7d6f4f;
+  opacity: 0.7;
+  display: block;
+}
+
+.file-actions, .link-actions, .video-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.preview-btn, .delete-btn {
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.preview-btn {
+  color: #2196f3;
+  background: rgba(33, 150, 243, 0.1);
+}
+
+.delete-btn {
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.preview-btn:active, .delete-btn:active {
+  transform: scale(0.95);
+}
+
+/* 预览按钮 */
+.preview-btn-container {
+  padding: 20rpx 60rpx 40rpx;
+  position: relative;
+  z-index: 5;
+}
+
+.preview-btn {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  padding: 24rpx 60rpx;
+  border-radius: 32rpx;
+  box-shadow: 0 8rpx 24rpx rgba(33, 150, 243, 0.3);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.preview-btn:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 32rpx rgba(33, 150, 243, 0.4);
+}
+
+.preview-btn-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: white;
+}
+
+/* 提交按钮 */
+.submit-section {
+  text-align: center;
+  margin-top: 40rpx;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  padding: 24rpx 60rpx;
+  border-radius: 32rpx;
+  box-shadow: 0 8rpx 24rpx rgba(76, 175, 80, 0.3);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 32rpx rgba(76, 175, 80, 0.4);
+}
+
+.submit-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: white;
+}
+
+/* 上传进度 */
+.upload-progress {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40rpx;
+  border-radius: 24rpx;
+  z-index: 1000;
+}
+
+.progress-bar {
+  width: 400rpx;
+  height: 16rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #45a049);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: white;
+  text-align: center;
+  display: block;
+}
+
 /* 动画效果 */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -245,6 +495,27 @@ page {
 
 .function-card:nth-child(3) {
   animation: float 5s ease-in-out 2s infinite;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.function-card:nth-child(1) {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.function-card:nth-child(2) {
+  animation: pulse 3s ease-in-out 0.5s infinite;
+}
+
+.function-card:nth-child(3) {
+  animation: pulse 3s ease-in-out 1s infinite;
 }
 
 /* 响应式调整 */

@@ -17,48 +17,48 @@
   <view class="btn-container">
     <view class="function-card" bindtap="addColumn">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">新增列</text>
-          <text class="card-desc">添加新的项目列</text>
-        </view>
-        <view class="icon-circle add-icon-circle">
-          <text class="icon">➕</text>
+        <text class="card-title">新增列</text>
+        <text class="card-desc">添加新的项目列</text>
+      </view>
+      <view class="icon-circle add-icon-circle">
+        <view class="card-icon add-icon">
+          <text class="icon-text">➕</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="addProject">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">新增项目</text>
-          <text class="card-desc">添加新的项目</text>
-        </view>
-        <view class="icon-circle project-icon-circle">
-          <text class="icon">📊</text>
+        <text class="card-title">新增项目</text>
+        <text class="card-desc">添加新的项目</text>
+      </view>
+      <view class="icon-circle project-icon-circle">
+        <view class="card-icon project-icon">
+          <text class="icon-text">📊</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="modifyProject">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">修改项目</text>
-          <text class="card-desc">修改现有项目</text>
-        </view>
-        <view class="icon-circle modify-icon-circle">
-          <text class="icon">✏️</text>
+        <text class="card-title">修改项目</text>
+        <text class="card-desc">修改现有项目</text>
+      </view>
+      <view class="icon-circle modify-icon-circle">
+        <view class="card-icon modify-icon">
+          <text class="icon-text">✏️</text>
         </view>
       </view>
     </view>
 
     <view class="function-card" bindtap="deleteProject">
       <view class="card-content">
-        <view class="text-content">
-          <text class="card-title">删除项目</text>
-          <text class="card-desc">删除现有项目</text>
-        </view>
-        <view class="icon-circle delete-icon-circle">
-          <text class="icon">🗑️</text>
+        <text class="card-title">删除项目</text>
+        <text class="card-desc">删除现有项目</text>
+      </view>
+      <view class="icon-circle delete-icon-circle">
+        <view class="card-icon delete-icon">
+          <text class="icon-text">🗑️</text>
         </view>
       </view>
     </view>

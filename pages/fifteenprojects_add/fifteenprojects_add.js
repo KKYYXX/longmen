@@ -88,21 +88,38 @@ Page({
 
   // 选择文档文件
   chooseDocumentFiles(fileType) {
-    // 模拟文档选择，实际项目中需要调用原生API
-    wx.showModal({
-      title: '文档选择',
-      content: `请选择${fileType.toUpperCase()}格式的文档文件`,
+    // 使用微信的文件选择API
+    wx.chooseMessageFile({
+      count: 1,
+      type: 'file',
+      extension: fileType === 'pdf' ? ['pdf'] : 
+                 fileType === 'doc' ? ['doc', 'docx'] : 
+                 fileType === 'xlsx' ? ['xlsx', 'xls'] : ['all'],
       success: (res) => {
-        if (res.confirm) {
-          // 模拟文件数据
-          const mockFiles = [{
-            name: `文档_${Date.now()}.${fileType}`,
-            size: Math.floor(Math.random() * 5000000) + 100000,
-            tempFilePath: `/temp/documents/document.${fileType}`,
-            type: fileType
-          }];
-          this.uploadFilesToServer(mockFiles, fileType);
+        // 过滤文件类型
+        const validFiles = res.tempFiles.filter(file => {
+          const fileName = file.name.toLowerCase();
+          if (fileType === 'pdf') return fileName.endsWith('.pdf');
+          if (fileType === 'doc') return fileName.endsWith('.doc') || fileName.endsWith('.docx');
+          if (fileType === 'xlsx') return fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+          return true;
+        });
+        
+        if (validFiles.length > 0) {
+          this.uploadFilesToServer(validFiles, fileType);
+        } else {
+          wx.showToast({
+            title: `请选择${fileType.toUpperCase()}格式的文件`,
+            icon: 'none'
+          });
         }
+      },
+      fail: (err) => {
+        console.error('选择文件失败:', err);
+        wx.showToast({
+          title: '选择文件失败',
+          icon: 'none'
+        });
       }
     });
   },
@@ -123,10 +140,42 @@ Page({
       }
     }, 200);
 
-    // 调用后端接口上传文件
-    // 接口：POST /api/fifteen-projects/upload-files
+    // 开发环境：模拟上传成功
+    if (wx.getAccountInfoSync().miniProgram.envVersion === 'develop') {
+      setTimeout(() => {
+        clearInterval(progressTimer);
+        this.setData({
+          fileUploadProgress: 100,
+          isUploading: false
+        });
+
+        // 模拟上传成功
+        const uploadedFile = {
+          id: Date.now(),
+          name: files[0].name || `文件_${Date.now()}.${fileType}`,
+          url: files[0].tempFilePath,
+          type: fileType,
+          size: files[0].size || 1024 * 1024,
+          uploadTime: new Date().toISOString()
+        };
+
+        this.setData({
+          uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
+        });
+
+        wx.showToast({
+          title: '文件上传成功（开发模式）',
+          icon: 'success'
+        });
+      }, 2000);
+      return;
+    }
+
+    // 生产环境：实际上传到服务器
+    const serverUrl = 'https://your-server-domain.com/api/fifteen-projects/upload-files';
+    
     wx.uploadFile({
-      url: 'http://127.0.0.1:5000/api/fifteen-projects/upload-files',
+      url: serverUrl,
       filePath: files[0].tempFilePath,
       name: 'file',
       header: {
@@ -143,29 +192,37 @@ Page({
           isUploading: false
         });
 
-        const result = JSON.parse(res.data);
-        if (result.success) {
-          // 添加到已上传文件列表
-          const uploadedFile = {
-            id: result.fileId,
-            name: files[0].name,
-            url: result.fileUrl,
-            type: fileType,
-            size: files[0].size,
-            uploadTime: new Date().toISOString()
-          };
+        try {
+          const result = JSON.parse(res.data);
+          if (result.success) {
+            // 添加到已上传文件列表
+            const uploadedFile = {
+              id: result.fileId,
+              name: files[0].name,
+              url: result.fileUrl,
+              type: fileType,
+              size: files[0].size,
+              uploadTime: new Date().toISOString()
+            };
 
-          this.setData({
-            uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
-          });
+            this.setData({
+              uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
+            });
 
+            wx.showToast({
+              title: '文件上传成功',
+              icon: 'success'
+            });
+          } else {
+            wx.showToast({
+              title: result.message || '文件上传失败',
+              icon: 'none'
+            });
+          }
+        } catch (e) {
+          console.error('解析响应失败:', e);
           wx.showToast({
-            title: '文件上传成功',
-            icon: 'success'
-          });
-        } else {
-          wx.showToast({
-            title: result.message || '文件上传失败',
+            title: '服务器响应异常',
             icon: 'none'
           });
         }
@@ -176,8 +233,16 @@ Page({
           isUploading: false
         });
         console.error('文件上传失败:', err);
+        
+        let errorMsg = '文件上传失败';
+        if (err.errMsg.includes('timeout')) {
+          errorMsg = '上传超时，请检查网络';
+        } else if (err.errMsg.includes('fail')) {
+          errorMsg = '网络连接失败';
+        }
+        
         wx.showToast({
-          title: '文件上传失败',
+          title: errorMsg,
           icon: 'none'
         });
       }
@@ -278,13 +343,41 @@ Page({
 
   // 视频上传功能
   uploadVideos() {
-    wx.chooseMedia({
-      count: 3,
-      mediaType: ['video'],
-      sourceType: ['album', 'camera'],
-      maxDuration: 300, // 最大5分钟
+    // 显示选择来源的弹窗
+    wx.showActionSheet({
+      itemList: ['从相册选择', '从聊天记录选择', '拍摄视频'],
       success: (res) => {
-        this.uploadVideosToServer(res.tempFiles);
+        let sourceType = [];
+        switch (res.tapIndex) {
+          case 0: // 相册
+            sourceType = ['album'];
+            break;
+          case 1: // 聊天记录
+            sourceType = ['album']; // 微信会自动显示聊天记录选项
+            break;
+          case 2: // 拍摄
+            sourceType = ['camera'];
+            break;
+          default:
+            return;
+        }
+        
+        wx.chooseMedia({
+          count: 3,
+          mediaType: ['video'],
+          sourceType: sourceType,
+          maxDuration: 300, // 最大5分钟
+          success: (res) => {
+            this.uploadVideosToServer(res.tempFiles);
+          },
+          fail: (err) => {
+            console.error('选择视频失败:', err);
+            wx.showToast({
+              title: '选择视频失败',
+              icon: 'none'
+            });
+          }
+        });
       }
     });
   },

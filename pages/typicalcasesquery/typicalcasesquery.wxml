@@ -1,231 +1,103 @@
-<!-- 页面容器 -->
-<view class="typicalcases-query-container">
-  <!-- 搜索区域 -->
-  <view class="search-section">
-    <!-- 时间筛选 -->
-    <view class="filter-row">
-      <text class="filter-label">时间筛选：</text>
-      <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
-        <view class="date-picker">
-          <text>{{startDate || '开始时间'}}</text>
-        </view>
-      </picker>
-      <text class="date-separator">至</text>
-      <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
-        <view class="date-picker">
-          <text>{{endDate || '结束时间'}}</text>
-        </view>
-      </picker>
+<view class="app-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <view class="header">
+    <view class="icon-wrapper">
+      <view class="icon-circle">
+        <text class="icon">🔍</text>
+      </view>
     </view>
-    
-    <!-- 名称搜索 -->
+    <view class="title-box">
+      <text class="title">典型案例查询</text>
+      <text class="subtitle">查看已上传的典型案例</text>
+    </view>
+  </view>
+
+  <!-- 搜索区域 -->
+  <view class="search-container">
     <view class="search-box">
-      <input 
-        class="search-input" 
-        placeholder="搜索案例名称..." 
-        value="{{searchKeyword}}"
-        bindinput="onSearchInput"
-        bindconfirm="onSearch"
-      />
-      <view class="search-btn" bindtap="onSearch">
-        <text class="search-icon">🔍</text>
+      <text class="search-icon">🔍</text>
+      <input class="search-input" 
+             placeholder="搜索案例标题或内容" 
+             value="{{searchKeyword}}"
+             bindinput="onSearchInput"
+             bindconfirm="onSearch"/>
+      <text class="search-btn" bindtap="onSearch">搜索</text>
+    </view>
+  </view>
+
+  <!-- 筛选区域 -->
+  <view class="filter-container">
+    <view class="filter-tabs">
+      <view class="filter-tab {{currentFilter === 'all' ? 'active' : ''}}" 
+            bindtap="setFilter" data-filter="all">
+        <text>全部</text>
+      </view>
+      <view class="filter-tab {{currentFilter === 'files' ? 'active' : ''}}" 
+            bindtap="setFilter" data-filter="files">
+        <text>文件</text>
+      </view>
+      <view class="filter-tab {{currentFilter === 'links' ? 'active' : ''}}" 
+            bindtap="setFilter" data-filter="links">
+        <text>链接</text>
+      </view>
+      <view class="filter-tab {{currentFilter === 'videos' ? 'active' : ''}}" 
+            bindtap="setFilter" data-filter="videos">
+        <text>视频</text>
       </view>
     </view>
   </view>
 
   <!-- 案例列表 -->
-  <view class="case-list">
-    <view 
-      class="case-item {{item.expanded ? 'expanded' : ''}}" 
-      wx:for="{{caseList}}" 
-      wx:key="id"
-      bindtap="onCaseTap"
-      data-index="{{index}}"
-    >
-      <!-- 案例头部 -->
+  <view class="cases-container">
+    <view class="case-item" wx:for="{{filteredCases}}" wx:key="id" bindtap="previewCase" data-case="{{item}}">
       <view class="case-header">
-        <view class="case-info">
-          <view class="case-icon">📋</view>
-          <view class="case-details">
-            <view class="case-name">{{item.title}}</view>
-            <view class="case-meta">
-              <text class="case-category">{{item.category}}</text>
-              <text class="case-date">{{item.createDate}}</text>
-            </view>
-            <view class="case-summary">{{item.summary}}</view>
-          </view>
+        <view class="case-title">
+          <text class="title-text">{{item.title}}</text>
+          <text class="case-type">{{item.type}}</text>
         </view>
-        <view class="case-actions">
-          <view class="expand-icon {{item.expanded ? 'expanded' : ''}}">▼</view>
+        <view class="case-time">
+          <text class="time-text">{{item.uploadTime}}</text>
         </view>
       </view>
-
-      <!-- 案例详情（展开时显示） -->
-      <view class="case-content" wx:if="{{item.expanded}}">
-        <view class="case-description">
-          <text class="content-label">详细内容：</text>
-          <text class="content-text">{{item.content}}</text>
+      
+      <view class="case-content">
+        <text class="content-text">{{item.description}}</text>
+      </view>
+      
+      <view class="case-stats">
+        <view class="stat-item">
+          <text class="stat-icon">📄</text>
+          <text class="stat-text">{{item.fileCount}}个文件</text>
         </view>
-
-        <view class="case-achievements">
-          <text class="content-label">主要成效：</text>
-          <text class="content-text">{{item.achievements}}</text>
+        <view class="stat-item">
+          <text class="stat-icon">🔗</text>
+          <text class="stat-text">{{item.linkCount}}个链接</text>
         </view>
-
-        <view class="case-experience">
-          <text class="content-label">经验总结：</text>
-          <text class="content-text">{{item.experience}}</text>
+        <view class="stat-item">
+          <text class="stat-icon">🎥</text>
+          <text class="stat-text">{{item.videoCount}}个视频</text>
         </view>
-
-        <!-- 图片展示 -->
-        <view class="media-section" wx:if="{{item.images && item.images.length > 0}}">
-          <text class="content-label">相关图片：</text>
-          <view class="image-list">
-            <view
-              class="image-item"
-              wx:for="{{item.images}}"
-              wx:key="name"
-              wx:for-item="img"
-            >
-              <image
-                class="case-image"
-                src="{{img.url}}"
-                mode="aspectFill"
-                bindtap="previewImage"
-                data-src="{{img.url}}"
-                data-urls="{{item.images}}"
-              />
-              <text class="image-name">{{img.name}}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 视频展示 -->
-        <view class="media-section" wx:if="{{item.videos && item.videos.length > 0}}">
-          <text class="content-label">相关视频：</text>
-          <view class="video-list">
-            <view
-              class="video-item"
-              wx:for="{{item.videos}}"
-              wx:key="name"
-              wx:for-item="video"
-            >
-              <video
-                class="case-video"
-                src="{{video.url}}"
-                controls
-                poster="{{video.poster || ''}}"
-              />
-              <text class="video-name">{{video.name}}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 相关链接 -->
-        <view class="media-section" wx:if="{{item.links && item.links.length > 0}}">
-          <text class="content-label">相关链接：</text>
-          <view class="link-list">
-            <view
-              class="link-item"
-              wx:for="{{item.links}}"
-              wx:key="name"
-              wx:for-item="link"
-              bindtap="openLink"
-              data-url="{{link.url}}"
-            >
-              <text class="link-icon">🔗</text>
-              <text class="link-name">{{link.name}}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 项目报告 -->
-        <view class="media-section" wx:if="{{item.reports && item.reports.length > 0}}">
-          <text class="content-label">项目报告：</text>
-          <view class="report-list">
-            <view
-              class="report-item"
-              wx:for="{{item.reports}}"
-              wx:key="name"
-              wx:for-item="report"
-              bindtap="downloadReport"
-              data-url="{{report.url}}"
-              data-name="{{report.name}}"
-            >
-              <text class="report-icon">📄</text>
-              <text class="report-name">{{report.name}}</text>
-              <text class="download-icon">⬇️</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 标签和联系信息 -->
-        <view class="case-footer">
-          <view class="tags-section" wx:if="{{item.tags && item.tags.length > 0}}">
-            <text class="content-label">标签：</text>
-            <view class="tag-list">
-              <text
-                class="tag-item"
-                wx:for="{{item.tags}}"
-                wx:key="*this"
-              >{{item}}</text>
-            </view>
-          </view>
-
-          <view class="contact-info">
-            <text class="content-label">联系方式：</text>
-            <text class="contact-text">{{item.contact}}</text>
-          </view>
-        </view>
-
-        <!-- 文件展示 -->
-        <view class="media-section" wx:if="{{item.files && item.files.length > 0}}">
-          <text class="content-label">相关文件：</text>
-          <view class="file-list">
-            <view 
-              class="file-item" 
-              wx:for="{{item.files}}" 
-              wx:key="fileName"
-              bindtap="downloadFile"
-              data-file="{{item}}"
-            >
-              <text class="file-icon">📄</text>
-              <text class="file-name">{{item.fileName}}</text>
-              <text class="file-size">{{item.fileSize}}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 进度详情 -->
-        <view class="progress-section">
-          <text class="content-label">项目进度：</text>
-          <view class="progress-bar">
-            <view class="progress-fill" style="width: {{item.progress}}%"></view>
-          </view>
-          <text class="progress-text">{{item.progress}}% 完成</text>
-        </view>
+      </view>
+      
+      <view class="case-actions">
+        <text class="action-btn preview-btn" bindtap="previewCase" data-case="{{item}}">预览</text>
+        <text class="action-btn download-btn" bindtap="downloadCase" data-case="{{item}}">下载</text>
+        <text class="action-btn share-btn" bindtap="shareCase" data-case="{{item}}">分享</text>
       </view>
     </view>
   </view>
 
-  <!-- 加载更多 -->
-  <view class="load-more" wx:if="{{hasMore && !loading}}" bindtap="loadMore">
-    <text>加载更多</text>
-  </view>
-
-  <!-- 加载中 -->
-  <view class="loading" wx:if="{{loading}}">
-    <text>加载中...</text>
-  </view>
-
-  <!-- 没有更多数据 -->
-  <view class="no-more" wx:if="{{!hasMore && caseList.length > 0}}">
-    <text>没有更多数据了</text>
-  </view>
-
   <!-- 空状态 -->
-  <view class="empty-state" wx:if="{{caseList.length === 0 && !loading}}">
-    <text class="empty-icon">📋</text>
-    <text class="empty-text">暂无典型案例数据</text>
+  <view class="empty-state" wx:if="{{filteredCases.length === 0}}">
+    <text class="empty-icon">📭</text>
+    <text class="empty-title">暂无案例</text>
+    <text class="empty-desc">还没有上传任何典型案例</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore && filteredCases.length > 0}}">
+    <text class="load-more-btn" bindtap="loadMore">加载更多</text>
   </view>
 </view>
