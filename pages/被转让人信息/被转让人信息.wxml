@@ -21,18 +21,15 @@
       </view>
 
       <view class="info-item">
-        <text class="info-label">密码：</text>
-        <view class="password-container">
-          <input class="info-input password-input" placeholder="请输入密码，不少于6位" value="{{transfereeInfo.password}}" bindinput="onPasswordInput" password="{{!showPassword}}" />
-          <view class="password-toggle" bindtap="togglePassword">
-            <text class="toggle-icon">{{showPassword ? '🙈' : '👁️'}}</text>
-          </view>
+        <text class="info-label">微信号：</text>
+        <view class="wechat-container">
+          <input class="info-input wechat-input" placeholder="请输入微信号" value="{{transfereeInfo.wechat}}" bindinput="onWechatInput" />
         </view>
       </view>
 
-      <!-- 密码要求提示 -->
-      <view class="password-hint">
-        <text class="hint-text">密码要求：不少于6位字符</text>
+      <!-- 微信号要求提示 -->
+      <view class="wechat-hint">
+        <text class="hint-text">请输入正确的信息</text>
       </view>
     </view>
 

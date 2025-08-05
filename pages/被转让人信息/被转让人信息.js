@@ -8,9 +8,8 @@ Page({
     transfereeInfo: {
       name: '',
       phone: '',
-      password: ''
+      wechat: ''
     },
-    showPassword: false,
     isFormValid: false
   },
 
@@ -35,54 +34,42 @@ Page({
   },
 
   /**
-   * 密码输入事件
+   * 微信号输入事件
    */
-  onPasswordInput(e) {
+  onWechatInput(e) {
     this.setData({
-      'transfereeInfo.password': e.detail.value
+      'transfereeInfo.wechat': e.detail.value
     });
     this.validateForm();
   },
 
   /**
-   * 切换密码显示/隐藏
+   * 验证微信号格式
    */
-  togglePassword() {
-    this.setData({
-      showPassword: !this.data.showPassword
-    });
-    console.log('密码显示状态:', this.data.showPassword ? '显示' : '隐藏');
-  },
-
-  /**
-   * 验证密码格式
-   */
-  validatePassword(password) {
-    // 临时简化密码验证，用于测试
-    // 原要求：大小写字母和数字相结合，不少于8位
-    // 临时要求：不少于6位即可
-    const isLengthValid = password && password.length >= 6;
+  validateWechat(wechat) {
+    // 验证微信号不为空
+    const isValid = wechat && wechat.trim().length > 0;
     
-    console.log('密码验证详情:', {
-      password: password,
-      passwordLength: password ? password.length : 0,
-      isLengthValid,
-      isValid: isLengthValid
+    console.log('微信号验证详情:', {
+      wechat: wechat,
+      wechatLength: wechat ? wechat.length : 0,
+      isValid: isValid
     });
 
-    return isLengthValid;
+    return isValid;
   },
 
   /**
    * 验证表单
    */
   validateForm() {
-    const { name, phone, password } = this.data.transfereeInfo;
+    const { name, phone, wechat } = this.data.transfereeInfo;
     const isNameValid = name && name.trim().length > 0;
-    const isPhoneValid = phone && /^1[3-9]\d{9}$/.test(phone);
-    const isPasswordValid = this.validatePassword(password);
+    // 放宽手机号验证，只要不为空且长度合理即可
+    const isPhoneValid = phone && phone.trim().length >= 10;
+    const isWechatValid = this.validateWechat(wechat);
 
-    const isFormValid = isNameValid && isPhoneValid && isPasswordValid;
+    const isFormValid = isNameValid && isPhoneValid && isWechatValid;
 
     this.setData({
       isFormValid: isFormValid
@@ -91,14 +78,14 @@ Page({
     console.log('表单验证结果:', {
       name: name,
       phone: phone,
-      password: password,
+      wechat: wechat,
       isNameValid,
       isPhoneValid,
-      isPasswordValid,
+      isWechatValid,
       isFormValid,
       nameLength: name ? name.trim().length : 0,
-      phonePattern: phone ? /^1[3-9]\d{9}$/.test(phone) : false,
-      passwordLength: password ? password.length : 0
+      phoneLength: phone ? phone.trim().length : 0,
+      wechatLength: wechat ? wechat.length : 0
     });
   },
 
@@ -115,12 +102,12 @@ Page({
       return;
     }
 
-    const { name, phone, password } = this.data.transfereeInfo;
+    const { name, phone, wechat } = this.data.transfereeInfo;
 
-    // 再次验证密码
-    if (!this.validatePassword(password)) {
+    // 再次验证微信号
+    if (!this.validateWechat(wechat)) {
       wx.showToast({
-        title: '密码格式不正确',
+        title: '微信号格式不正确',
         icon: 'none',
         duration: 2000
       });
@@ -136,7 +123,7 @@ Page({
       success: (res) => {
         if (res.confirm) {
           // 调用后端validate接口进行转让验证
-          this.callValidateAPI(name, phone, password);
+          this.callValidateAPI(name, phone, wechat);
         }
       }
     });
@@ -145,7 +132,7 @@ Page({
   /**
    * 调用后端validate接口
    */
-  callValidateAPI(name, phone, password) {
+  callValidateAPI(name, phone, wechat) {
     wx.showLoading({
       title: '验证中...',
       mask: true
@@ -161,11 +148,12 @@ Page({
       data: {
         name: name,
         phone: phone,
-        password: password
+        wx_openid: wechat
       },
       success: (res) => {
         wx.hideLoading();
         console.log('validate接口响应:', res);
+        console.log('发送的数据:', { name, phone, wechat });
 
         if (res.statusCode === 200) {
           // 转让成功
@@ -175,12 +163,12 @@ Page({
           // 更新全局用户信息
           const app = getApp();
           console.log('=== 转让成功，开始更新用户信息 ===');
-          console.log('被转让人信息:', { name, phone, password });
+          console.log('被转让人信息:', { name, phone, wechat });
 
           app.updateUserInfo({
             name: userInfo.name,
             phone: userInfo.phone,
-            password: password
+            wechat: wechat
           });
 
           console.log('=== 用户信息更新完成 ===');
