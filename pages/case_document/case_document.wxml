@@ -1,0 +1,139 @@
+<view class="document-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <!-- 头部导航 -->
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="title-box">
+      <text class="title">{{caseData.caseName || caseData.title}}</text>
+      <text class="subtitle">{{caseData.category || '典型案例'}}</text>
+    </view>
+    <view class="share-btn" bindtap="shareCase">
+      <text class="share-icon">⋯</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 文档内容 -->
+  <view class="document-content" wx:if="{{!loading && caseData}}">
+    <!-- 案例基本信息 -->
+    <view class="case-info-card">
+      <view class="case-header">
+        <text class="case-title">{{caseData.caseName || caseData.title}}</text>
+        <text class="case-time">{{caseData.uploadTime || caseData.createDate}}</text>
+      </view>
+      
+      <view class="case-description">
+        <text class="description-label">案例描述：</text>
+        <text class="description-text">{{caseData.description || caseData.summary}}</text>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="case-stats">
+        <view class="stat-item">
+          <text class="stat-icon">📄</text>
+          <text class="stat-text">{{fileCount}}个文件</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-icon">🎥</text>
+          <text class="stat-text">{{videoCount}}个视频</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-icon">🔗</text>
+          <text class="stat-text">{{linkCount}}个链接</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 详细内容展示 -->
+    <view class="content-sections">
+      <!-- 详细描述 -->
+      <view class="content-section">
+        <text class="section-title">详细内容：</text>
+        <view class="content-detail">
+          <text class="detail-text">{{detailContent}}</text>
+        </view>
+      </view>
+
+      <!-- 上传文件 -->
+      <view class="content-section" wx:if="{{caseData.files && caseData.files.length > 0}}">
+        <text class="section-title">📄 上传文件：</text>
+        <view class="files-container">
+          <view class="file-item" wx:for="{{caseData.files}}" wx:key="index">
+            <view class="file-info">
+              <view class="file-icon">
+                <text class="icon">📄</text>
+              </view>
+              <view class="file-details">
+                <text class="file-name">{{item.name}}</text>
+                <text class="file-size">{{item.sizeFormatted || item.size}}</text>
+              </view>
+            </view>
+            <view class="file-actions">
+              <text class="action-btn preview-btn" bindtap="previewFile" data-file="{{item}}">预览</text>
+              <text class="action-btn download-btn" bindtap="downloadFile" data-file="{{item}}">下载</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 相关视频 -->
+      <view class="content-section" wx:if="{{caseData.videos && caseData.videos.length > 0}}">
+        <text class="section-title">🎥 相关视频：</text>
+        <view class="videos-container">
+          <view class="video-item" wx:for="{{caseData.videos}}" wx:key="index">
+            <view class="video-info">
+              <view class="video-icon">
+                <text class="icon">🎥</text>
+              </view>
+              <view class="video-details">
+                <text class="video-name">{{item.name}}</text>
+                <text class="video-duration" wx:if="{{item.duration}}">时长：{{item.duration}}</text>
+              </view>
+            </view>
+            <view class="video-actions">
+              <text class="action-btn play-btn" bindtap="playVideo" data-video="{{item}}">播放</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 新闻链接 -->
+      <view class="content-section" wx:if="{{caseData.links && caseData.links.length > 0}}">
+        <text class="section-title">🔗 相关新闻：</text>
+        <view class="links-container">
+          <view class="link-item" wx:for="{{caseData.links}}" wx:key="index">
+            <view class="link-info">
+              <view class="link-icon">
+                <text class="icon">🔗</text>
+              </view>
+              <view class="link-details">
+                <text class="link-title">{{item.title}}</text>
+                <text class="link-url">{{item.url}}</text>
+              </view>
+            </view>
+            <view class="link-actions">
+              <text class="action-btn open-btn" bindtap="openLink" data-link="{{item}}">打开</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:if="{{!loading && !caseData}}">
+    <text class="error-icon">❌</text>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">无法获取案例详情，请重试</text>
+    <text class="retry-btn" bindtap="loadCaseDetail">重新加载</text>
+  </view>
+</view>
