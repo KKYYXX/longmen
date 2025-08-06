@@ -8,16 +8,18 @@
     "pages/zcalter/zcalter",
     "pages/zcalter_add/zcalter_add",
     "pages/zcalter_delete/zcalter_delete",
-    "pages/zcquery_detail/zcaquery_detail",
+
     "pages/typicalcases/typicalcases",
     "pages/typicalcasesquery/typicalcasesquery",
     "pages/typicalcasesquery/typicalcasesquery_detail",
+    "pages/case_document/case_document",
     "pages/video-player/video-player",
     "pages/typicalcasesalter/typicalcasesalter",
     "pages/typicalcases_add/typicalcases_add",
     "pages/typicalcases_delete/typicalcases_delete",
     "pages/fifteenprojects/fifteenprojects",
     "pages/fifteenprojectsquery/fifteenprojectsquery",
+    "pages/project_progress/project_progress",
     "pages/fifteenprojectsalter/fifteenprojectsalter",
     "pages/fifteenprojects_add/fifteenprojects_add",
     "pages/fifteenprojects_add_column/fifteenprojects_add_column",
@@ -36,11 +38,10 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#f9e286",
-    "navigationBarTitleText": "个人登录系统",
+    "navigationBarTitleText": "典型案例管理系统",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#fffbe6",
-    "enablePullDownRefresh": false,
-    "disableScroll": false
+    "enablePullDownRefresh": false
   },
   "tabBar": {
     "color": "#7A7E83",
@@ -64,4 +65,8 @@
     ]
   },
   "sitemapLocation": "sitemap.json"
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7f764f1df779936fae6ea95f849dbdfe90f50ba4

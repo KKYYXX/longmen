@@ -898,14 +898,51 @@ Page({
       title: '提交中...'
     });
 
-    // 开发环境：模拟提交成功
+    // 开发环境：保存到本地存储并模拟提交成功
     if (apiConfig.isMockEnabled()) {
       setTimeout(() => {
+        // 构建案例数据对象
+        const newCase = {
+          id: Date.now(), // 使用时间戳作为ID，确保大于2000
+          caseName: this.data.caseName,
+          title: this.data.caseName,
+          uploadTime: new Date().toLocaleString(),
+          createDate: new Date().toISOString().split('T')[0],
+          description: `用户上传的典型案例：${this.data.caseName}`,
+          summary: `用户上传的典型案例：${this.data.caseName}`,
+          author: '当前用户',
+          contact: '用户联系方式',
+          files: this.data.uploadedFiles.map(file => ({
+            name: file.name,
+            size: file.size,
+            sizeFormatted: file.sizeFormatted || this.formatFileSize(file.size)
+          })),
+          videos: this.data.uploadedVideos.map(video => ({
+            name: video.name,
+            duration: video.duration || '未知时长'
+          })),
+          links: this.data.newsLinks.map(link => ({
+            title: link.title,
+            url: link.url
+          })),
+          fileCount: this.data.uploadedFiles.length,
+          videoCount: this.data.uploadedVideos.length,
+          linkCount: this.data.newsLinks.length
+        };
+
+        // 保存到本地存储
+        const storedCases = wx.getStorageSync('typicalCases') || [];
+        storedCases.push(newCase);
+        wx.setStorageSync('typicalCases', storedCases);
+
+        // 通知其他页面数据已更新
+        wx.setStorageSync('caseListNeedRefresh', true);
+
         wx.hideLoading();
         const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
         wx.showModal({
           title: '🎉 提交成功（开发模式）',
-          content: `典型案例"${this.data.caseName}"已成功提交！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n（开发模式下为模拟提交）`,
+          content: `典型案例"${this.data.caseName}"已成功提交！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n案例已保存到本地存储`,
           showCancel: false,
           confirmText: '完成',
           success: () => {
@@ -1051,5 +1088,14 @@ Page({
     } else {
       wx.navigateBack();
     }
+  },
+
+  // 格式化文件大小
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
-}); 
+});

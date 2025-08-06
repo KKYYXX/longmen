@@ -93,10 +93,118 @@ Page({
     const index = e.currentTarget.dataset.index;
     const file = this.data.fileList[index];
     
-    // 跳转到文件详情页面
-    wx.navigateTo({
-      url: `/pages/zcquery_detail/zcquery_detail?file_name=${encodeURIComponent(file.fileName)}&file_url=${encodeURIComponent(file.fileUrl)}`
-    });
+    // 直接预览文件内容
+    this.previewFile(file);
+  },
+
+  // 预览文件内容
+  previewFile(file) {
+    const fileUrl = file.fileUrl;
+    const fileName = file.fileName;
+    
+    // 判断是否为本地文件
+    const isLocalFile = fileUrl.startsWith('D:\\') || fileUrl.startsWith('C:\\') || fileUrl.startsWith('/');
+    
+    if (isLocalFile) {
+      // 本地文件，显示提示
+      wx.showModal({
+        title: '本地文件',
+        content: '此文件存储在本地计算机上，无法直接预览。',
+        showCancel: false,
+        confirmText: '确定'
+      });
+    } else {
+      // 网络文件，尝试预览
+      wx.showLoading({
+        title: '加载中...'
+      });
+      
+      // 根据文件类型选择不同的预览方式
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      
+      if (fileExtension === 'pdf') {
+        // PDF文件直接使用微信预览
+        wx.hideLoading();
+        wx.downloadFile({
+          url: fileUrl,
+          success: (res) => {
+            if (res.statusCode === 200) {
+              wx.openDocument({
+                filePath: res.tempFilePath,
+                success: () => {
+                  console.log('PDF文件打开成功');
+                },
+                fail: (err) => {
+                  console.log('PDF文件打开失败', err);
+                  wx.showToast({
+                    title: '文件打开失败',
+                    icon: 'none'
+                  });
+                }
+              });
+            } else {
+              wx.showToast({
+                title: '文件下载失败',
+                icon: 'none'
+              });
+            }
+          },
+          fail: (err) => {
+            wx.hideLoading();
+            console.log('下载失败', err);
+            wx.showToast({
+              title: '文件访问失败',
+              icon: 'none'
+            });
+          }
+        });
+      } else if (['doc', 'docx'].includes(fileExtension)) {
+        // Word文档
+        wx.hideLoading();
+        wx.downloadFile({
+          url: fileUrl,
+          success: (res) => {
+            if (res.statusCode === 200) {
+              wx.openDocument({
+                filePath: res.tempFilePath,
+                success: () => {
+                  console.log('Word文档打开成功');
+                },
+                fail: (err) => {
+                  console.log('Word文档打开失败', err);
+                  wx.showToast({
+                    title: '文件打开失败',
+                    icon: 'none'
+                  });
+                }
+              });
+            } else {
+              wx.showToast({
+                title: '文件下载失败',
+                icon: 'none'
+              });
+            }
+          },
+          fail: (err) => {
+            wx.hideLoading();
+            console.log('下载失败', err);
+            wx.showToast({
+              title: '文件访问失败',
+              icon: 'none'
+            });
+          }
+        });
+      } else {
+        // 其他文件类型
+        wx.hideLoading();
+        wx.showModal({
+          title: '文件预览',
+          content: '暂不支持此文件类型的预览，请下载后查看。',
+          showCancel: false,
+          confirmText: '确定'
+        });
+      }
+    }
   },
 
   // 刷新数据

@@ -1,5 +1,7 @@
 {
-  "navigationBarTitleText": "典型案例删改",
+  "navigationBarTitleText": "典型案例修改",
   "navigationBarBackgroundColor": "#f9e286",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
 }
