@@ -19,7 +19,7 @@ Page({
     // 调用后端接口获取案例列表
     // 接口：GET /api/typical-cases/list
     wx.request({
-      url: 'http://127.0.0.1:5000/api/typical-cases/list',
+      url: 'http://127.0.0.1:5000/app/api/typical-cases/list',
       method: 'GET',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
