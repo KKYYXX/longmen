@@ -56,14 +56,23 @@
         </view>
       </view>
 
-      <!-- 登录按钮 -->
-      <button
-        class="submit-btn {{isLoginFormValid ? 'active' : 'disabled'}}"
-        bindtap="onLogin"
-        disabled="{{!isLoginFormValid}}"
-      >
-        登录
-      </button>
+      <!-- 登录按钮组 -->
+      <view class="login-buttons">
+        <button
+          class="login-btn normal-login {{isLoginFormValid ? 'active' : 'disabled'}}"
+          bindtap="onNormalLogin"
+          disabled="{{!isLoginFormValid}}"
+        >
+          普通登录
+        </button>
+        <button
+          class="login-btn admin-login {{isLoginFormValid ? 'active' : 'disabled'}}"
+          bindtap="onAdminLogin"
+          disabled="{{!isLoginFormValid}}"
+        >
+          权限管理登录
+        </button>
+      </view>
     </view>
 
     <!-- 微信登录表单 -->
@@ -100,14 +109,23 @@
         </view>
       </view>
 
-      <!-- 登录按钮 -->
-      <button
-        class="submit-btn {{isLoginFormValid ? 'active' : 'disabled'}}"
-        bindtap="onLogin"
-        disabled="{{!isLoginFormValid}}"
-      >
-        登录
-      </button>
+      <!-- 登录按钮组 -->
+      <view class="login-buttons">
+        <button
+          class="login-btn normal-login {{isLoginFormValid ? 'active' : 'disabled'}}"
+          bindtap="onNormalLogin"
+          disabled="{{!isLoginFormValid}}"
+        >
+          普通登录
+        </button>
+        <button
+          class="login-btn admin-login {{isLoginFormValid ? 'active' : 'disabled'}}"
+          bindtap="onAdminLogin"
+          disabled="{{!isLoginFormValid}}"
+        >
+          权限管理登录
+        </button>
+      </view>
     </view>
   </view>
 
@@ -211,4 +229,6 @@
   <view class="error-message" wx:if="{{errorMessage}}">
     <text class="error-text">{{errorMessage}}</text>
   </view>
+
+
 </view>

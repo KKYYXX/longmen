@@ -6,12 +6,17 @@
   background: #ffffff;
   padding: 60rpx 40rpx 120rpx 40rpx;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 /* 页面头部 */
 .header {
   text-align: center;
   margin-bottom: 80rpx;
+  width: 100%;
 }
 
 .title {
@@ -21,14 +26,17 @@
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
   letter-spacing: 2rpx;
   margin-bottom: 20rpx;
+  display: block;
 }
 
 /* 内容区域 */
 .content {
-  background: #ffffff;
+  background: #f7f3e9;
   border-radius: 20rpx;
   box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.12);
   padding: 60rpx 40rpx;
+  width: 100%;
+  max-width: 600rpx;
   display: flex;
   flex-direction: column;
   gap: 32rpx;
@@ -52,6 +60,7 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  margin-bottom: 0;
 }
 
 /* 按钮悬停效果 */
@@ -85,4 +94,7 @@
 .btn text {
   position: relative;
   z-index: 2;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2d3748;
 }

@@ -1,4 +1,6 @@
 // pages/personal/personal.js
+
+
 Page({
 
   /**
@@ -106,7 +108,7 @@ Page({
       name: userData.name,
       phone: userData.phone,
       wechat: userData.wechat,
-      password: userData.password,
+      password: userData.password, // 直接存储密码
       registerTime: new Date().toISOString()
     };
     
@@ -355,9 +357,6 @@ Page({
   /**
    * 注册处理
    */
-  /**
-   * 注册处理（联调后端接口）
-   */
   onRegister() {
     if (!this.data.isRegisterFormValid) {
       return;
@@ -425,11 +424,10 @@ Page({
     console.log('注册成功：', result.user);
   },
 
-
   /**
-   * 登录处理
+   * 普通登录处理
    */
-  onLogin() {
+  onNormalLogin() {
     if (!this.data.isLoginFormValid) {
       return;
     }
@@ -470,8 +468,8 @@ Page({
         return;
       }
 
-      // 登录成功
-      this.handleLoginSuccess(user);
+      // 普通登录成功
+      this.handleNormalLoginSuccess(user);
     } else {
       // 微信登录验证
       const { wechat, password } = loginForm;
@@ -500,22 +498,129 @@ Page({
         return;
       }
 
-      // 登录成功
-      this.handleLoginSuccess(user);
+      // 普通登录成功
+      this.handleNormalLoginSuccess(user);
     }
   },
 
   /**
-   * 处理登录成功
+   * 权限管理登录处理
    */
-  handleLoginSuccess(user) {
+  onAdminLogin() {
+    if (!this.data.isLoginFormValid) {
+      return;
+    }
+
+    const { loginType, loginForm } = this.data;
+
+    if (loginType === 'phone') {
+      // 手机号登录验证
+      const { phone, password } = loginForm;
+      
+      if (!phone.trim()) {
+        this.setData({ errorMessage: '请输入手机号码' });
+        return;
+      }
+
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      if (!phoneRegex.test(phone)) {
+        this.setData({ errorMessage: '请输入正确的手机号码' });
+        return;
+      }
+
+      if (!password.trim()) {
+        this.setData({ errorMessage: '请输入密码' });
+        return;
+      }
+
+      // 检查用户是否已注册
+      const existingUser = this.checkUserExists(phone, 'phone');
+      if (!existingUser) {
+        this.setData({ errorMessage: '该手机号未注册，请先注册' });
+        return;
+      }
+
+      // 验证登录信息
+      const user = this.validateUserLogin(phone, password, 'phone');
+      if (!user) {
+        this.setData({ errorMessage: '手机号或密码错误' });
+        return;
+      }
+
+      // 权限管理登录成功
+      this.handleAdminLoginSuccess(user);
+    } else {
+      // 微信登录验证
+      const { wechat, password } = loginForm;
+      
+      if (!wechat.trim()) {
+        this.setData({ errorMessage: '请输入微信号' });
+        return;
+      }
+
+      if (!password.trim()) {
+        this.setData({ errorMessage: '请输入密码' });
+        return;
+      }
+
+      // 检查用户是否已注册
+      const existingUser = this.checkUserExists(wechat, 'wechat');
+      if (!existingUser) {
+        this.setData({ errorMessage: '该微信号未注册，请先注册' });
+        return;
+      }
+
+      // 验证登录信息
+      const user = this.validateUserLogin(wechat, password, 'wechat');
+      if (!user) {
+        this.setData({ errorMessage: '微信号或密码错误' });
+        return;
+      }
+
+      // 权限管理登录成功
+      this.handleAdminLoginSuccess(user);
+    }
+  },
+
+  /**
+   * 处理普通登录成功
+   */
+  handleNormalLoginSuccess(user) {
     // 存储用户信息和登录状态
     wx.setStorageSync('userInfo', user);
     wx.setStorageSync('isLoggedIn', true);
+    wx.setStorageSync('loginType', 'normal');
 
-    // 登录成功处理
+    // 普通登录成功处理
     wx.showToast({
-      title: '登录成功',
+      title: '普通登录成功',
+      icon: 'success',
+      duration: 1500,
+      success: () => {
+        // 延迟跳转到首页
+        setTimeout(() => {
+          wx.switchTab({
+            url: '/pages/index/index'
+          });
+        }, 1500);
+      }
+    });
+
+    console.log('普通登录成功：', user);
+  },
+
+  /**
+   * 处理权限管理登录成功
+   */
+  handleAdminLoginSuccess(user) {
+    // 存储用户信息和登录状态
+    wx.setStorageSync('userInfo', user);
+    wx.setStorageSync('isLoggedIn', true);
+    wx.setStorageSync('loginType', 'admin');
+
+    // 权限管理登录成功处理
+    wx.showToast({
+      title: '权限管理登录成功',
       icon: 'success',
       duration: 1500,
       success: () => {
@@ -528,7 +633,7 @@ Page({
       }
     });
 
-    console.log('登录成功：', user);
+    console.log('权限管理登录成功：', user);
   },
 
   /**

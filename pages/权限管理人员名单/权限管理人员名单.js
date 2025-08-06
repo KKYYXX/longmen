@@ -2,7 +2,23 @@
 Page({
   data: {},
 
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+    console.log('=== 权限管理人员名单页面加载 ===');
+    console.log('页面参数:', options);
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+    console.log('=== 权限管理人员名单页面显示 ===');
+  },
+
   onProjectQuery() {
+    console.log('点击项目查询权限人员按钮');
     // 跳转到项目查询权限人员页面
     wx.navigateTo({
       url: '/pages/项目查询权限人员/项目查询权限人员',
@@ -21,6 +37,7 @@ Page({
   },
 
   onProjectModify() {
+    console.log('点击项目修改权限人员按钮');
     // 跳转到项目修改权限人员页面
     wx.navigateTo({
       url: '/pages/项目修改权限人员/项目修改权限人员',
@@ -39,6 +56,7 @@ Page({
   },
 
   onPolicyModify() {
+    console.log('点击政策文件修改权限人员按钮');
     // 跳转到政策文件修改权限人员页面
     wx.navigateTo({
       url: '/pages/政策文件修改权限人员/政策文件修改权限人员',
@@ -57,6 +75,7 @@ Page({
   },
 
   onCaseModify() {
+    console.log('点击典型案例修改权限人员按钮');
     // 跳转到典型案例修改权限人员页面
     wx.navigateTo({
       url: '/pages/典型案例修改权限人员/典型案例修改权限人员',
@@ -75,6 +94,7 @@ Page({
   },
 
   onProgressModify() {
+    console.log('点击项目进度修改权限人员按钮');
     // 跳转到项目进度修改权限人员页面
     wx.navigateTo({
       url: '/pages/项目进度修改权限人员/项目进度修改权限人员',

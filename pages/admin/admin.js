@@ -16,7 +16,26 @@ Page({
    */
   onLoad(options) {
     console.log('=== admin页面加载 ===');
+    console.log('权限管理中心页面加载', options);
+    
+    // 接收登录传递的用户信息
+    if (options.name && options.phone) {
+      this.setData({
+        'userInfo.name': decodeURIComponent(options.name),
+        'userInfo.phone': options.phone
+      });
+    }
+    
     this.loadUserInfo();
+
+    // 显示欢迎信息
+    if (options.name) {
+      wx.showToast({
+        title: `欢迎 ${decodeURIComponent(options.name)}`,
+        icon: 'none',
+        duration: 2000
+      });
+    }
   },
 
   /**
@@ -105,39 +124,9 @@ Page({
   },
 
   /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-    // 接收登录传递的用户信息
-    if (options.name && options.phone) {
-      this.setData({
-        'userInfo.name': decodeURIComponent(options.name),
-        'userInfo.phone': options.phone
-      });
-    }
-    console.log('权限管理中心页面加载', options);
-
-    // 显示欢迎信息
-    if (options.name) {
-      wx.showToast({
-        title: `欢迎 ${decodeURIComponent(options.name)}`,
-        icon: 'none',
-        duration: 2000
-      });
-    }
-  },
-
-  /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
 
   },
 

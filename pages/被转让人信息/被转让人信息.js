@@ -10,6 +10,7 @@ Page({
       phone: '',
       wechat: ''
     },
+    currentManagerPhone: '', // 当前负责人手机号
     isFormValid: false
   },
 
@@ -103,6 +104,7 @@ Page({
     }
 
     const { name, phone, wechat } = this.data.transfereeInfo;
+    const currentPhone = this.data.currentManagerPhone;
 
     // 再次验证微信号
     if (!this.validateWechat(wechat)) {
@@ -122,25 +124,32 @@ Page({
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
-          // 调用后端validate接口进行转让验证
-          this.callValidateAPI(name, phone, wechat);
+          // 调用后端transfer_principal接口进行转让
+          this.callTransferAPI(name, phone, wechat, currentPhone);
         }
       }
     });
   },
 
   /**
-   * 调用后端validate接口
+   * 调用后端transfer_principal接口
    */
-  callValidateAPI(name, phone, wechat) {
+  callTransferAPI(name, phone, wechat, currentPhone) {
     wx.showLoading({
-      title: '验证中...',
+      title: '转让中...',
       mask: true
     });
 
-    // 调用后端 /user/validate 接口
+    console.log('调用转让接口，参数:', {
+      name: name,
+      phone: phone,
+      wx_openid: wechat,
+      current_phone: currentPhone
+    });
+
+    // 调用后端 /user/transfer_principal 接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/validate',
+      url: 'http://127.0.0.1:5000/user/transfer_principal',
       method: 'POST',
       header: {
         'content-type': 'application/x-www-form-urlencoded'
@@ -148,30 +157,17 @@ Page({
       data: {
         name: name,
         phone: phone,
-        wx_openid: wechat
+        wx_openid: wechat,
+        current_phone: currentPhone
       },
       success: (res) => {
         wx.hideLoading();
-        console.log('validate接口响应:', res);
-        console.log('发送的数据:', { name, phone, wechat });
+        console.log('transfer_principal接口响应:', res);
+        console.log('发送的数据:', { name, phone, wechat, currentPhone });
 
         if (res.statusCode === 200) {
           // 转让成功
-          const userInfo = res.data;
-          console.log('转让成功，用户信息:', userInfo);
-
-          // 更新全局用户信息
-          const app = getApp();
-          console.log('=== 转让成功，开始更新用户信息 ===');
-          console.log('被转让人信息:', { name, phone, wechat });
-
-          app.updateUserInfo({
-            name: userInfo.name,
-            phone: userInfo.phone,
-            wechat: wechat
-          });
-
-          console.log('=== 用户信息更新完成 ===');
+          console.log('转让成功:', res.data);
 
           wx.showToast({
             title: '转让成功！',
@@ -208,7 +204,7 @@ Page({
       },
       fail: (err) => {
         wx.hideLoading();
-        console.error('validate接口请求失败:', err);
+        console.error('transfer_principal接口请求失败:', err);
         wx.showToast({
           title: '网络连接失败',
           icon: 'none',
@@ -224,6 +220,22 @@ Page({
   onLoad(options) {
     console.log('被转让人信息页面加载', options);
 
+    // 接收传递的当前负责人手机号
+    if (options.currentPhone) {
+      this.setData({
+        currentManagerPhone: options.currentPhone
+      });
+      console.log('接收到的当前负责人手机号:', options.currentPhone);
+    } else {
+      // 如果没有传递参数，从全局获取用户信息
+      const app = getApp();
+      const userInfo = app.getUserInfo();
+      this.setData({
+        currentManagerPhone: userInfo.phone || ''
+      });
+      console.log('从全局获取的当前负责人手机号:', userInfo.phone);
+    }
+
     // 接收传递的被转让人信息（如果有的话）
     if (options.name) {
       this.setData({
@@ -235,9 +247,9 @@ Page({
         'transfereeInfo.phone': options.phone
       });
     }
-    if (options.password) {
+    if (options.wechat) {
       this.setData({
-        'transfereeInfo.password': options.password
+        'transfereeInfo.wechat': options.wechat
       });
     }
 

@@ -16,10 +16,11 @@ Page({
    */
   onTransfer() {
     console.log('点击了转让按钮');
+    console.log('当前负责人信息:', this.data.managerInfo);
 
-    // 跳转到被转让人信息页面
+    // 跳转到被转让人信息页面，传递当前负责人手机号
     wx.navigateTo({
-      url: '/pages/被转让人信息/被转让人信息',
+      url: `/pages/被转让人信息/被转让人信息?currentPhone=${this.data.managerInfo.phone}`,
       success: function() {
         console.log('成功跳转到被转让人信息页面');
       },
