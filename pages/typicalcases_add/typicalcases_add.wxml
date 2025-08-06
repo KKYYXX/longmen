@@ -31,7 +31,7 @@
     <view class="function-card" bindtap="uploadFiles">
       <view class="card-content">
         <text class="card-title">文件上传</text>
-        <text class="card-desc">上传PDF和DOC文档</text>
+        <text class="card-desc">上传一个PDF或DOC文档</text>
       </view>
       <view class="icon-circle upload-icon-circle">
         <view class="card-icon upload-icon">

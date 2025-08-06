@@ -104,9 +104,13 @@
   color: #6c757d;
 }
 
-.case-progress {
+.case-category {
   color: #FFA726;
   font-weight: 500;
+  background: rgba(255, 167, 38, 0.1);
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
 }
 
 .case-actions {

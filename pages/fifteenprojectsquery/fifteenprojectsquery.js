@@ -10,17 +10,18 @@ Page({
     projectList: []
   },
 
-  onLoad() {
+  onLoad: function() {
+    console.log('十五项项目查询页面加载');
     this.loadProjectList();
   },
 
-  onShow() {
-    // 页面显示时刷新数据
-    this.refreshData();
+  onShow: function() {
+    // 页面显示时不需要重复加载，避免无限循环
+    console.log('十五项项目查询页面显示');
   },
 
   // 开始时间选择
-  onStartDateChange(e) {
+  onStartDateChange: function(e) {
     this.setData({
       startDate: e.detail.value
     });
@@ -28,7 +29,7 @@ Page({
   },
 
   // 结束时间选择
-  onEndDateChange(e) {
+  onEndDateChange: function(e) {
     this.setData({
       endDate: e.detail.value
     });
@@ -36,29 +37,42 @@ Page({
   },
 
   // 加载项目列表
-  loadProjectList(isRefresh = false) {
+  loadProjectList: function(isRefresh) {
+    console.log('开始加载项目列表', isRefresh);
+    if (typeof isRefresh === 'undefined') isRefresh = false;
     if (this.data.loading) return;
 
     this.setData({
       loading: true
     });
 
-    // 模拟加载延迟，实际项目中这里会调用后端API
-    setTimeout(() => {
+    // 直接加载数据，不使用延迟
+    try {
       // 获取默认项目数据
       const allProjects = this.getDefaultProjects();
+      console.log('获取到项目数据:', allProjects);
+      console.log('项目数据类型:', typeof allProjects);
+      console.log('是否为数组:', Array.isArray(allProjects));
 
       this.setData({
-        projectList: allProjects,
+        projectList: allProjects || [],
         loading: false,
         hasMore: false
       });
-    }, 500);
+      console.log('项目列表设置完成，当前列表长度:', this.data.projectList.length);
+    } catch (error) {
+      console.error('加载项目数据失败:', error);
+      this.setData({
+        projectList: [],
+        loading: false
+      });
+    }
   },
 
   // 获取默认项目数据
-  getDefaultProjects() {
-    return [
+  getDefaultProjects: function() {
+    console.log('开始获取默认项目数据');
+    var projects = [
       {
         id: 1,
         projectName: '智慧城市基础设施建设项目',
@@ -160,6 +174,8 @@ Page({
         expanded: false
       }
     ];
+    console.log('返回项目数据，共', projects.length, '个项目');
+    return projects;
   },
 
     // TODO: 生产环境中调用后端API获取十五项项目数据
@@ -205,19 +221,19 @@ Page({
   },
 
   // 搜索输入
-  onSearchInput(e) {
+  onSearchInput: function(e) {
     this.setData({
       searchKeyword: e.detail.value
     });
   },
 
   // 搜索
-  onSearch() {
+  onSearch: function() {
     this.refreshData();
   },
 
   // 刷新数据
-  refreshData() {
+  refreshData: function() {
     this.setData({
       page: 1,
       hasMore: true
@@ -226,7 +242,7 @@ Page({
   },
 
   // 项目项点击
-  onProjectTap(e) {
+  onProjectTap: function(e) {
     const index = e.currentTarget.dataset.index;
     const project = this.data.projectList[index];
 
@@ -237,10 +253,10 @@ Page({
   },
 
   // 图片预览
-  previewImage(e) {
+  previewImage: function(e) {
     const src = e.currentTarget.dataset.src;
     const urls = e.currentTarget.dataset.urls;
-    
+
     wx.previewImage({
       current: src,
       urls: urls
@@ -248,7 +264,7 @@ Page({
   },
 
   // 文件下载
-  downloadFile(e) {
+  downloadFile: function(e) {
     const file = e.currentTarget.dataset.file;
     
     wx.showModal({
@@ -267,18 +283,18 @@ Page({
   },
 
   // 加载更多
-  loadMore() {
+  loadMore: function() {
     this.loadProjectList();
   },
 
   // 下拉刷新
-  onPullDownRefresh() {
+  onPullDownRefresh: function() {
     this.refreshData();
     wx.stopPullDownRefresh();
   },
 
   // 上拉加载
-  onReachBottom() {
+  onReachBottom: function() {
     if (this.data.hasMore && !this.data.loading) {
       this.loadMore();
     }

@@ -14,7 +14,7 @@ Page({
     }
   },
 
-  onLoad(options) {
+  onLoad: function(options) {
     console.log('项目进度页面加载', options);
     if (options.id) {
       this.setData({
@@ -24,11 +24,11 @@ Page({
     }
   },
 
-  navigateBack() {
+  navigateBack: function() {
     wx.navigateBack();
   },
 
-  loadProjectData() {
+  loadProjectData: function() {
     this.setData({ loading: true });
     
     const apiConfig = require('../../config/api.js');
@@ -96,7 +96,7 @@ Page({
   },
 
   // 获取项目数据
-  getProjectById(projectId) {
+  getProjectById: function(projectId) {
     const defaultProjects = [
       {
         id: 1,
@@ -154,7 +154,7 @@ Page({
   },
 
   // 生成进度数据
-  generateProgressData(projectData) {
+  generateProgressData: function(projectData) {
     const progressTemplates = {
       1: [ // 智慧城市项目
         {
@@ -647,7 +647,7 @@ Page({
   },
 
   // 计算统计数据
-  calculateStats(progressList) {
+  calculateStats: function(progressList) {
     const totalRecords = progressList.length;
     const completedTasks = progressList.filter(item => item.status === 'completed').length;
     const ongoingTasks = progressList.filter(item => item.status === 'ongoing').length;
@@ -662,14 +662,14 @@ Page({
   },
 
   // 日期选择
-  onDateChange(e) {
+  onDateChange: function(e) {
     const selectedDate = e.detail.value;
     this.setData({ selectedDate });
     this.filterProgressByDate(selectedDate);
   },
 
   // 按日期筛选进度
-  filterProgressByDate(date) {
+  filterProgressByDate: function(date) {
     if (!date) {
       this.setData({
         filteredProgressList: this.data.progressList
@@ -684,7 +684,7 @@ Page({
   },
 
   // 显示全部进度
-  showAllProgress() {
+  showAllProgress: function() {
     this.setData({
       selectedDate: '',
       filteredProgressList: this.data.progressList
@@ -692,7 +692,7 @@ Page({
   },
 
   // 查看进度详情
-  viewProgressDetail(e) {
+  viewProgressDetail: function(e) {
     const progress = e.currentTarget.dataset.progress;
     wx.showModal({
       title: progress.title,
@@ -703,7 +703,7 @@ Page({
   },
 
   // 预览图片
-  previewImage(e) {
+  previewImage: function(e) {
     const src = e.currentTarget.dataset.src;
     const urls = e.currentTarget.dataset.urls;
     wx.previewImage({
@@ -713,14 +713,14 @@ Page({
   },
 
   // 分享项目
-  shareProject() {
+  shareProject: function() {
     wx.showShareMenu({
       withShareTicket: true,
       menus: ['shareAppMessage', 'shareTimeline']
     });
   },
 
-  onShareAppMessage() {
+  onShareAppMessage: function() {
     const projectData = this.data.projectData;
     return {
       title: `${projectData.projectName} - 项目进度`,
@@ -729,7 +729,7 @@ Page({
     };
   },
 
-  onShareTimeline() {
+  onShareTimeline: function() {
     const projectData = this.data.projectData;
     return {
       title: `${projectData.projectName} - 项目进度`,

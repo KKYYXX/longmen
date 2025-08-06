@@ -80,6 +80,13 @@ Page({
     });
   },
 
+  // 项目进度管理
+  manageProgress() {
+    wx.navigateTo({
+      url: '/pages/project_progress_manage/project_progress_manage'
+    });
+  },
+
   // 查看项目详情
   viewProjectDetail(e) {
     const projectId = e.currentTarget.dataset.id;

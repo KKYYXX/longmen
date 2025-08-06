@@ -10,17 +10,17 @@ Page({
     loading: false
   },
 
-  onLoad() {
+  onLoad: function() {
     console.log('典型案例查询页面加载');
     this.loadCases();
   },
 
-  onShow() {
+  onShow: function() {
     // 页面显示时重新加载数据，以防其他页面有更新
     this.loadCases();
   },
 
-  loadCases() {
+  loadCases: function() {
     this.setData({ loading: true });
 
     // 使用开发模式，从本地存储和默认数据加载
@@ -105,8 +105,9 @@ Page({
   },
 
   // 获取默认案例数据
-  getDefaultCases() {
-    return [
+  getDefaultCases: function() {
+    // 所有默认案例
+    const allDefaultCases = [
       {
         id: 1,
         caseName: '智慧城市建设典型案例',
@@ -121,8 +122,7 @@ Page({
         author: '市信息化办公室',
         contact: '张主任 - 13800138000',
         files: [
-          { name: '智慧城市建设方案.pdf', size: '2.5MB', sizeFormatted: '2.5MB' },
-          { name: '技术架构图.png', size: '1.2MB', sizeFormatted: '1.2MB' }
+          { name: '智慧城市建设方案.pdf', size: '2.5MB', sizeFormatted: '2.5MB' }
         ],
         videos: [
           { name: '智慧城市演示视频.mp4', duration: '5:30' }
@@ -145,8 +145,7 @@ Page({
         author: '市发改委',
         contact: '李处长 - 13900139000',
         files: [
-          { name: '绿色能源规划书.docx', size: '3.1MB', sizeFormatted: '3.1MB' },
-          { name: '能源效率报告.xlsx', size: '800KB', sizeFormatted: '800KB' }
+          { name: '绿色能源规划书.docx', size: '3.1MB', sizeFormatted: '3.1MB' }
         ],
         videos: [
           { name: '园区建设纪录片.mp4', duration: '8:45' }
@@ -169,8 +168,7 @@ Page({
         author: '市教育局',
         contact: '王局长 - 13700137000',
         files: [
-          { name: '数字化教育方案.pdf', size: '4.2MB', sizeFormatted: '4.2MB' },
-          { name: '教学效果评估.pptx', size: '6.8MB', sizeFormatted: '6.8MB' }
+          { name: '数字化教育方案.pdf', size: '4.2MB', sizeFormatted: '4.2MB' }
         ],
         videos: [
           { name: '智慧课堂演示.mp4', duration: '12:20' }
@@ -181,24 +179,28 @@ Page({
         ]
       }
     ];
+
+    // 过滤掉已删除的默认案例
+    const deletedDefaultCases = wx.getStorageSync('deletedDefaultCases') || [];
+    return allDefaultCases.filter(caseItem => !deletedDefaultCases.includes(caseItem.id));
   },
 
-  generateMockCases() {
+  generateMockCases: function() {
     // 保持向后兼容，调用新的方法
     return this.getDefaultCases();
   },
 
-  onSearchInput(e) {
+  onSearchInput: function(e) {
     this.setData({
       searchKeyword: e.detail.value
     });
   },
 
-  onSearch() {
+  onSearch: function() {
     this.filterCases();
   },
 
-  setFilter(e) {
+  setFilter: function(e) {
     const filter = e.currentTarget.dataset.filter;
     this.setData({
       currentFilter: filter
@@ -206,7 +208,7 @@ Page({
     this.filterCases();
   },
 
-  filterCases() {
+  filterCases: function() {
     let filtered = this.data.allCases;
     
     if (this.data.currentFilter !== 'all') {
@@ -237,7 +239,7 @@ Page({
     });
   },
 
-  viewCaseDetail(e) {
+  viewCaseDetail: function(e) {
     const caseData = e.currentTarget.dataset.case;
     wx.showModal({
       title: caseData.title,
@@ -246,7 +248,7 @@ Page({
     });
   },
 
-  previewCase(e) {
+  previewCase: function(e) {
     const caseData = e.currentTarget.dataset.case;
     // 跳转到文档展示页面，显示完整的案例内容
     wx.navigateTo({
@@ -254,21 +256,21 @@ Page({
     });
   },
 
-  downloadCase(e) {
+  downloadCase: function(e) {
     wx.showToast({
       title: '下载功能开发中',
       icon: 'none'
     });
   },
 
-  shareCase(e) {
+  shareCase: function(e) {
     wx.showToast({
       title: '分享功能开发中',
       icon: 'none'
     });
   },
 
-  loadMore() {
+  loadMore: function() {
     wx.showToast({
       title: '没有更多数据',
       icon: 'none'

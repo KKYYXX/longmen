@@ -31,10 +31,10 @@
       <view class="case-info">
         <view class="case-icon">📋</view>
         <view class="case-details">
-          <view class="case-name">{{item.caseName}}</view>
+          <view class="case-name">{{item.title}}</view>
           <view class="case-meta">
             <text class="case-date">{{item.createDate}}</text>
-            <text class="case-progress">进度: {{item.progress}}%</text>
+            <text class="case-category">{{item.category}}</text>
           </view>
         </view>
       </view>
