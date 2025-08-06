@@ -18,17 +18,12 @@
   <scroll-view class="records-container" scroll-y="true">
     <block wx:for="{{ filteredRecords }}" wx:key="index">
       <view class="record-card">
-        <view class="record-header">
-          <view class="record-name">{{ item.name }}</view>
-          <view class="record-time">{{ item.time }}</view>
+        <view class="record-name">{{ item.name }}</view>
+        <view class="record-phone">
+          <icon class="phone-icon" type="phone" size="18" />
+          {{ item.phone }}
         </view>
-        <view class="record-details">
-          <view class="record-phone">
-            <icon class="phone-icon" type="phone" size="20" />
-            {{ item.phone }}
-          </view>
-          <view class="delete-btn" bindtap="onDeleteRecord" data-index="{{ index }}">删除</view>
-        </view>
+        <view class="delete-btn" bindtap="onDeleteRecord" data-index="{{ index }}">删除</view>
       </view>
     </block>
   </scroll-view>

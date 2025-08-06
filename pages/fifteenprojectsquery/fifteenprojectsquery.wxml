@@ -35,9 +35,9 @@
 
   <!-- 项目列表 -->
   <view class="project-list">
-    <view 
-      class="project-item {{item.expanded ? 'expanded' : ''}}" 
-      wx:for="{{projectList}}" 
+    <view
+      class="project-item"
+      wx:for="{{projectList}}"
       wx:key="id"
       bindtap="onProjectTap"
       data-index="{{index}}"
@@ -49,152 +49,21 @@
           <view class="project-details">
             <view class="project-name">{{item.projectName}}</view>
             <view class="project-meta">
-              <text class="project-date">{{item.createDate}}</text>
+              <text class="project-date">{{item.createDate || item.startDate}}</text>
               <text class="project-progress">进度: {{item.progress}}%</text>
             </view>
+            <view class="project-type">{{item.projectType}}</view>
           </view>
         </view>
         <view class="project-actions">
-          <view class="expand-icon {{item.expanded ? 'expanded' : ''}}">▼</view>
+          <view class="view-icon">👁️</view>
+          <text class="view-text">查看详情</text>
         </view>
       </view>
 
-      <!-- 项目详情（展开时显示） -->
-      <view class="project-content" wx:if="{{item.expanded}}">
-        <!-- 项目基本信息 -->
-        <view class="info-section">
-          <view class="info-item">
-            <text class="info-label">项目类型：</text>
-            <text class="info-value">{{item.projectType || '暂无'}}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">开始时间：</text>
-            <text class="info-value">{{item.startDate || '暂无'}}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">结束时间：</text>
-            <text class="info-value">{{item.endDate || '暂无'}}</text>
-          </view>
-        </view>
-
-        <!-- 项目背景 -->
-        <view class="detail-section" wx:if="{{item.background}}">
-          <text class="content-label">项目背景：</text>
-          <text class="content-text">{{item.background}}</text>
-        </view>
-
-        <!-- 项目内容和落实举措 -->
-        <view class="detail-section" wx:if="{{item.content}}">
-          <text class="content-label">项目内容和落实举措：</text>
-          <text class="content-text">{{item.content}}</text>
-        </view>
-
-        <!-- 主要任务目标 -->
-        <view class="detail-section" wx:if="{{item.objectives}}">
-          <text class="content-label">主要任务目标：</text>
-          <text class="content-text">{{item.objectives}}</text>
-        </view>
-
-        <!-- 联系人信息 -->
-        <view class="contact-section" wx:if="{{item.contact}}">
-          <text class="content-label">联系人信息：</text>
-          <view class="contact-info">
-            <view class="contact-item" wx:if="{{item.contact.name}}">
-              <text class="contact-label">姓名：</text>
-              <text class="contact-value">{{item.contact.name}}</text>
-            </view>
-            <view class="contact-item" wx:if="{{item.contact.position}}">
-              <text class="contact-label">职务：</text>
-              <text class="contact-value">{{item.contact.position}}</text>
-            </view>
-            <view class="contact-item" wx:if="{{item.contact.phone}}">
-              <text class="contact-label">联系方式：</text>
-              <text class="contact-value">{{item.contact.phone}}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 备注 -->
-        <view class="detail-section" wx:if="{{item.remarks}}">
-          <text class="content-label">备注：</text>
-          <text class="content-text">{{item.remarks}}</text>
-        </view>
-        
-        <!-- 图片展示 -->
-        <view class="media-section" wx:if="{{item.images && item.images.length > 0}}">
-          <text class="content-label">项目图片：</text>
-          <view class="image-list">
-            <image 
-              class="project-image" 
-              wx:for="{{item.images}}" 
-              wx:key="*this"
-              src="{{item}}"
-              mode="aspectFill"
-              bindtap="previewImage"
-              data-src="{{item}}"
-              data-urls="{{projectList[index].images}}"
-            />
-          </view>
-        </view>
-
-        <!-- 视频展示 -->
-        <view class="media-section" wx:if="{{item.videos && item.videos.length > 0}}">
-          <text class="content-label">项目视频：</text>
-          <view class="video-list">
-            <video 
-              class="project-video" 
-              wx:for="{{item.videos}}" 
-              wx:key="*this"
-              src="{{item}}"
-              controls
-            />
-          </view>
-        </view>
-
-        <!-- 项目报告 -->
-        <view class="media-section" wx:if="{{item.reports && item.reports.length > 0}}">
-          <text class="content-label">项目报告：</text>
-          <view class="file-list">
-            <view
-              class="file-item report-item"
-              wx:for="{{item.reports}}"
-              wx:key="fileName"
-              bindtap="downloadFile"
-              data-file="{{item}}"
-            >
-              <text class="file-icon">📊</text>
-              <text class="file-name">{{item.fileName}}</text>
-              <text class="file-size">{{item.fileSize}}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 其他文件 -->
-        <view class="media-section" wx:if="{{item.files && item.files.length > 0}}">
-          <text class="content-label">相关文件：</text>
-          <view class="file-list">
-            <view
-              class="file-item"
-              wx:for="{{item.files}}"
-              wx:key="fileName"
-              bindtap="downloadFile"
-              data-file="{{item}}"
-            >
-              <text class="file-icon">📄</text>
-              <text class="file-name">{{item.fileName}}</text>
-              <text class="file-size">{{item.fileSize}}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 进度详情 -->
-        <view class="progress-section">
-          <text class="content-label">项目进度：</text>
-          <view class="progress-bar">
-            <view class="progress-fill" style="width: {{item.progress}}%"></view>
-          </view>
-          <text class="progress-text">{{item.progress}}% 完成</text>
-        </view>
+      <!-- 项目简介 -->
+      <view class="project-summary">
+        <text class="summary-text">{{item.objectives}}</text>
       </view>
     </view>
   </view>

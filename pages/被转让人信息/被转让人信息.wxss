@@ -161,6 +161,27 @@
   border-left: 4rpx solid #667eea;
 }
 
+/* 微信号容器 */
+.wechat-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.wechat-input {
+  flex: 1;
+}
+
+/* 微信号提示 */
+.wechat-hint {
+  margin-top: 20rpx;
+  padding: 16rpx 20rpx;
+  background: #f8f9ff;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #667eea;
+}
+
 .hint-text {
   font-size: 24rpx;
   color: #666;

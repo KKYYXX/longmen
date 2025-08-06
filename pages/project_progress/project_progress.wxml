@@ -1,0 +1,190 @@
+<view class="progress-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <!-- 头部导航 -->
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="title-box">
+      <text class="title">{{projectData.projectName}}</text>
+      <text class="subtitle">项目进度详情</text>
+    </view>
+    <view class="share-btn" bindtap="shareProject">
+      <text class="share-icon">⋯</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 项目内容 -->
+  <view class="main-content" wx:if="{{!loading && projectData}}">
+    
+    <!-- 主要任务目标卡片 -->
+    <view class="objectives-card">
+      <view class="card-header">
+        <text class="card-title">🎯 主要任务目标</text>
+      </view>
+      <view class="objectives-content">
+        <text class="objectives-text">{{projectData.objectives || '暂无任务目标描述'}}</text>
+      </view>
+      
+      <!-- 项目基本信息 -->
+      <view class="project-info">
+        <view class="info-row">
+          <view class="info-item">
+            <text class="info-label">项目类型</text>
+            <text class="info-value">{{projectData.projectType || '暂无'}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">总进度</text>
+            <text class="info-value">{{projectData.progress || 0}}%</text>
+          </view>
+        </view>
+        <view class="info-row">
+          <view class="info-item">
+            <text class="info-label">开始时间</text>
+            <text class="info-value">{{projectData.startDate || '暂无'}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">预计完成</text>
+            <text class="info-value">{{projectData.endDate || '暂无'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 进度时间线 -->
+    <view class="timeline-section">
+      <view class="section-header">
+        <text class="section-title">📅 项目进度时间线</text>
+        <text class="section-subtitle">点击查看详细进度</text>
+      </view>
+
+      <!-- 时间选择器 -->
+      <view class="time-filter">
+        <picker mode="date" value="{{selectedDate}}" bindchange="onDateChange">
+          <view class="date-picker-btn">
+            <text class="picker-icon">📅</text>
+            <text class="picker-text">{{selectedDate || '选择日期'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+        <view class="filter-btn" bindtap="showAllProgress">
+          <text>查看全部</text>
+        </view>
+      </view>
+
+      <!-- 进度列表 -->
+      <view class="progress-list">
+        <view 
+          class="progress-item {{item.isToday ? 'today' : ''}}" 
+          wx:for="{{filteredProgressList}}" 
+          wx:key="id"
+          bindtap="viewProgressDetail"
+          data-progress="{{item}}"
+        >
+          <view class="progress-time">
+            <view class="time-dot {{item.status}}"></view>
+            <view class="time-info">
+              <text class="time-date">{{item.date}}</text>
+              <text class="time-period">{{item.time}}</text>
+            </view>
+          </view>
+          
+          <view class="progress-content">
+            <view class="progress-header">
+              <text class="progress-title">{{item.title}}</text>
+              <text class="progress-status {{item.status}}">{{item.statusText}}</text>
+            </view>
+            
+            <view class="progress-details">
+              <view class="detail-item">
+                <text class="detail-icon">📍</text>
+                <text class="detail-text">{{item.location}}</text>
+              </view>
+              <view class="detail-item">
+                <text class="detail-icon">👤</text>
+                <text class="detail-text">{{item.person}}</text>
+              </view>
+              <view class="detail-item">
+                <text class="detail-icon">📝</text>
+                <text class="detail-text">{{item.description}}</text>
+              </view>
+            </view>
+
+            <!-- 进度图片 -->
+            <view class="progress-images" wx:if="{{item.images && item.images.length > 0}}">
+              <image 
+                class="progress-image" 
+                wx:for="{{item.images}}" 
+                wx:for-item="img"
+                wx:key="*this"
+                src="{{img}}"
+                mode="aspectFill"
+                bindtap="previewImage"
+                data-src="{{img}}"
+                data-urls="{{item.images}}"
+              />
+            </view>
+
+            <!-- 完成度 -->
+            <view class="completion-info" wx:if="{{item.completion}}">
+              <text class="completion-label">完成度：</text>
+              <view class="completion-bar">
+                <view class="completion-fill" style="width: {{item.completion}}%"></view>
+              </view>
+              <text class="completion-text">{{item.completion}}%</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-progress" wx:if="{{filteredProgressList.length === 0 && !loading}}">
+        <text class="empty-icon">📅</text>
+        <text class="empty-text">{{selectedDate ? '该日期暂无进度记录' : '暂无进度记录'}}</text>
+        <text class="empty-hint">项目进度将实时更新显示</text>
+      </view>
+    </view>
+
+    <!-- 项目统计 -->
+    <view class="stats-section">
+      <view class="section-header">
+        <text class="section-title">📊 项目统计</text>
+      </view>
+      
+      <view class="stats-grid">
+        <view class="stat-item">
+          <text class="stat-number">{{progressStats.totalRecords}}</text>
+          <text class="stat-label">总记录数</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{progressStats.completedTasks}}</text>
+          <text class="stat-label">已完成任务</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{progressStats.ongoingTasks}}</text>
+          <text class="stat-label">进行中任务</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{progressStats.pendingTasks}}</text>
+          <text class="stat-label">待开始任务</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:if="{{!loading && !projectData}}">
+    <text class="error-icon">❌</text>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">无法获取项目详情，请重试</text>
+    <text class="retry-btn" bindtap="loadProjectData">重新加载</text>
+  </view>
+</view>

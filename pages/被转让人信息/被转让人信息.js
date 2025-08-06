@@ -8,9 +8,8 @@ Page({
     transfereeInfo: {
       name: '',
       phone: '',
-      password: ''
+      wechat: ''
     },
-    showPassword: false,
     isFormValid: false
   },
 
@@ -35,58 +34,58 @@ Page({
   },
 
   /**
-   * 密码输入事件
+   * 微信号输入事件
    */
-  onPasswordInput(e) {
+  onWechatInput(e) {
     this.setData({
-      'transfereeInfo.password': e.detail.value
+      'transfereeInfo.wechat': e.detail.value
     });
     this.validateForm();
   },
 
   /**
-   * 切换密码显示/隐藏
+   * 验证微信号格式
    */
-  togglePassword() {
-    this.setData({
-      showPassword: !this.data.showPassword
+  validateWechat(wechat) {
+    // 验证微信号不为空
+    const isValid = wechat && wechat.trim().length > 0;
+    
+    console.log('微信号验证详情:', {
+      wechat: wechat,
+      wechatLength: wechat ? wechat.length : 0,
+      isValid: isValid
     });
-    console.log('密码显示状态:', this.data.showPassword ? '显示' : '隐藏');
-  },
 
-  /**
-   * 验证密码格式
-   */
-  validatePassword(password) {
-    // 密码要求：大小写字母和数字相结合，不少于8位
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const isLengthValid = password.length >= 8;
-
-    return hasLowerCase && hasUpperCase && hasNumber && isLengthValid;
+    return isValid;
   },
 
   /**
    * 验证表单
    */
   validateForm() {
-    const { name, phone, password } = this.data.transfereeInfo;
+    const { name, phone, wechat } = this.data.transfereeInfo;
     const isNameValid = name && name.trim().length > 0;
-    const isPhoneValid = phone && /^1[3-9]\d{9}$/.test(phone);
-    const isPasswordValid = this.validatePassword(password);
+    // 放宽手机号验证，只要不为空且长度合理即可
+    const isPhoneValid = phone && phone.trim().length >= 10;
+    const isWechatValid = this.validateWechat(wechat);
 
-    const isFormValid = isNameValid && isPhoneValid && isPasswordValid;
+    const isFormValid = isNameValid && isPhoneValid && isWechatValid;
 
     this.setData({
       isFormValid: isFormValid
     });
 
     console.log('表单验证结果:', {
+      name: name,
+      phone: phone,
+      wechat: wechat,
       isNameValid,
       isPhoneValid,
-      isPasswordValid,
-      isFormValid
+      isWechatValid,
+      isFormValid,
+      nameLength: name ? name.trim().length : 0,
+      phoneLength: phone ? phone.trim().length : 0,
+      wechatLength: wechat ? wechat.length : 0
     });
   },
 
@@ -103,12 +102,12 @@ Page({
       return;
     }
 
-    const { name, phone, password } = this.data.transfereeInfo;
+    const { name, phone, wechat } = this.data.transfereeInfo;
 
-    // 再次验证密码
-    if (!this.validatePassword(password)) {
+    // 再次验证微信号
+    if (!this.validateWechat(wechat)) {
       wx.showToast({
-        title: '密码格式不正确',
+        title: '微信号格式不正确',
         icon: 'none',
         duration: 2000
       });
@@ -123,54 +122,98 @@ Page({
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
-          // 模拟转让操作
-          wx.showLoading({
-            title: '转让中...',
-            mask: true
+          // 调用后端validate接口进行转让验证
+          this.callValidateAPI(name, phone, wechat);
+        }
+      }
+    });
+  },
+
+  /**
+   * 调用后端validate接口
+   */
+  callValidateAPI(name, phone, wechat) {
+    wx.showLoading({
+      title: '验证中...',
+      mask: true
+    });
+
+    // 调用后端 /user/validate 接口
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/user/validate',
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      data: {
+        name: name,
+        phone: phone,
+        wx_openid: wechat
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('validate接口响应:', res);
+        console.log('发送的数据:', { name, phone, wechat });
+
+        if (res.statusCode === 200) {
+          // 转让成功
+          const userInfo = res.data;
+          console.log('转让成功，用户信息:', userInfo);
+
+          // 更新全局用户信息
+          const app = getApp();
+          console.log('=== 转让成功，开始更新用户信息 ===');
+          console.log('被转让人信息:', { name, phone, wechat });
+
+          app.updateUserInfo({
+            name: userInfo.name,
+            phone: userInfo.phone,
+            wechat: wechat
           });
 
-          setTimeout(() => {
-            wx.hideLoading();
+          console.log('=== 用户信息更新完成 ===');
 
-            // 更新全局用户信息
-            const app = getApp();
-            console.log('=== 转让成功，开始更新用户信息 ===');
-            console.log('被转让人信息:', { name, phone, password });
-
-            app.updateUserInfo({
-              name: name,
-              phone: phone,
-              password: password
-            });
-
-            console.log('=== 用户信息更新完成 ===');
-
-            wx.showToast({
-              title: '转让成功！',
-              icon: 'success',
-              duration: 1500,
-              success: () => {
-                // 转让成功后返回上一页
-                setTimeout(() => {
-                  // 使用navigateBack返回上一页，不退登录
-                  wx.navigateBack({
-                    delta: 1,
-                    success: () => {
-                      console.log('成功返回上一页');
-                    },
-                    fail: (err) => {
-                      console.error('返回上一页失败:', err);
-                      // 如果返回失败，尝试返回多级
-                      wx.navigateBack({
-                        delta: 2
-                      });
-                    }
-                  });
-                }, 500);
-              }
-            });
-          }, 1500);
+          wx.showToast({
+            title: '转让成功！',
+            icon: 'success',
+            duration: 1500,
+            success: () => {
+              // 转让成功后返回上一页
+              setTimeout(() => {
+                wx.navigateBack({
+                  delta: 1,
+                  success: () => {
+                    console.log('成功返回上一页');
+                  },
+                  fail: (err) => {
+                    console.error('返回上一页失败:', err);
+                    // 如果返回失败，尝试返回多级
+                    wx.navigateBack({
+                      delta: 2
+                    });
+                  }
+                });
+              }, 500);
+            }
+          });
+        } else {
+          // 转让失败，显示错误信息
+          const errorMessage = res.data.message || '转让失败';
+          wx.showToast({
+            title: errorMessage,
+            icon: 'none',
+            duration: 2000
+          });
         }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('validate接口请求失败:', err);
+        wx.showToast({
+          title: '网络连接失败',
+          icon: 'none',
+          duration: 2000
+        });
       }
     });
   },

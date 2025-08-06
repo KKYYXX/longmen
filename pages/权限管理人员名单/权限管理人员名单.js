@@ -41,7 +41,7 @@ Page({
   onPolicyModify() {
     // 跳转到政策文件修改权限人员页面
     wx.navigateTo({
-      url: '/pages/政策文件修改权限人员/政策修改权限人员',
+      url: '/pages/政策文件修改权限人员/政策文件修改权限人员',
       success: function() {
         console.log('成功跳转到政策文件修改权限人员页面');
       },
