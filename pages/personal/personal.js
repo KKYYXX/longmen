@@ -381,8 +381,8 @@ Page({
       return;
     }
 
-    if (!this.validatePassword(password)) {
-      this.setData({ errorMessage: '密码格式不正确，请确保包含大小写字母和数字，且不少于8位' });
+    if (password.length < 6) {
+      this.setData({ errorMessage: '密码至少6位' });
       return;
     }
 
@@ -391,37 +391,52 @@ Page({
       return;
     }
 
-    // 尝试注册新用户
-    const result = this.registerNewUser({ name, phone, wechat, password });
-    
-    if (!result.success) {
-      this.setData({ errorMessage: result.message });
-      return;
-    }
-
-    // 注册成功
-    wx.showToast({
-      title: '注册成功',
-      icon: 'success',
-      duration: 1500,
-      success: () => {
-        // 延迟切换到登录页面
-        setTimeout(() => {
-          this.setData({
-            currentMode: 'login',
-            loginType: 'phone',
-            errorMessage: '',
-            loginForm: {
-              phone: phone,
-              wechat: wechat,
-              password: ''
+    // 连接后端注册接口
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/user/register', // 根据实际后端地址修改
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: {
+        name: name.trim(),
+        phone: phone.trim(),
+        wx_openid: wechat.trim(),
+        password: password
+      },
+      success: (res) => {
+        if (res.data.success) {
+          // 注册成功
+          wx.showToast({
+            title: '注册成功',
+            icon: 'success',
+            duration: 1500,
+            success: () => {
+              // 延迟切换到登录页面
+              setTimeout(() => {
+                this.setData({
+                  currentMode: 'login',
+                  loginType: 'phone',
+                  errorMessage: '',
+                  loginForm: {
+                    phone: phone,
+                    wechat: wechat,
+                    password: ''
+                  }
+                });
+              }, 1500);
             }
           });
-        }, 1500);
+          console.log('注册成功');
+        } else {
+          this.setData({ errorMessage: res.data.message || '注册失败' });
+        }
+      },
+      fail: (err) => {
+        console.error('注册请求失败:', err);
+        this.setData({ errorMessage: '网络错误，请稍后重试' });
       }
     });
-
-    console.log('注册成功：', result.user);
   },
 
   /**
@@ -454,22 +469,30 @@ Page({
         return;
       }
 
-      // 检查用户是否已注册
-      const existingUser = this.checkUserExists(phone, 'phone');
-      if (!existingUser) {
-        this.setData({ errorMessage: '该手机号未注册，请先注册' });
-        return;
-      }
+      // 连接后端普通登录接口 - 手机号登录
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/user/common_login', // 根据实际后端地址修改
+        method: 'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        data: {
+          phone: phone.trim(),
+          password: password
+        },
+        success: (res) => {
+          if (res.data.success) {
+            this.handleNormalLoginSuccess(res.data.user);
+          } else {
+            this.setData({ errorMessage: res.data.message || '登录失败' });
+          }
+        },
+        fail: (err) => {
+          console.error('普通登录请求失败:', err);
+          this.setData({ errorMessage: '网络错误，请稍后重试' });
+        }
+      });
 
-      // 验证登录信息
-      const user = this.validateUserLogin(phone, password, 'phone');
-      if (!user) {
-        this.setData({ errorMessage: '手机号或密码错误' });
-        return;
-      }
-
-      // 普通登录成功
-      this.handleNormalLoginSuccess(user);
     } else {
       // 微信登录验证
       const { wechat, password } = loginForm;
@@ -484,22 +507,29 @@ Page({
         return;
       }
 
-      // 检查用户是否已注册
-      const existingUser = this.checkUserExists(wechat, 'wechat');
-      if (!existingUser) {
-        this.setData({ errorMessage: '该微信号未注册，请先注册' });
-        return;
-      }
-
-      // 验证登录信息
-      const user = this.validateUserLogin(wechat, password, 'wechat');
-      if (!user) {
-        this.setData({ errorMessage: '微信号或密码错误' });
-        return;
-      }
-
-      // 普通登录成功
-      this.handleNormalLoginSuccess(user);
+      // 连接后端普通登录接口 - 微信号登录
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/user/common_login', // 根据实际后端地址修改
+        method: 'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        data: {
+          wx_openid: wechat.trim(),
+          password: password
+        },
+        success: (res) => {
+          if (res.data.success) {
+            this.handleNormalLoginSuccess(res.data.user);
+          } else {
+            this.setData({ errorMessage: res.data.message || '登录失败' });
+          }
+        },
+        fail: (err) => {
+          console.error('普通登录请求失败:', err);
+          this.setData({ errorMessage: '网络错误，请稍后重试' });
+        }
+      });
     }
   },
 
@@ -533,22 +563,30 @@ Page({
         return;
       }
 
-      // 检查用户是否已注册
-      const existingUser = this.checkUserExists(phone, 'phone');
-      if (!existingUser) {
-        this.setData({ errorMessage: '该手机号未注册，请先注册' });
-        return;
-      }
+      // 连接后端权限管理登录接口 - 手机号登录
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/user/principal_login', // 根据实际后端地址修改
+        method: 'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        data: {
+          phone: phone.trim(),
+          password: password
+        },
+        success: (res) => {
+          if (res.data.success) {
+            this.handleAdminLoginSuccess(res.data.user);
+          } else {
+            this.setData({ errorMessage: res.data.message || '权限登录失败' });
+          }
+        },
+        fail: (err) => {
+          console.error('权限登录请求失败:', err);
+          this.setData({ errorMessage: '网络错误，请稍后重试' });
+        }
+      });
 
-      // 验证登录信息
-      const user = this.validateUserLogin(phone, password, 'phone');
-      if (!user) {
-        this.setData({ errorMessage: '手机号或密码错误' });
-        return;
-      }
-
-      // 权限管理登录成功
-      this.handleAdminLoginSuccess(user);
     } else {
       // 微信登录验证
       const { wechat, password } = loginForm;
@@ -563,22 +601,29 @@ Page({
         return;
       }
 
-      // 检查用户是否已注册
-      const existingUser = this.checkUserExists(wechat, 'wechat');
-      if (!existingUser) {
-        this.setData({ errorMessage: '该微信号未注册，请先注册' });
-        return;
-      }
-
-      // 验证登录信息
-      const user = this.validateUserLogin(wechat, password, 'wechat');
-      if (!user) {
-        this.setData({ errorMessage: '微信号或密码错误' });
-        return;
-      }
-
-      // 权限管理登录成功
-      this.handleAdminLoginSuccess(user);
+      // 连接后端权限管理登录接口 - 微信号登录
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/user/principal_login', // 根据实际后端地址修改
+        method: 'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        data: {
+          wx_openid: wechat.trim(),
+          password: password
+        },
+        success: (res) => {
+          if (res.data.success) {
+            this.handleAdminLoginSuccess(res.data.user);
+          } else {
+            this.setData({ errorMessage: res.data.message || '权限登录失败' });
+          }
+        },
+        fail: (err) => {
+          console.error('权限登录请求失败:', err);
+          this.setData({ errorMessage: '网络错误，请稍后重试' });
+        }
+      });
     }
   },
 
