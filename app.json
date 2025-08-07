@@ -8,7 +8,6 @@
     "pages/zcalter/zcalter",
     "pages/zcalter_add/zcalter_add",
     "pages/zcalter_delete/zcalter_delete",
-
     "pages/typicalcases/typicalcases",
     "pages/typicalcasesquery/typicalcasesquery",
     "pages/typicalcasesquery/typicalcasesquery_detail",
