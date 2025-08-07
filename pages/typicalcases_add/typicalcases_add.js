@@ -68,13 +68,43 @@ Page({
   },
 
   // 文件上传功能
-  uploadFiles() {
+  uploadFiles: function() {
+    console.log('uploadFiles 方法被调用');
+    console.log('当前上传的文件数量:', this.data.uploadedFiles.length);
+
+    // 检查是否已经上传了文件
+    if (this.data.uploadedFiles.length > 0) {
+      var self = this;
+      wx.showModal({
+        title: '提示',
+        content: '每个案例只能上传一个文件，是否要替换当前文件？',
+        success: function(res) {
+          if (res.confirm) {
+            // 清空当前文件，允许上传新文件
+            self.setData({
+              uploadedFiles: []
+            });
+            self.showFileTypeSelection();
+          }
+        }
+      });
+      return;
+    }
+
+    this.showFileTypeSelection();
+  },
+
+  // 显示文件类型选择
+  showFileTypeSelection: function() {
+    console.log('showFileTypeSelection 方法被调用');
+    var self = this;
     wx.showActionSheet({
       itemList: ['选择PDF文档', '选择Word文档'],
-      success: (res) => {
-        const fileTypes = ['pdf', 'doc'];
-        const selectedType = fileTypes[res.tapIndex];
-        this.chooseDocumentFiles(selectedType);
+      success: function(res) {
+        var fileTypes = ['pdf', 'doc'];
+        var selectedType = fileTypes[res.tapIndex];
+        console.log('选择的文件类型:', selectedType);
+        self.chooseDocumentFiles(selectedType);
       }
     });
   },
@@ -88,41 +118,74 @@ Page({
   },
 
   // 选择文档文件
-  chooseDocumentFiles(fileType) {
-    // 使用微信的文件选择API
-    wx.chooseMessageFile({
-      count: 1,
-      type: 'file',
-      extension: fileType === 'pdf' ? ['pdf'] : 
-                 fileType === 'doc' ? ['doc', 'docx'] : 
-                 fileType === 'xlsx' ? ['xlsx', 'xls'] : ['all'],
-      success: (res) => {
-        // 过滤文件类型
-        const validFiles = res.tempFiles.filter(file => {
-          const fileName = file.name.toLowerCase();
-          if (fileType === 'pdf') return fileName.endsWith('.pdf');
-          if (fileType === 'doc') return fileName.endsWith('.doc') || fileName.endsWith('.docx');
-          if (fileType === 'xlsx') return fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
-          return true;
-        });
-        
-        if (validFiles.length > 0) {
-          this.uploadFilesToServer(validFiles, fileType);
-        } else {
+  chooseDocumentFiles: function(fileType) {
+    console.log('开始选择文件，类型:', fileType);
+    var self = this;
+
+    // 开发环境下模拟文件选择
+    var apiConfig = require('../../config/api.js');
+    if (apiConfig.isMockEnabled()) {
+      // 模拟文件选择成功
+      var mockFile = {
+        name: fileType === 'pdf' ? '测试文档.pdf' : '测试文档.docx',
+        size: 1024 * 1024 * 2, // 2MB
+        tempFilePath: '/mock/path/test.' + (fileType === 'pdf' ? 'pdf' : 'docx')
+      };
+
+      wx.showModal({
+        title: '模拟文件选择',
+        content: '已选择文件：' + mockFile.name + '\n文件大小：' + self.formatFileSize(mockFile.size) + '\n\n这是开发模式的模拟选择，实际环境中会打开文件选择器。',
+        confirmText: '确认上传',
+        cancelText: '取消',
+        success: function(res) {
+          if (res.confirm) {
+            self.uploadFilesToServer([mockFile], fileType);
+          }
+        }
+      });
+      return;
+    }
+
+    // 生产环境使用真实的文件选择API
+    try {
+      wx.chooseMessageFile({
+        count: 1,
+        type: 'file',
+        extension: fileType === 'pdf' ? ['pdf'] : ['doc', 'docx'],
+        success: (res) => {
+          console.log('文件选择成功:', res);
+          // 过滤文件类型
+          const validFiles = res.tempFiles.filter(file => {
+            const fileName = file.name.toLowerCase();
+            if (fileType === 'pdf') return fileName.endsWith('.pdf');
+            if (fileType === 'doc') return fileName.endsWith('.doc') || fileName.endsWith('.docx');
+            return true;
+          });
+
+          if (validFiles.length > 0) {
+            this.uploadFilesToServer(validFiles, fileType);
+          } else {
+            wx.showToast({
+              title: `请选择${fileType.toUpperCase()}格式的文件`,
+              icon: 'none'
+            });
+          }
+        },
+        fail: (err) => {
+          console.error('选择文件失败:', err);
           wx.showToast({
-            title: `请选择${fileType.toUpperCase()}格式的文件`,
+            title: '选择文件失败，请重试',
             icon: 'none'
           });
         }
-      },
-      fail: (err) => {
-        console.error('选择文件失败:', err);
-        wx.showToast({
-          title: '选择文件失败',
-          icon: 'none'
-        });
-      }
-    });
+      });
+    } catch (error) {
+      console.error('文件选择API调用失败:', error);
+      wx.showToast({
+        title: '文件选择功能暂不可用',
+        icon: 'none'
+      });
+    }
   },
 
   // 上传文件到服务器
@@ -869,19 +932,30 @@ Page({
       return;
     }
 
-    if (this.data.uploadedFiles.length === 0 && 
-        this.data.newsLinks.length === 0 && 
-        this.data.uploadedVideos.length === 0) {
+    if (this.data.uploadedFiles.length === 0) {
       wx.showToast({
-        title: '请至少上传一个文件、链接或视频',
+        title: '请先上传一个文件',
         icon: 'none'
       });
       return;
     }
 
+    const fileName = this.data.uploadedFiles.length > 0 ? this.data.uploadedFiles[0].name : '无';
+    const linkCount = this.data.newsLinks.length;
+    const videoCount = this.data.uploadedVideos.length;
+
+    let contentSummary = `案例名称：${this.data.caseName}\n\n文件：${fileName}`;
+    if (linkCount > 0) {
+      contentSummary += `\n新闻链接：${linkCount}个`;
+    }
+    if (videoCount > 0) {
+      contentSummary += `\n视频：${videoCount}个`;
+    }
+    contentSummary += '\n\n确定要提交这些内容吗？';
+
     wx.showModal({
       title: '确认提交',
-      content: `案例名称：${this.data.caseName}\n\n文件：${this.data.uploadedFiles.length}个\n新闻链接：${this.data.newsLinks.length}个\n视频：${this.data.uploadedVideos.length}个\n\n确定要提交这些内容吗？`,
+      content: contentSummary,
       success: (res) => {
         if (res.confirm) {
           this.submitToServer();
@@ -906,8 +980,10 @@ Page({
           id: Date.now(), // 使用时间戳作为ID，确保大于2000
           caseName: this.data.caseName,
           title: this.data.caseName,
+          category: '用户上传', // 添加分类字段
           uploadTime: new Date().toLocaleString(),
           createDate: new Date().toISOString().split('T')[0],
+          updateDate: new Date().toISOString().split('T')[0], // 添加更新日期
           description: `用户上传的典型案例：${this.data.caseName}`,
           summary: `用户上传的典型案例：${this.data.caseName}`,
           author: '当前用户',

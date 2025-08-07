@@ -166,6 +166,35 @@
   color: rgba(92,80,50,0.6);
 }
 
+/* 自动操作提示 */
+.auto-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 15px 0;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 12px;
+  border-left: 4px solid #2196f3;
+  animation: pulse 2s infinite;
+}
+
+.tip-icon {
+  font-size: 18px;
+}
+
+.tip-text {
+  font-size: 14px;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
 .case-description {
   margin-bottom: 20px;
 }
@@ -248,64 +277,245 @@
   line-height: 1.7;
 }
 
-/* 文件容器 */
-.files-container {
+/* 文件内容容器 */
+.file-content-container {
+  margin: 0; /* 不设置边距，和上面的case-info-card一样 */
+  margin-bottom: 20px; /* 只设置下边距 */
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(139,117,65,0.15); /* 和上面一样的阴影 */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,236,179,0.6); /* 和上面一样的边框 */
+  overflow: hidden;
+}
+
+/* 文件头部卡片 */
+.file-header-card {
+  display: flex;
+  align-items: center;
+  padding: 20px 25px; /* 减少内边距 */
+  background: linear-gradient(135deg, #fff8dc 0%, #faf0e6 100%); /* 更淡的颜色 */
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2); /* 更淡的边框 */
+}
+
+.file-icon-large {
+  width: 50px; /* 适中的大小 */
+  height: 50px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.file-icon-large .icon {
+  font-size: 24px; /* 适中的图标大小 */
+}
+
+.file-info-large {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.file-name-large {
+  font-size: 16px; /* 适中的字体大小 */
+  font-weight: 600; /* 稍微减轻字重 */
+  color: #5c5032; /* 更温和的颜色 */
+  margin-bottom: 4px;
+  line-height: 1.3; /* 更好的行高 */
+}
+
+.file-size-large {
+  font-size: 13px; /* 稍小的字体 */
+  color: #8b7355; /* 更温和的颜色 */
+  opacity: 0.8;
+}
+
+.open-btn-large {
+  padding: 8px 16px; /* 更小的内边距 */
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 18px; /* 更小的圆角 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 更轻的阴影 */
+  transition: all 0.3s ease;
+  border: 1px solid rgba(92, 80, 50, 0.2); /* 添加淡边框 */
+}
+
+.open-btn-large:active {
+  transform: scale(0.95);
+}
+
+.open-text {
+  font-size: 14px; /* 更小的字体 */
+  font-weight: 500; /* 减轻字重 */
+  color: #5c5032; /* 更温和的颜色 */
+}
+
+/* 文件内容显示区域 */
+.file-content-display {
+  padding: 0;
+}
+
+.content-header {
+  padding: 20px 25px 15px; /* 适中的内边距 */
+  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+  background: rgba(255, 248, 220, 0.3); /* 更淡的背景 */
+}
+
+.content-title {
+  font-size: 16px; /* 适中的字体大小 */
+  font-weight: 600;
+  color: #5c5032;
+  letter-spacing: 0.5px;
+}
+
+.content-body {
+  padding: 25px; /* 适中的内边距 */
+  background: #fff;
+}
+
+.content-text {
+  font-size: 15px; /* 适中的字体大小 */
+  line-height: 1.8; /* 舒适的行高 */
+  color: #444; /* 更好的阅读颜色 */
+  white-space: pre-line;
+  word-wrap: break-word;
+  letter-spacing: 0.3px; /* 适中的字间距 */
+}
+
+/* 文件附录区域 */
+.file-appendix {
+  background: #fff;
+}
+
+.appendix-section {
+  padding: 20px 25px;
+}
+
+.appendix-divider {
+  height: 2px;
+  background: linear-gradient(90deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+  margin-bottom: 20px;
+  border-radius: 1px;
+}
+
+.appendix-title {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: #5c5032;
+  margin-bottom: 15px;
+}
+
+/* 紧凑型视频列表 */
+.videos-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.file-item {
+.video-item-compact {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255,248,192,0.3);
-  border-radius: 12px;
   padding: 15px;
-  border: 1px solid rgba(255,236,179,0.8);
+  background: rgba(255, 248, 220, 0.3);
+  border-radius: 12px;
+  border-left: 4px solid #ffd700;
 }
 
-.file-info {
+.video-info-compact {
   display: flex;
   align-items: center;
   flex: 1;
 }
 
-.file-icon {
-  width: 40px;
-  height: 40px;
-  background: #FFDD8F;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.video-icon-small {
+  font-size: 20px;
   margin-right: 12px;
 }
 
-.file-icon .icon {
-  font-size: 20px;
-}
-
-.file-details {
+.video-details-compact {
   flex: 1;
 }
 
-.file-name {
+.video-name-small {
   display: block;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
   font-weight: 500;
   margin-bottom: 4px;
 }
 
-.file-size {
-  font-size: 14px;
+.video-duration-small {
+  font-size: 12px;
   color: #666;
 }
 
-.file-actions {
+.play-btn-small {
+  padding: 8px 16px;
+  background: #ffd700;
+  color: #5c5032;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* 紧凑型链接列表 */
+.links-list {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.link-item-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: rgba(255, 248, 220, 0.3);
+  border-radius: 12px;
+  border-left: 4px solid #ffd700;
+}
+
+.link-info-compact {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.link-icon-small {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.link-details-compact {
+  flex: 1;
+}
+
+.link-title-small {
+  display: block;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.link-url-small {
+  font-size: 12px;
+  color: #666;
+  word-break: break-all;
+}
+
+.open-btn-small {
+  padding: 8px 16px;
+  background: #ffd700;
+  color: #5c5032;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 /* 视频容器 */

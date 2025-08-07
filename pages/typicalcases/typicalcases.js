@@ -53,7 +53,7 @@ Page({
       return;
     }
 
-    //下面验证用户权限加进来的时候以下三行要删掉
+    // 已登录，直接跳转到修改页面
     wx.navigateTo({
       url: '/pages/typicalcasesalter/typicalcasesalter'
     });

@@ -238,6 +238,10 @@ page {
   color: #f44336;
 }
 
+.progress-icon {
+  color: #4caf50;
+}
+
 /* 动画效果 */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -258,6 +262,10 @@ page {
 
 .function-card:nth-child(4) {
   animation: float 5s ease-in-out 3s infinite;
+}
+
+.function-card:nth-child(5) {
+  animation: float 5s ease-in-out 4s infinite;
 }
 
 /* 响应式调整 */

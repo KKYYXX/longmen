@@ -1,38 +1,7 @@
 Page({
   data: {
     searchKeyword: '',
-    caseList: [
-      {
-        id: 1,
-        title: '智慧城市建设典型案例',
-        category: '基础设施建设',
-        createDate: '2024-01-15',
-        updateDate: '2024-07-20',
-        summary: '通过物联网、大数据、人工智能等技术，构建智慧城市管理平台，实现城市治理现代化，提升市民生活质量。',
-        author: '市信息化办公室',
-        contact: '张主任 - 13800138000'
-      },
-      {
-        id: 2,
-        title: '绿色能源示范园区建设案例',
-        category: '环保治理',
-        createDate: '2024-02-10',
-        updateDate: '2024-07-18',
-        summary: '建设集太阳能、风能、储能于一体的绿色能源示范园区，实现清洁能源的高效利用和智能管理。',
-        author: '市发改委',
-        contact: '李处长 - 13900139000'
-      },
-      {
-        id: 3,
-        title: '数字化教育改革实践案例',
-        category: '民生改善',
-        createDate: '2024-03-05',
-        updateDate: '2024-07-15',
-        summary: '运用数字技术改革传统教育模式，建设智慧校园，推进教育公平和质量提升。',
-        author: '市教育局',
-        contact: '王局长 - 13700137000'
-      }
-    ]
+    caseList: []
   },
 
   onLoad() {
@@ -41,12 +10,9 @@ Page({
   },
 
   onShow() {
-    // 检查是否需要刷新数据
-    const needRefresh = wx.getStorageSync('caseListNeedRefresh');
-    if (needRefresh) {
-      wx.removeStorageSync('caseListNeedRefresh');
-      this.loadCaseList();
-    }
+    // 每次显示页面时都重新加载数据，确保显示最新的案例列表
+    console.log('删除页面显示，重新加载案例列表');
+    this.loadCaseList();
   },
 
   // 加载案例列表
@@ -55,10 +21,10 @@ Page({
       // 从本地存储获取用户添加的案例
       const storedCases = wx.getStorageSync('typicalCases') || [];
 
-      // 合并默认示例数据和用户添加的数据
-      const defaultCases = [
+      // 获取所有默认示例数据
+      const allDefaultCases = [
         {
-          id: 1001,
+          id: 1,
           title: '智慧城市建设典型案例',
           category: '基础设施建设',
           createDate: '2024-01-15',
@@ -68,7 +34,7 @@ Page({
           contact: '张主任 - 13800138000'
         },
         {
-          id: 1002,
+          id: 2,
           title: '绿色能源示范园区建设案例',
           category: '环保治理',
           createDate: '2024-02-10',
@@ -78,7 +44,7 @@ Page({
           contact: '李处长 - 13900139000'
         },
         {
-          id: 1003,
+          id: 3,
           title: '数字化教育改革实践案例',
           category: '民生改善',
           createDate: '2024-03-05',
@@ -89,6 +55,10 @@ Page({
         }
       ];
 
+      // 过滤掉已删除的默认案例
+      const deletedDefaultCases = wx.getStorageSync('deletedDefaultCases') || [];
+      const defaultCases = allDefaultCases.filter(caseItem => !deletedDefaultCases.includes(caseItem.id));
+
       // 合并数据：用户添加的案例在前，默认案例在后
       const allCases = [...storedCases, ...defaultCases];
 
@@ -98,6 +68,8 @@ Page({
 
       console.log('案例列表加载完成，总数量：', allCases.length);
       console.log('用户添加的案例数量：', storedCases.length);
+      console.log('用户添加的案例详情：', storedCases);
+      console.log('所有案例列表：', allCases);
 
     } catch (error) {
       console.error('加载案例列表失败:', error);
@@ -153,10 +125,11 @@ Page({
   // 删除案例
   deleteCase(e) {
     const caseItem = e.currentTarget.dataset.case;
+    console.log('准备删除案例：', caseItem);
 
     wx.showModal({
       title: '确认删除',
-      content: `确定要删除案例"${caseItem.title}"吗？此操作不可恢复。`,
+      content: `确定要删除案例"${caseItem.title}"吗？此操作不可恢复。\n\n案例ID: ${caseItem.id}`,
       confirmText: '删除',
       confirmColor: '#e74c3c',
       cancelText: '取消',
@@ -170,26 +143,27 @@ Page({
 
   // 执行删除操作
   performDelete(caseItem) {
+    console.log('开始执行删除操作，案例ID：', caseItem.id);
     wx.showLoading({
       title: '删除中...'
     });
 
     try {
-      // 检查是否是默认案例（ID < 2000的不能删除）
-      if (caseItem.id < 2000) {
-        wx.hideLoading();
-        wx.showModal({
-          title: '无法删除',
-          content: '系统默认案例不能删除，只能删除用户添加的案例。',
-          showCancel: false
-        });
-        return;
-      }
+      console.log('删除案例，ID：', caseItem.id);
 
-      // 从本地存储中删除
-      const storedCases = wx.getStorageSync('typicalCases') || [];
-      const updatedCases = storedCases.filter(item => item.id !== caseItem.id);
-      wx.setStorageSync('typicalCases', updatedCases);
+      // 如果是系统默认案例（ID <= 10），从删除的默认案例列表中记录
+      if (caseItem.id <= 10) {
+        const deletedDefaultCases = wx.getStorageSync('deletedDefaultCases') || [];
+        if (!deletedDefaultCases.includes(caseItem.id)) {
+          deletedDefaultCases.push(caseItem.id);
+          wx.setStorageSync('deletedDefaultCases', deletedDefaultCases);
+        }
+      } else {
+        // 如果是用户添加的案例，从本地存储中删除
+        const storedCases = wx.getStorageSync('typicalCases') || [];
+        const updatedCases = storedCases.filter(item => item.id !== caseItem.id);
+        wx.setStorageSync('typicalCases', updatedCases);
+      }
 
       // 从当前列表中移除
       const caseList = this.data.caseList.filter(item => item.id !== caseItem.id);

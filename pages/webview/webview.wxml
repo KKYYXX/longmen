@@ -1,0 +1,26 @@
+<view class="webview-container">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在加载网页...</text>
+  </view>
+  
+  <!-- 错误状态 -->
+  <view class="error-container" wx:if="{{error}}">
+    <text class="error-icon">❌</text>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">{{errorMessage}}</text>
+    <view class="error-actions">
+      <text class="action-btn retry-btn" bindtap="retryLoad">重新加载</text>
+      <text class="action-btn copy-btn" bindtap="copyUrl">复制链接</text>
+      <text class="action-btn back-btn" bindtap="goBack">返回</text>
+    </view>
+  </view>
+  
+  <!-- WebView -->
+  <web-view wx:if="{{!loading && !error && webUrl}}" 
+            src="{{webUrl}}" 
+            bindload="onWebViewLoad"
+            binderror="onWebViewError">
+  </web-view>
+</view>
