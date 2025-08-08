@@ -160,6 +160,20 @@ Page({
       wx.hideLoading();
 
       if (isSuccess) {
+        // 生成新项目的完整数据
+        const newProject = {
+          id: Date.now(), // 临时使用时间戳作为ID，实际应该由后端生成
+          ...submitData,
+          name: submitData.projectName, // 兼容性字段
+          description: submitData.objectives || submitData.content || '暂无描述'
+        };
+
+        // 将新项目数据存储到全局，供查询页面使用
+        const app = getApp();
+        if (app && app.globalData) {
+          app.globalData.newProject = newProject;
+        }
+
         wx.showModal({
           title: '操作结果',
           content: `项目"${projectData.projectName}"保存成功！\n已保存${Object.keys(projectData).length}个字段的数据。`,

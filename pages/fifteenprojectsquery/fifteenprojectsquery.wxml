@@ -55,8 +55,10 @@
           </view>
         </view>
         <view class="project-actions">
-          <view class="view-icon">👁️</view>
-          <text class="view-text">查看详情</text>
+          <view class="view-detail-btn">
+            <view class="view-icon">👁️</view>
+            <text class="view-text">查看详情</text>
+          </view>
         </view>
       </view>
 
@@ -120,6 +122,72 @@
         <view class="info-label">主要任务目标</view>
         <view class="info-value objectives-text">{{selectedProject.objectives}}</view>
       </view>
+    </view>
+
+    <!-- 时间查询按键区域 -->
+    <view class="time-query-section">
+      <view class="section-title">进度查询</view>
+      <view class="time-buttons">
+        <view
+          class="time-btn {{selectedTimeRange === item.value ? 'active' : ''}}"
+          wx:for="{{timeRangeOptions}}"
+          wx:key="value"
+          bindtap="onTimeRangeSelect"
+          data-value="{{item.value}}"
+        >
+          {{item.label}}
+        </view>
+      </view>
+
+      <!-- 自定义时间选择 -->
+      <view class="custom-time-section">
+        <view class="custom-time-row">
+          <picker mode="date" value="{{customStartDate}}" bindchange="onCustomStartDateChange">
+            <view class="custom-date-picker">
+              <text>{{customStartDate || '开始日期'}}</text>
+            </view>
+          </picker>
+          <text class="date-separator">至</text>
+          <picker mode="date" value="{{customEndDate}}" bindchange="onCustomEndDateChange">
+            <view class="custom-date-picker">
+              <text>{{customEndDate || '结束日期'}}</text>
+            </view>
+          </picker>
+          <view class="query-btn" bindtap="onCustomTimeQuery">查询</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 进度记录加载中 -->
+    <view class="progress-loading" wx:if="{{progressLoading}}">
+      <text class="loading-icon">⏳</text>
+      <text class="loading-text">正在查询进度记录...</text>
+    </view>
+
+    <!-- 进度记录列表 -->
+    <view class="progress-records" wx:if="{{progressList.length > 0 && !progressLoading}}">
+      <view class="records-title">进度记录</view>
+      <view
+        class="record-item"
+        wx:for="{{progressList}}"
+        wx:key="id"
+      >
+        <view class="record-summary">
+          <text class="summary-person">{{item.person}}</text>
+          <text class="summary-connector">于</text>
+          <text class="summary-datetime">{{item.date}} {{item.time}}</text>
+          <text class="summary-connector">在</text>
+          <text class="summary-location">{{item.location}}</text>
+          <text class="summary-connector">进行了以下工作：</text>
+        </view>
+        <view class="record-content">{{item.content}}</view>
+      </view>
+    </view>
+
+    <!-- 无进度记录提示 -->
+    <view class="no-progress" wx:if="{{showNoProgress && !progressLoading}}">
+      <text class="no-progress-icon">📋</text>
+      <text class="no-progress-text">该时间段暂无进度记录</text>
     </view>
   </view>
 </view>

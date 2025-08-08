@@ -9,7 +9,24 @@ Page({
     pageSize: 10,
     projectList: [],
     showProjectDetail: false,
-    selectedProject: null
+    selectedProject: null,
+
+    // 时间查询相关
+    selectedTimeRange: '',
+    customStartDate: '',
+    customEndDate: '',
+    timeRangeOptions: [
+      { label: '最近一周', value: 'week' },
+      { label: '最近一月', value: 'month' },
+      { label: '最近三月', value: 'quarter' },
+      { label: '最近半年', value: 'halfYear' },
+      { label: '最近一年', value: 'year' }
+    ],
+
+    // 进度记录相关
+    progressList: [],
+    showNoProgress: false,
+    progressLoading: false
   },
 
   onLoad: function() {
@@ -19,6 +36,26 @@ Page({
 
   onShow: function() {
     console.log('十五项项目查询页面显示');
+
+    // 检查是否有新添加的项目
+    const app = getApp();
+    if (app && app.globalData && app.globalData.newProject) {
+      console.log('检测到新项目，刷新列表');
+
+      // 检查项目是否已经在列表中（避免重复添加）
+      const existingProject = this.data.projectList.find(p => p.id === app.globalData.newProject.id);
+      if (!existingProject) {
+        this.addProjectToList(app.globalData.newProject);
+
+        wx.showToast({
+          title: '项目已添加',
+          icon: 'success'
+        });
+      }
+
+      // 清除全局数据
+      app.globalData.newProject = null;
+    }
   },
 
   // 开始时间选择
@@ -223,7 +260,206 @@ Page({
   closeProjectDetail: function() {
     this.setData({
       showProjectDetail: false,
-      selectedProject: null
+      selectedProject: null,
+      selectedTimeRange: '',
+      customStartDate: '',
+      customEndDate: '',
+      progressList: [],
+      showNoProgress: false
+    });
+  },
+
+  // 时间范围选择
+  onTimeRangeSelect: function(e) {
+    const value = e.currentTarget.dataset.value;
+    this.setData({
+      selectedTimeRange: value,
+      customStartDate: '',
+      customEndDate: ''
+    });
+    this.queryProgressByTimeRange(value);
+  },
+
+  // 自定义开始时间选择
+  onCustomStartDateChange: function(e) {
+    this.setData({
+      customStartDate: e.detail.value,
+      selectedTimeRange: ''
+    });
+  },
+
+  // 自定义结束时间选择
+  onCustomEndDateChange: function(e) {
+    this.setData({
+      customEndDate: e.detail.value,
+      selectedTimeRange: ''
+    });
+  },
+
+  // 自定义时间查询
+  onCustomTimeQuery: function() {
+    if (!this.data.customStartDate || !this.data.customEndDate) {
+      wx.showToast({
+        title: '请选择完整的时间范围',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (this.data.customStartDate > this.data.customEndDate) {
+      wx.showToast({
+        title: '开始时间不能晚于结束时间',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.queryProgressByCustomTime(this.data.customStartDate, this.data.customEndDate);
+  },
+
+  // 根据时间范围查询进度
+  queryProgressByTimeRange: function(timeRange) {
+    if (!this.data.selectedProject) return;
+
+    this.setData({
+      progressLoading: true,
+      showNoProgress: false
+    });
+
+    // 计算时间范围
+    const endDate = new Date();
+    const startDate = new Date();
+
+    switch(timeRange) {
+      case 'week':
+        startDate.setDate(endDate.getDate() - 7);
+        break;
+      case 'month':
+        startDate.setMonth(endDate.getMonth() - 1);
+        break;
+      case 'quarter':
+        startDate.setMonth(endDate.getMonth() - 3);
+        break;
+      case 'halfYear':
+        startDate.setMonth(endDate.getMonth() - 6);
+        break;
+      case 'year':
+        startDate.setFullYear(endDate.getFullYear() - 1);
+        break;
+    }
+
+    const startDateStr = this.formatDate(startDate);
+    const endDateStr = this.formatDate(endDate);
+
+    this.queryProgressByCustomTime(startDateStr, endDateStr);
+  },
+
+  // 根据自定义时间查询进度
+  queryProgressByCustomTime: function(startDate, endDate) {
+    if (!this.data.selectedProject) return;
+
+    this.setData({
+      progressLoading: true,
+      showNoProgress: false
+    });
+
+    // TODO: 替换为真实的后端API调用
+    // 这里使用模拟数据
+    setTimeout(() => {
+      const mockProgressData = this.generateMockProgressData(startDate, endDate);
+
+      this.setData({
+        progressList: mockProgressData,
+        showNoProgress: mockProgressData.length === 0,
+        progressLoading: false
+      });
+    }, 1000);
+  },
+
+  // 生成模拟进度数据
+  generateMockProgressData: function(startDate, endDate) {
+    const progressData = [
+      {
+        id: 1,
+        person: '张三（项目经理）',
+        time: '09:30',
+        location: '智慧城市建设现场A区',
+        content: '组织召开项目启动会议，确定了各部门分工和时间节点，完成了基础设施建设的前期准备工作，包括场地清理、设备调试和人员安排',
+        date: '2024-01-15'
+      },
+      {
+        id: 2,
+        person: '李四（技术负责人）',
+        time: '14:20',
+        location: '市政府会议室B',
+        content: '与规划局、建设局等相关部门协调项目推进事宜，汇报了当前进展情况，确定了下一阶段的工作计划和资源配置方案',
+        date: '2024-01-16'
+      },
+      {
+        id: 3,
+        person: '王五（质量监督员）',
+        time: '16:45',
+        location: '项目技术中心',
+        content: '完成智慧城市管理平台技术方案的专家评审工作，通过了关键技术节点的验收，确认了系统架构和数据接口标准',
+        date: '2024-01-17'
+      },
+      {
+        id: 4,
+        person: '赵六（安全员）',
+        time: '11:10',
+        location: '建设现场C区域',
+        content: '进行了全面的安全检查和质量监督工作，发现并及时解决了3个潜在安全隐患，确保了施工现场的安全规范',
+        date: '2024-01-18'
+      },
+      {
+        id: 5,
+        person: '钱七（文档管理员）',
+        time: '08:00',
+        location: '项目办公楼D座',
+        content: '整理完善项目相关文档资料，更新了最新的进度报告和财务报表，准备向市领导汇报项目整体推进情况',
+        date: '2024-01-19'
+      },
+      {
+        id: 6,
+        person: '孙八（设备工程师）',
+        time: '13:15',
+        location: '设备安装现场',
+        content: '完成了智能监控设备的安装调试工作，测试了数据传输功能，确保设备正常运行并与中央控制系统连接',
+        date: '2024-01-20'
+      },
+      {
+        id: 7,
+        person: '周九（协调专员）',
+        time: '10:30',
+        location: '社区服务中心',
+        content: '深入社区开展项目宣传工作，收集居民意见和建议，协调解决了施工过程中影响居民生活的相关问题',
+        date: '2024-01-21'
+      }
+    ];
+
+    // 根据时间范围过滤数据
+    return progressData.filter(item => {
+      return item.date >= startDate && item.date <= endDate;
+    });
+  },
+
+  // 格式化日期
+  formatDate: function(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  },
+
+
+
+
+
+  // 添加新项目到列表
+  addProjectToList: function(newProject) {
+    const projectList = [newProject, ...this.data.projectList];
+    this.setData({
+      projectList: projectList
     });
   },
 

@@ -10,6 +10,30 @@ Page({
     this.loadProjectList();
   },
 
+  onShow() {
+    console.log('十五项项目删改页面显示');
+
+    // 检查是否有新添加的项目
+    const app = getApp();
+    if (app && app.globalData && app.globalData.newProject) {
+      console.log('检测到新项目，刷新列表');
+
+      // 检查项目是否已经在列表中（避免重复添加）
+      const existingProject = this.data.projectList.find(p => p.id === app.globalData.newProject.id);
+      if (!existingProject) {
+        this.addProjectToList(app.globalData.newProject);
+
+        wx.showToast({
+          title: '项目已添加',
+          icon: 'success'
+        });
+      }
+
+      // 注意：不要在这里清除 globalData.newProject，
+      // 因为用户可能还会去查询页面查看
+    }
+  },
+
   // 加载项目列表
   loadProjectList() {
     this.setData({
@@ -125,5 +149,13 @@ Page({
   // 返回上一页
   goBack() {
     wx.navigateBack();
+  },
+
+  // 添加新项目到列表
+  addProjectToList: function(newProject) {
+    const projectList = [newProject, ...this.data.projectList];
+    this.setData({
+      projectList: projectList
+    });
   }
 });

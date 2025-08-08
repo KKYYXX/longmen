@@ -5,7 +5,11 @@ App({
       name: '谢佳艺',
       phone: '15816782067',
       password: '********'
-    }
+    },
+    // 十五项项目相关的全局数据
+    editingProject: null,    // 正在编辑的项目数据
+    updatedProject: null,    // 更新后的项目数据
+    newProject: null         // 新添加的项目数据
   },
 
   /**
@@ -33,26 +37,45 @@ App({
       console.error('保存用户信息到本地存储失败:', e);
     }
 
-    console.log('=== 用户信息更新完成 ===');
+    console.log('=== 全局用户信息更新完成 ===');
   },
 
   /**
    * 获取全局用户信息
    */
   getUserInfo() {
-    // 优先从本地存储获取最新信息
+    return this.globalData.userInfo;
+  },
+
+  /**
+   * 应用启动时的初始化
+   */
+  onLaunch() {
+    console.log('应用启动');
+    
+    // 从本地存储恢复用户信息
     try {
-      const localUserInfo = wx.getStorageSync('currentUserInfo');
-      if (localUserInfo && localUserInfo.name) {
-        this.globalData.userInfo = localUserInfo;
-        console.log('从本地存储获取用户信息:', JSON.stringify(localUserInfo));
-        return localUserInfo;
+      const storedUserInfo = wx.getStorageSync('currentUserInfo');
+      if (storedUserInfo) {
+        this.globalData.userInfo = storedUserInfo;
+        console.log('从本地存储恢复用户信息:', storedUserInfo);
       }
     } catch (e) {
-      console.log('获取本地用户信息失败:', e);
+      console.error('从本地存储读取用户信息失败:', e);
     }
+  },
 
-    console.log('返回默认用户信息:', JSON.stringify(this.globalData.userInfo));
-    return this.globalData.userInfo;
+  /**
+   * 应用显示时
+   */
+  onShow() {
+    console.log('应用显示');
+  },
+
+  /**
+   * 应用隐藏时
+   */
+  onHide() {
+    console.log('应用隐藏');
   }
-})
+});

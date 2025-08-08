@@ -192,6 +192,13 @@
   padding: 12rpx;
 }
 
+.view-detail-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
 .view-icon {
   font-size: 36rpx;
   color: #666666;
@@ -348,8 +355,222 @@
 
 .file-icon {
   font-size: 32rpx;
-  margin-right: 15rpx;
-  color: #6c757d;
+}
+
+/* 时间查询区域 */
+.time-query-section {
+  margin-top: 40rpx;
+  padding: 30rpx;
+  background: #f8f9fa;
+  border-radius: 16rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 25rpx;
+  text-align: center;
+}
+
+/* 时间按键 */
+.time-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+  margin-bottom: 30rpx;
+  justify-content: center;
+}
+
+.time-btn {
+  padding: 15rpx 25rpx;
+  background: #ffffff;
+  border: 2rpx solid #e9ecef;
+  border-radius: 25rpx;
+  font-size: 26rpx;
+  color: #666666;
+  text-align: center;
+  transition: all 0.3s ease;
+  min-width: 120rpx;
+}
+
+.time-btn.active {
+  background: linear-gradient(135deg, #fff9c4 0%, #fff3a0 100%);
+  border-color: #fff3a0;
+  color: #4a4a4a;
+  box-shadow: 0 4rpx 15rpx rgba(255, 249, 196, 0.4);
+}
+
+.time-btn:active {
+  transform: scale(0.95);
+}
+
+/* 自定义时间选择 */
+.custom-time-section {
+  border-top: 1rpx solid #e9ecef;
+  padding-top: 25rpx;
+}
+
+.custom-time-row {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.custom-date-picker {
+  padding: 15rpx 20rpx;
+  background: #ffffff;
+  border: 2rpx solid #e9ecef;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #333333;
+  min-width: 140rpx;
+  text-align: center;
+}
+
+.query-btn {
+  padding: 15rpx 30rpx;
+  background: linear-gradient(135deg, #fff9c4 0%, #fff3a0 100%);
+  border-radius: 25rpx;
+  font-size: 26rpx;
+  color: #4a4a4a;
+  font-weight: 600;
+  box-shadow: 0 4rpx 15rpx rgba(255, 249, 196, 0.4);
+  transition: all 0.3s ease;
+}
+
+.query-btn:active {
+  transform: scale(0.95);
+}
+
+/* 进度记录加载状态 */
+.progress-loading {
+  text-align: center;
+  padding: 60rpx 30rpx;
+  margin-top: 30rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.loading-icon {
+  display: block;
+  font-size: 60rpx;
+  margin-bottom: 20rpx;
+  animation: rotate 2s linear infinite;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 进度记录列表 */
+.progress-records {
+  margin-top: 30rpx;
+  padding: 30rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.records-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 25rpx;
+  text-align: center;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx solid #fff3a0;
+}
+
+.record-item {
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 25rpx;
+  margin-bottom: 20rpx;
+  border-left: 4rpx solid #fff3a0;
+  transition: all 0.3s ease;
+}
+
+.record-item:last-child {
+  margin-bottom: 0;
+}
+
+.record-item:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
+}
+
+.record-summary {
+  margin-bottom: 15rpx;
+  line-height: 1.6;
+  font-size: 26rpx;
+}
+
+.summary-person {
+  font-weight: bold;
+  color: #4a4a4a;
+  background: #fff3a0;
+  padding: 3rpx 8rpx;
+  border-radius: 8rpx;
+}
+
+.summary-datetime {
+  font-weight: 600;
+  color: #666666;
+  background: #e8f4fd;
+  padding: 3rpx 8rpx;
+  border-radius: 8rpx;
+}
+
+.summary-location {
+  font-weight: 600;
+  color: #666666;
+  background: #f0f8e8;
+  padding: 3rpx 8rpx;
+  border-radius: 8rpx;
+}
+
+.summary-connector {
+  color: #888888;
+  margin: 0 5rpx;
+}
+
+.record-content {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.6;
+  background: #ffffff;
+  padding: 15rpx;
+  border-radius: 8rpx;
+  border-left: 3rpx solid #fff3a0;
+  margin-top: 10rpx;
+}
+
+/* 无进度记录提示 */
+.no-progress {
+  text-align: center;
+  padding: 60rpx 30rpx;
+  color: #999999;
+}
+
+.no-progress-icon {
+  display: block;
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.no-progress-text {
+  font-size: 28rpx;
 }
 
 .file-name {

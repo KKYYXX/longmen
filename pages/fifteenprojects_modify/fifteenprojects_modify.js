@@ -9,6 +9,8 @@ Page({
     linkUrl: '',
     linkTitle: '',
     addedItems: [],
+    editMode: false, // 是否为编辑模式
+    editingProjectId: null, // 正在编辑的项目ID
     projectList: [
       {
         id: 1,
@@ -169,18 +171,30 @@ Page({
           selectedProject: projectList[projectIndex]
         });
 
+        // 将更新后的项目数据传递给查询页面
+        const app = getApp();
+        if (app && app.globalData) {
+          app.globalData.updatedProject = projectList[projectIndex];
+        }
+
         wx.showModal({
           title: '操作结果',
           content: `修改成功！\n项目：${selectedProject.name}\n列：${selectedColumn.name}\n已更新为新内容。`,
           showCancel: false,
           success: () => {
-            this.setData({
-              currentStep: 1,
-              selectedProject: null,
-              selectedColumn: null,
-              selectedAction: '',
-              newContent: ''
-            });
+            if (this.data.editMode) {
+              // 编辑模式，返回查询页面
+              wx.navigateBack();
+            } else {
+              // 新增模式，重置状态
+              this.setData({
+                currentStep: 1,
+                selectedProject: null,
+                selectedColumn: null,
+                selectedAction: '',
+                newContent: ''
+              });
+            }
           }
         });
       } else {
@@ -403,18 +417,30 @@ Page({
       wx.hideLoading();
 
       if (isSuccess) {
+        // 将更新后的项目数据传递给查询页面
+        const app = getApp();
+        if (app && app.globalData) {
+          app.globalData.updatedProject = selectedProject;
+        }
+
         wx.showModal({
           title: '操作结果',
           content: `上传成功！\n项目：${selectedProject.name}\n列：${selectedColumn.name}\n已添加${addedItems.length}项内容。`,
           showCancel: false,
           success: () => {
-            this.setData({
-              currentStep: 1,
-              selectedProject: null,
-              selectedColumn: null,
-              selectedAction: '',
-              addedItems: []
-            });
+            if (this.data.editMode) {
+              // 编辑模式，返回查询页面
+              wx.navigateBack();
+            } else {
+              // 新增模式，重置状态
+              this.setData({
+                currentStep: 1,
+                selectedProject: null,
+                selectedColumn: null,
+                selectedAction: '',
+                addedItems: []
+              });
+            }
           }
         });
       } else {
@@ -430,5 +456,51 @@ Page({
   // 取消操作
   cancel() {
     wx.navigateBack();
+  },
+
+  // 页面加载
+  onLoad: function(options) {
+    console.log('修改页面加载，参数:', options);
+
+    // 检查是否为编辑模式
+    if (options.projectId) {
+      this.setData({
+        editMode: true,
+        editingProjectId: parseInt(options.projectId)
+      });
+
+      // 从全局数据或本地数据中获取项目信息
+      const app = getApp();
+      if (app && app.globalData && app.globalData.editingProject) {
+        this.setData({
+          selectedProject: app.globalData.editingProject,
+          currentStep: 2 // 直接跳到第二步，因为项目已选择
+        });
+        console.log('编辑模式，项目数据:', app.globalData.editingProject);
+      } else {
+        // 如果全局数据中没有，从本地项目列表中查找
+        const project = this.data.projectList.find(p => p.id === parseInt(options.projectId));
+        if (project) {
+          this.setData({
+            selectedProject: project,
+            currentStep: 2
+          });
+        }
+      }
+    }
+  },
+
+  // 页面显示
+  onShow: function() {
+    console.log('修改页面显示');
+  },
+
+  // 页面卸载
+  onUnload: function() {
+    // 清理全局数据
+    const app = getApp();
+    if (app && app.globalData && app.globalData.editingProject) {
+      app.globalData.editingProject = null;
+    }
   }
 });

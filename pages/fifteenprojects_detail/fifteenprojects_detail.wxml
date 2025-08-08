@@ -1,0 +1,170 @@
+<!-- 十五项项目详情页面 -->
+<view class="project-detail-container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <text class="page-title">{{projectInfo.projectName}}</text>
+    <text class="page-subtitle">主要任务与量化目标</text>
+  </view>
+
+  <!-- 项目基本信息 -->
+  <view class="project-info-section">
+    <view class="info-card">
+      <view class="info-row">
+        <text class="info-label">项目类型：</text>
+        <text class="info-value">{{projectInfo.projectType}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">开始时间：</text>
+        <text class="info-value">{{projectInfo.startDate}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">结束时间：</text>
+        <text class="info-value">{{projectInfo.endDate}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">项目进度：</text>
+        <text class="info-value progress-text">{{projectInfo.progress}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主要任务目标内容 -->
+  <view class="objectives-section">
+    <view class="section-header">
+      <text class="section-title">📋 主要任务目标</text>
+    </view>
+    <view class="objectives-content">
+      <text class="objectives-text">{{projectInfo.objectives}}</text>
+    </view>
+  </view>
+
+  <!-- 项目内容和落实举措 -->
+  <view class="content-section">
+    <view class="section-header">
+      <text class="section-title">🎯 项目内容和落实举措</text>
+    </view>
+    <view class="content-text">
+      <text>{{projectInfo.content}}</text>
+    </view>
+  </view>
+
+  <!-- 时间查询按键区域 -->
+  <view class="time-query-section">
+    <view class="section-header">
+      <text class="section-title">⏰ 进度查询</text>
+      <text class="section-subtitle">选择时间查看详细进度</text>
+    </view>
+    
+    <!-- 快速时间选择 -->
+    <view class="quick-time-buttons">
+      <view 
+        class="time-btn {{selectedTimeType === 'week' ? 'active' : ''}}"
+        bindtap="selectTimeType"
+        data-type="week"
+      >
+        <text class="time-btn-text">本周</text>
+      </view>
+      <view 
+        class="time-btn {{selectedTimeType === 'month' ? 'active' : ''}}"
+        bindtap="selectTimeType"
+        data-type="month"
+      >
+        <text class="time-btn-text">本月</text>
+      </view>
+      <view 
+        class="time-btn {{selectedTimeType === 'quarter' ? 'active' : ''}}"
+        bindtap="selectTimeType"
+        data-type="quarter"
+      >
+        <text class="time-btn-text">本季度</text>
+      </view>
+      <view 
+        class="time-btn {{selectedTimeType === 'custom' ? 'active' : ''}}"
+        bindtap="selectTimeType"
+        data-type="custom"
+      >
+        <text class="time-btn-text">自定义</text>
+      </view>
+    </view>
+
+    <!-- 自定义时间选择 -->
+    <view class="custom-time-picker" wx:if="{{selectedTimeType === 'custom'}}">
+      <view class="picker-row">
+        <text class="picker-label">开始时间：</text>
+        <picker mode="date" value="{{queryStartDate}}" bindchange="onQueryStartDateChange">
+          <view class="date-picker-display">
+            <text>{{queryStartDate || '请选择开始时间'}}</text>
+            <text class="picker-arrow">📅</text>
+          </view>
+        </picker>
+      </view>
+      <view class="picker-row">
+        <text class="picker-label">结束时间：</text>
+        <picker mode="date" value="{{queryEndDate}}" bindchange="onQueryEndDateChange">
+          <view class="date-picker-display">
+            <text>{{queryEndDate || '请选择结束时间'}}</text>
+            <text class="picker-arrow">📅</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 查询按钮 -->
+    <view class="query-btn-container">
+      <button class="query-btn" bindtap="queryProgress">
+        <text class="query-btn-text">🔍 查询进度详情</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 进度详情展示区域 -->
+  <view class="progress-detail-section" wx:if="{{showProgressDetail}}">
+    <view class="section-header">
+      <text class="section-title">📊 进度详情</text>
+      <text class="section-subtitle">{{progressTimeRange}}</text>
+    </view>
+    
+    <!-- 进度记录列表 -->
+    <view class="progress-list">
+      <view 
+        class="progress-item"
+        wx:for="{{progressRecords}}"
+        wx:key="id"
+      >
+        <view class="progress-timeline">
+          <view class="timeline-dot"></view>
+          <view class="timeline-line" wx:if="{{index < progressRecords.length - 1}}"></view>
+        </view>
+        <view class="progress-content">
+          <view class="progress-header">
+            <text class="progress-date">{{item.date}}</text>
+            <text class="progress-time">{{item.time}}</text>
+          </view>
+          <view class="progress-info">
+            <view class="progress-person">
+              <text class="person-label">执行人：</text>
+              <text class="person-name">{{item.person}}</text>
+            </view>
+            <view class="progress-location">
+              <text class="location-label">地点：</text>
+              <text class="location-name">{{item.location}}</text>
+            </view>
+          </view>
+          <view class="progress-description">
+            <text class="description-text">{{item.description}}</text>
+          </view>
+          <view class="progress-result" wx:if="{{item.result}}">
+            <text class="result-label">完成情况：</text>
+            <text class="result-text">{{item.result}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-progress" wx:if="{{progressRecords.length === 0}}">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">该时间段暂无进度记录</text>
+    </view>
+  </view>
+</view>
