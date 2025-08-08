@@ -16,48 +16,74 @@ Page({
       loading: true
     });
 
-    // 调用后端接口获取项目列表
-    // 接口：GET /api/fifteen-projects/list
-    wx.request({
-      url: 'http://127.0.0.1:5000/api/fifteen-projects/list',
-      method: 'GET',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      success: (res) => {
-        this.setData({
-          loading: false
-        });
-        if (res.data.success) {
-          this.setData({
-            projectList: res.data.projects || []
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '加载项目列表失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        this.setData({
-          loading: false
-        });
-        console.error('加载项目列表失败:', err);
-        wx.showToast({
-          title: '加载项目列表失败',
-          icon: 'none'
-        });
-      }
-    });
+    // 使用模拟数据，实际项目中应该调用后端接口
+    try {
+      const projects = this.getDefaultProjects();
+      this.setData({
+        projectList: projects,
+        loading: false
+      });
+      console.log('项目列表加载完成，共', projects.length, '个项目');
+    } catch (error) {
+      console.error('加载项目列表失败:', error);
+      this.setData({
+        projectList: [],
+        loading: false
+      });
+      wx.showToast({
+        title: '加载项目列表失败',
+        icon: 'none'
+      });
+    }
   },
 
-  // 新增列
-  addColumn() {
-    wx.navigateTo({
-      url: '/pages/fifteenprojects_add_column/fifteenprojects_add_column'
-    });
+  // 获取默认项目数据
+  getDefaultProjects() {
+    return [
+      {
+        id: 1,
+        projectName: '智慧城市基础设施建设项目',
+        projectType: '基础设施建设',
+        progress: 68,
+        status: '进行中',
+        createDate: '2024-01-15'
+      },
+      {
+        id: 2,
+        projectName: '绿色能源产业园区建设',
+        projectType: '产业发展',
+        progress: 52,
+        status: '进行中',
+        createDate: '2024-02-01'
+      },
+      {
+        id: 3,
+        projectName: '数字化教育改革试点',
+        projectType: '民生改善',
+        progress: 82,
+        status: '即将完成',
+        createDate: '2024-03-01'
+      },
+      {
+        id: 4,
+        projectName: '城市轨道交通建设工程',
+        projectType: '交通建设',
+        progress: 35,
+        status: '建设中',
+        createDate: '2024-01-01'
+      },
+      {
+        id: 5,
+        projectName: '现代农业科技示范园',
+        projectType: '农业发展',
+        progress: 28,
+        status: '建设中',
+        createDate: '2024-04-01'
+      }
+    ];
   },
+
+
 
   // 新增项目
   addProject() {
@@ -80,12 +106,7 @@ Page({
     });
   },
 
-  // 项目进度管理
-  manageProgress() {
-    wx.navigateTo({
-      url: '/pages/project_progress_manage/project_progress_manage'
-    });
-  },
+
 
   // 查看项目详情
   viewProjectDetail(e) {

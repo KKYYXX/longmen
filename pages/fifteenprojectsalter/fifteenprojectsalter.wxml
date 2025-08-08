@@ -15,17 +15,7 @@
   </view>
 
   <view class="btn-container">
-    <view class="function-card" bindtap="addColumn">
-      <view class="card-content">
-        <text class="card-title">新增列</text>
-        <text class="card-desc">添加新的项目列</text>
-      </view>
-      <view class="icon-circle add-icon-circle">
-        <view class="card-icon add-icon">
-          <text class="icon-text">➕</text>
-        </view>
-      </view>
-    </view>
+
 
     <view class="function-card" bindtap="addProject">
       <view class="card-content">
@@ -63,16 +53,6 @@
       </view>
     </view>
 
-    <view class="function-card" bindtap="manageProgress">
-      <view class="card-content">
-        <text class="card-title">项目进度管理</text>
-        <text class="card-desc">管理项目进度记录</text>
-      </view>
-      <view class="icon-circle progress-icon-circle">
-        <view class="card-icon progress-icon">
-          <text class="icon-text">📈</text>
-        </view>
-      </view>
-    </view>
+
   </view>
 </view>

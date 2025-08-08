@@ -20,9 +20,9 @@
     
     <!-- 名称搜索 -->
     <view class="search-box">
-      <input 
-        class="search-input" 
-        placeholder="搜索项目名称..." 
+      <input
+        class="search-input"
+        placeholder="搜索项目名称..."
         value="{{searchKeyword}}"
         bindinput="onSearchInput"
         bindconfirm="onSearch"
@@ -50,7 +50,6 @@
             <view class="project-name">{{item.projectName}}</view>
             <view class="project-meta">
               <text class="project-date">{{item.createDate || item.startDate}}</text>
-              <text class="project-progress">进度: {{item.progress}}%</text>
             </view>
             <view class="project-type">{{item.projectType}}</view>
           </view>
@@ -87,5 +86,40 @@
   <view class="empty-state" wx:if="{{projectList.length === 0 && !loading}}">
     <text class="empty-icon">🏗️</text>
     <text class="empty-text">暂无十五项项目数据</text>
+  </view>
+</view>
+
+<!-- 项目详情弹窗 -->
+<view class="project-detail-modal" wx:if="{{showProjectDetail}}">
+  <view class="modal-mask" bindtap="closeProjectDetail"></view>
+  <view class="modal-content">
+    <!-- 弹窗头部 -->
+    <view class="modal-header">
+      <view class="modal-title">{{selectedProject.projectName}}</view>
+      <view class="close-btn" bindtap="closeProjectDetail">✕</view>
+    </view>
+
+    <!-- 项目详细信息 -->
+    <view class="project-info-section">
+      <view class="info-item">
+        <view class="info-label">项目名称</view>
+        <view class="info-value">{{selectedProject.projectName}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">项目类型</view>
+        <view class="info-value">{{selectedProject.projectType}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">创建时间</view>
+        <view class="info-value">{{selectedProject.createDate || selectedProject.startDate}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">主要任务目标</view>
+        <view class="info-value objectives-text">{{selectedProject.objectives}}</view>
+      </view>
+    </view>
   </view>
 </view>

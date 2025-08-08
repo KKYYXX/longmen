@@ -22,39 +22,8 @@ Page({
 
   // 初始化页面
   initPage() {
-    // 检查用户权限
-    this.checkUserPermission();
-  },
-
-  // 检查用户权限
-  checkUserPermission() {
-    // TODO: 调用后端接口检查用户是否有添加十五项项目的权限
-    // 接口：GET /api/user/permissions
-    wx.request({
-      url: 'http://127.0.0.1:5000/api/user/permissions',
-      method: 'GET',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      success: (res) => {
-        if (res.data.success && res.data.permissions.includes('add_fifteen_project')) {
-          console.log('用户有添加十五项项目权限');
-        } else {
-          wx.showModal({
-            title: '权限不足',
-            content: '您没有添加十五项项目的权限，请联系管理员。',
-            showCancel: false,
-            success: () => {
-              wx.navigateBack();
-            }
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('检查权限失败:', err);
-        // 开发环境下允许继续操作
-      }
-    });
+    // 页面初始化完成
+    console.log('十五项项目添加页面初始化完成');
   },
 
   // 文件上传功能

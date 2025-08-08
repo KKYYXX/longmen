@@ -9,7 +9,7 @@
 
 /* 搜索区域 */
 .search-section {
-  padding: 30rpx;
+  padding: 20rpx 30rpx 30rpx;
   background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
   border-bottom: 1rpx solid #FFE082;
   box-shadow: 0 4rpx 20rpx rgba(249, 226, 134, 0.2);
@@ -19,78 +19,125 @@
 .filter-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 25rpx;
   flex-wrap: wrap;
+  gap: 15rpx;
 }
 
 .filter-label {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: #333333;
-  margin-right: 20rpx;
-  min-width: 120rpx;
+  font-weight: 500;
+  min-width: 100rpx;
 }
 
 .date-picker {
-  background: #f8f9fa;
-  border: 1rpx solid #dee2e6;
-  border-radius: 8rpx;
-  padding: 16rpx 20rpx;
-  font-size: 26rpx;
-  color: #495057;
-  margin-right: 20rpx;
-  min-width: 200rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1rpx solid rgba(255, 255, 255, 0.6);
+  border-radius: 12rpx;
+  padding: 18rpx 24rpx;
+  font-size: 24rpx;
+  color: #333333;
+  min-width: 180rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10rpx);
+  transition: all 0.3s ease;
+}
+
+.date-picker:active {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(0.98);
 }
 
 .date-separator {
-  font-size: 26rpx;
-  color: #6c757d;
-  margin: 0 10rpx;
+  font-size: 24rpx;
+  color: #666666;
+  font-weight: 500;
 }
 
 /* 搜索框 */
 .search-box {
-  display: flex;
-  align-items: center;
-  background: #f8f9fa;
-  border-radius: 12rpx;
-  padding: 0 20rpx;
-  border: 1rpx solid #dee2e6;
+  position: relative;
+  margin-top: 25rpx;
 }
 
 .search-input {
-  flex: 1;
-  height: 80rpx;
-  font-size: 28rpx;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  border-radius: 30rpx;
+  padding: 22rpx 70rpx 22rpx 35rpx;
+  font-size: 26rpx;
   color: #333333;
-  padding: 0;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10rpx);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: rgba(0, 122, 255, 0.3);
+  box-shadow: 0 4rpx 20rpx rgba(0, 122, 255, 0.1);
+}
+
+.search-input::placeholder {
+  color: #999999;
 }
 
 .search-btn {
-  padding: 10rpx;
-  margin-left: 10rpx;
+  position: absolute;
+  right: 25rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44rpx;
+  height: 44rpx;
+  background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 122, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.search-btn:active {
+  transform: translateY(-50%) scale(0.95);
+  box-shadow: 0 1rpx 4rpx rgba(0, 122, 255, 0.4);
 }
 
 .search-icon {
-  font-size: 32rpx;
-  color: #f9e286;
+  font-size: 20rpx;
+  color: #ffffff;
 }
 
 /* 项目列表 */
 .project-list {
-  padding: 20rpx;
+  padding: 30rpx 20rpx 20rpx;
 }
 
 .project-item {
   background: #ffffff;
-  border-radius: 12rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
   overflow: hidden;
   transition: all 0.3s ease;
+  border-left: 5rpx solid #f9e286;
+  position: relative;
+}
+
+.project-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, #f9e286 0%, transparent 100%);
 }
 
 .project-item:active {
   transform: scale(0.98);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
 }
 
 /* 项目头部 */
@@ -98,7 +145,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 30rpx;
+  padding: 32rpx 28rpx 20rpx;
 }
 
 .project-info {
@@ -108,9 +155,10 @@
 }
 
 .project-icon {
-  font-size: 48rpx;
-  margin-right: 20rpx;
+  font-size: 52rpx;
+  margin-right: 24rpx;
   color: #FFB74D;
+  filter: drop-shadow(0 2rpx 4rpx rgba(255, 183, 77, 0.3));
 }
 
 .project-details {
@@ -118,70 +166,73 @@
 }
 
 .project-name {
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: 30rpx;
+  font-weight: 600;
   color: #333333;
-  margin-bottom: 8rpx;
+  margin-bottom: 12rpx;
   line-height: 1.4;
+  letter-spacing: 0.5rpx;
 }
 
 .project-meta {
   display: flex;
   align-items: center;
-  gap: 20rpx;
-  font-size: 24rpx;
-  color: #6c757d;
+  gap: 24rpx;
+  font-size: 22rpx;
+  color: #666666;
 }
 
-.project-progress {
-  color: #FFB74D;
-  font-weight: 500;
-}
+
 
 .project-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  padding: 10rpx;
+  gap: 8rpx;
+  padding: 12rpx;
 }
 
 .view-icon {
-  font-size: 20px;
-  color: rgba(92,80,50,0.7);
+  font-size: 36rpx;
+  color: #666666;
+  opacity: 0.8;
 }
 
 .view-text {
-  font-size: 12px;
-  color: rgba(92,80,50,0.6);
+  font-size: 20rpx;
+  color: #666666;
+  opacity: 0.7;
 }
 
 /* 项目类型 */
 .project-type {
-  font-size: 12px;
-  color: rgba(92,80,50,0.6);
-  background: rgba(255,248,192,0.5);
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-top: 5px;
+  font-size: 20rpx;
+  color: #666666;
+  background: rgba(249, 226, 134, 0.3);
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+  margin-top: 8rpx;
   display: inline-block;
+  font-weight: 500;
 }
 
 /* 项目简介 */
 .project-summary {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(255,236,179,0.5);
+  margin-top: 24rpx;
+  padding: 24rpx 28rpx;
+  border-top: 1rpx solid rgba(249, 226, 134, 0.3);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .summary-text {
-  font-size: 14px;
-  color: rgba(92,80,50,0.8);
-  line-height: 1.5;
+  font-size: 24rpx;
+  color: #555555;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  letter-spacing: 0.3rpx;
 }
 
 /* 移除了展开功能相关的样式 */
@@ -322,32 +373,7 @@
   color: #FFB74D;
 }
 
-/* 进度区域 */
-.progress-section {
-  margin-bottom: 20rpx;
-}
 
-.progress-bar {
-  width: 100%;
-  height: 12rpx;
-  background: #e9ecef;
-  border-radius: 6rpx;
-  margin: 10rpx 0;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #FFB74D;
-  border-radius: 6rpx;
-  transition: width 0.3s ease;
-}
-
-.progress-text {
-  font-size: 24rpx;
-  color: #FFB74D;
-  font-weight: 500;
-}
 
 /* 加载状态 */
 .load-more, .loading, .no-more {
@@ -378,4 +404,162 @@
 .empty-text {
   font-size: 28rpx;
   color: #6c757d;
+}
+
+/* 项目详情弹窗样式 */
+.project-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  width: 90%;
+  max-height: 80%;
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 弹窗头部 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
+  border-bottom: 1rpx solid #FFE082;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.close-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  font-size: 32rpx;
+  color: #666666;
+  cursor: pointer;
+}
+
+/* 项目目标 */
+.project-objectives {
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.objectives-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 20rpx;
+}
+
+.objectives-content {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* 项目详细信息区域 */
+.project-info-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30rpx;
+}
+
+.info-item {
+  margin-bottom: 30rpx;
+  padding-bottom: 25rpx;
+  border-bottom: 1rpx solid rgba(249, 226, 134, 0.3);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #666666;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.objectives-text {
+  line-height: 1.6;
+  text-align: justify;
+  color: #444444;
+}
+
+/* 空状态样式 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 40rpx;
+  color: #999999;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+/* 加载状态 */
+.loading-state {
+  text-align: center;
+  padding: 60rpx 40rpx;
+  color: #666666;
+}
+
+.loading-icon {
+  font-size: 60rpx;
+  margin-bottom: 20rpx;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

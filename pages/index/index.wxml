@@ -32,7 +32,7 @@
       </view>
       
       <!-- 功能按钮2 -->
-      <view class="feature-card" bindtap="goToFifteenProjects">
+      <view class="feature-card" bindtap="goToFifteenProjects" style="position: relative; left: 0rpx; top: -1rpx">
         <view class="icon-container">
           <text class="feature-icon">📋</text>
         </view>
