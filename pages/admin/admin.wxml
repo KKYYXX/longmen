@@ -23,12 +23,5 @@
   <!-- 底部信息 -->
   <view class="admin-footer">
     <text class="footer-text">操作将影响账号权限分配</text>
-    <text class="footer-number">49999998</text>
-
-    <!-- 用户信息显示 -->
-    <view class="user-info" wx:if="{{userInfo.name}}">
-      <text class="user-name">当前用户：{{userInfo.name}}</text>
-      <text class="user-phone">手机号：{{userInfo.phone}}</text>
-    </view>
   </view>
 </view>

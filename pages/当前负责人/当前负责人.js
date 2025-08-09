@@ -77,11 +77,49 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 每次显示页面时刷新用户信息
+    console.log('当前负责人页面显示，开始刷新负责人信息');
+    // 每次显示页面时从后端获取最新的负责人信息
+    this.refreshCurrentManager();
+  },
+
+  /**
+   * 从后端获取当前负责人信息
+   */
+  refreshCurrentManager() {
+    console.log('开始刷新当前负责人信息');
+    
+    // 检查是否有新的用户信息可用
+    const app = getApp();
+    const currentUserInfo = app.getUserInfo();
+    const oldManagerInfo = this.data.managerInfo;
+    
+    // 更新页面数据
+    this.setData({
+      managerInfo: {
+        name: currentUserInfo.name || '未知用户',
+        phone: currentUserInfo.phone || '未知电话'
+      }
+    });
+    
+    console.log('当前负责人信息已更新:', this.data.managerInfo);
+    
+    // 如果负责人信息有变化，显示提示
+    if (oldManagerInfo.name && oldManagerInfo.name !== currentUserInfo.name) {
+      wx.showToast({
+        title: `负责人已更新为: ${currentUserInfo.name}`,
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  /**
+   * 使用全局用户信息（备用方案）
+   */
+  useGlobalUserInfo() {
     const app = getApp();
     const userInfo = app.getUserInfo();
     
-    // 更新页面数据
     this.setData({
       managerInfo: {
         name: userInfo.name || '未知用户',
@@ -89,17 +127,7 @@ Page({
       }
     });
     
-    console.log('当前负责人页面显示，刷新用户信息:', userInfo);
-    console.log('页面显示时的负责人信息:', this.data.managerInfo);
-    
-    // 如果用户信息有更新，显示提示
-    if (userInfo.name && userInfo.name !== this.data.managerInfo.name) {
-      wx.showToast({
-        title: `负责人已更新为: ${userInfo.name}`,
-        icon: 'none',
-        duration: 2000
-      });
-    }
+    console.log('使用全局用户信息:', this.data.managerInfo);
   },
 
   /**

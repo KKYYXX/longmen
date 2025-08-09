@@ -149,7 +149,7 @@ Page({
 
     // 调用后端 /user/transfer_principal 接口
     wx.request({
-      url: 'http://127.0.0.1:5000/user/transfer_principal',
+      url: 'http://127.0.0.1:5000/app/user/transfer_principal',
       method: 'POST',
       header: {
         'content-type': 'application/x-www-form-urlencoded'
@@ -169,6 +169,21 @@ Page({
           // 转让成功
           console.log('转让成功:', res.data);
 
+          // 更新全局用户信息为新的负责人信息
+          const app = getApp();
+          const newUserInfo = {
+            name: name,
+            phone: phone,
+            password: app.getUserInfo().password // 保持原密码
+          };
+          
+          console.log('更新全局用户信息为新负责人:', newUserInfo);
+          app.updateUserInfo(newUserInfo);
+
+          // 同时更新微信小程序的登录状态缓存
+          wx.setStorageSync('userInfo', newUserInfo);
+          wx.setStorageSync('isLoggedIn', true);
+
           wx.showToast({
             title: '转让成功！',
             icon: 'success',
@@ -180,6 +195,16 @@ Page({
                   delta: 1,
                   success: () => {
                     console.log('成功返回上一页');
+                    
+                    // 发送页面刷新事件给当前负责人页面
+                    const pages = getCurrentPages();
+                    if (pages.length > 1) {
+                      const prevPage = pages[pages.length - 2];
+                      if (prevPage && prevPage.refreshUserInfo) {
+                        console.log('调用上一页的刷新方法');
+                        prevPage.refreshUserInfo();
+                      }
+                    }
                   },
                   fail: (err) => {
                     console.error('返回上一页失败:', err);
