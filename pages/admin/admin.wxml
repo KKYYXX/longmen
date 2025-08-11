@@ -16,6 +16,7 @@
       <!-- 负责人转让按钮 -->
       <button class="admin-btn" bindtap="onTransferOwnership">
         <text class="btn-text">负责人转让</text>
+
       </button>
     </view>
   </view>

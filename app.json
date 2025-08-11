@@ -27,6 +27,8 @@
     "pages/fifteenprojects_add_project/fifteenprojects_add_project",
     "pages/fifteenprojects_modify/fifteenprojects_modify",
     "pages/fifteenprojects_delete/fifteenprojects_delete",
+    "pages/项目查询权限人员/项目查询权限人员",
+    "pages/项目修改权限人员/项目修改权限人员",
     "pages/权限管理人员名单/权限管理人员名单",
     "pages/当前负责人/当前负责人",
     "pages/被转让人信息/被转让人信息",

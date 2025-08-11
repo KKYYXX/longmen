@@ -8,6 +8,13 @@
   <!-- 功能按钮区域 -->
   <view class="content">
 
+    <button class="btn" bindtap="onProjectQuery">
+      <text>项目查询</text>
+    </button>
+
+    <button class="btn" bindtap="onProjectModify">
+      <text>项目修改</text>
+    </button>
 
     <button class="btn" bindtap="onPolicyModify">
       <text>政策文件修改</text>
