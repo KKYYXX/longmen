@@ -179,33 +179,7 @@
   min-width: 40rpx;
 }
 
-/* 文件上传区域 */
-.upload-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 120rpx;
-  border: 2rpx dashed #FFB74D;
-  border-radius: 8rpx;
-  background: rgba(255, 183, 77, 0.05);
-  transition: all 0.3s ease;
-}
 
-.upload-area:active {
-  background: rgba(255, 183, 77, 0.1);
-  border-color: #FFA726;
-}
-
-.upload-icon {
-  font-size: 32rpx;
-  margin-bottom: 10rpx;
-}
-
-.upload-text {
-  font-size: 24rpx;
-  color: #6c757d;
-}
 
 /* 按钮组 */
 .button-group {
@@ -248,4 +222,222 @@
 .cancel-btn:active {
   transform: translateY(2rpx);
   box-shadow: 0 2rpx 8rpx rgba(158, 158, 158, 0.4);
+}
+
+/* 联系人管理样式 */
+.contacts-container {
+  width: 100%;
+}
+
+.contacts-list {
+  margin-bottom: 20rpx;
+}
+
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.contact-phone {
+  display: block;
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.contact-edit-btn,
+.contact-delete-btn {
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  cursor: pointer;
+}
+
+.contact-edit-btn {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.contact-delete-btn {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.add-contact-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx;
+  background: #f0f8ff;
+  border: 2rpx dashed #4a90e2;
+  border-radius: 12rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-contact-btn:active {
+  background: #e6f3ff;
+  transform: scale(0.98);
+}
+
+.add-contact-icon {
+  font-size: 36rpx;
+  color: #4a90e2;
+  margin-right: 12rpx;
+}
+
+.add-contact-text {
+  font-size: 28rpx;
+  color: #4a90e2;
+  font-weight: 500;
+}
+
+/* 联系人弹窗样式 */
+.contact-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.contact-modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.contact-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 680rpx;
+  max-width: 90%;
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.2);
+}
+
+.contact-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.contact-modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.contact-modal-close {
+  font-size: 36rpx;
+  color: #999999;
+  cursor: pointer;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.contact-modal-close:active {
+  background: #f5f5f5;
+}
+
+.contact-modal-body {
+  padding: 40rpx;
+}
+
+.contact-form-item {
+  margin-bottom: 30rpx;
+}
+
+.contact-form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.contact-form-input {
+  width: 100%;
+  padding: 24rpx 20rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  background: #fafafa;
+  box-sizing: border-box;
+  min-height: 80rpx;
+}
+
+.contact-form-input:focus {
+  border-color: #4a90e2;
+  background: #ffffff;
+}
+
+.contact-modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx 40rpx;
+  border-top: 1rpx solid #e9ecef;
+}
+
+.contact-cancel-btn,
+.contact-save-btn {
+  flex: 1;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+}
+
+.contact-cancel-btn {
+  background: #f5f5f5;
+  color: #666666;
+}
+
+.contact-save-btn {
+  background: #4a90e2;
+  color: #ffffff;
+}
+
+.contact-cancel-btn:active {
+  background: #e0e0e0;
+}
+
+.contact-save-btn:active {
+  background: #357abd;
 }

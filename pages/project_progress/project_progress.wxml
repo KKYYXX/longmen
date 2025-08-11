@@ -11,8 +11,13 @@
       <text class="title">{{projectData.projectName}}</text>
       <text class="subtitle">项目进度详情</text>
     </view>
-    <view class="share-btn" bindtap="shareProject">
-      <text class="share-icon">⋯</text>
+    <view class="header-actions">
+      <view class="action-btn" bindtap="goToDeletePage">
+        <text class="action-icon">🗑️</text>
+      </view>
+      <view class="share-btn" bindtap="shareProject">
+        <text class="share-icon">⋯</text>
+      </view>
     </view>
   </view>
 
@@ -66,18 +71,30 @@
         <text class="section-subtitle">点击查看详细进度</text>
       </view>
 
-      <!-- 时间选择器 -->
+      <!-- 时间筛选器 -->
       <view class="time-filter">
+        <view class="filter-buttons">
+          <view class="filter-btn {{timeFilter === 'week' ? 'active' : ''}}" bindtap="filterByTime" data-filter="week">
+            <text>最近一周</text>
+          </view>
+          <view class="filter-btn {{timeFilter === 'month' ? 'active' : ''}}" bindtap="filterByTime" data-filter="month">
+            <text>最近一月</text>
+          </view>
+          <view class="filter-btn {{timeFilter === 'year' ? 'active' : ''}}" bindtap="filterByTime" data-filter="year">
+            <text>最近一年</text>
+          </view>
+          <view class="filter-btn {{timeFilter === 'all' ? 'active' : ''}}" bindtap="filterByTime" data-filter="all">
+            <text>查看全部</text>
+          </view>
+        </view>
+
         <picker mode="date" value="{{selectedDate}}" bindchange="onDateChange">
           <view class="date-picker-btn">
             <text class="picker-icon">📅</text>
-            <text class="picker-text">{{selectedDate || '选择日期'}}</text>
+            <text class="picker-text">{{selectedDate || '选择具体日期'}}</text>
             <text class="picker-arrow">▼</text>
           </view>
         </picker>
-        <view class="filter-btn" bindtap="showAllProgress">
-          <text>查看全部</text>
-        </view>
       </view>
 
       <!-- 进度列表 -->
@@ -100,7 +117,12 @@
           <view class="progress-content">
             <view class="progress-header">
               <text class="progress-title">{{item.title}}</text>
-              <text class="progress-status {{item.status}}">{{item.statusText}}</text>
+              <view class="progress-actions">
+                <text class="progress-status {{item.status}}">{{item.statusText}}</text>
+                <view class="delete-btn" bindtap="deleteProgress" data-id="{{item.id}}" catchtap="deleteProgress">
+                  <text class="delete-icon">🗑️</text>
+                </view>
+              </view>
             </view>
             
             <view class="progress-details">

@@ -92,9 +92,22 @@
         <view class="action-icon">📎</view>
         <view class="action-info">
           <view class="action-name">添加内容</view>
-          <view class="action-desc">添加图片、视频、链接、新闻稿等</view>
+          <view class="action-desc">添加图片、视频、时间、地点、人员等</view>
         </view>
         <view class="select-icon">{{selectedAction === 'add' ? '✓' : '○'}}</view>
+      </view>
+
+      <view
+        class="action-item {{selectedAction === 'delete' ? 'selected' : ''}}"
+        bindtap="selectAction"
+        data-action="delete"
+      >
+        <view class="action-icon">🗑️</view>
+        <view class="action-info">
+          <view class="action-name">删除内容</view>
+          <view class="action-desc">删除项目进度记录</view>
+        </view>
+        <view class="select-icon">{{selectedAction === 'delete' ? '✓' : '○'}}</view>
       </view>
     </view>
 
@@ -154,9 +167,19 @@
           <text class="upload-text">添加视频</text>
         </view>
 
-        <view class="upload-item" bindtap="addLink">
-          <view class="upload-icon">🔗</view>
-          <text class="upload-text">添加链接</text>
+        <view class="upload-item" bindtap="addTime">
+          <view class="upload-icon">⏰</view>
+          <text class="upload-text">添加时间</text>
+        </view>
+
+        <view class="upload-item" bindtap="addLocation">
+          <view class="upload-icon">📍</view>
+          <text class="upload-text">添加地点</text>
+        </view>
+
+        <view class="upload-item" bindtap="addPerson">
+          <view class="upload-icon">👤</view>
+          <text class="upload-text">添加人员</text>
         </view>
 
         <view class="upload-item" bindtap="uploadDocument">
@@ -165,21 +188,56 @@
         </view>
       </view>
 
-      <!-- 链接输入框 -->
-      <view class="link-input" wx:if="{{showLinkInput}}">
+      <!-- 时间输入框 -->
+      <view class="input-section" wx:if="{{showTimeInput}}">
+        <text class="input-label">添加时间</text>
+        <picker
+          mode="date"
+          value="{{selectedDate}}"
+          bindchange="onDateChange"
+          class="form-input"
+        >
+          <view class="picker-text">{{selectedDate || '请选择日期'}}</view>
+        </picker>
+        <picker
+          mode="time"
+          value="{{selectedTime}}"
+          bindchange="onTimeChange"
+          class="form-input"
+        >
+          <view class="picker-text">{{selectedTime || '请选择时间'}}</view>
+        </picker>
+        <button class="add-btn" bindtap="confirmAddTime">添加时间</button>
+      </view>
+
+      <!-- 地点输入框 -->
+      <view class="input-section" wx:if="{{showLocationInput}}">
+        <text class="input-label">添加地点</text>
         <input
           class="form-input"
-          placeholder="请输入链接地址"
-          value="{{linkUrl}}"
-          bindinput="onLinkInput"
+          placeholder="请输入地点名称"
+          value="{{locationName}}"
+          bindinput="onLocationInput"
+        />
+        <button class="add-btn" bindtap="confirmAddLocation">添加地点</button>
+      </view>
+
+      <!-- 人员输入框 -->
+      <view class="input-section" wx:if="{{showPersonInput}}">
+        <text class="input-label">添加人员</text>
+        <input
+          class="form-input"
+          placeholder="请输入人员姓名"
+          value="{{personName}}"
+          bindinput="onPersonNameInput"
         />
         <input
           class="form-input"
-          placeholder="请输入链接标题"
-          value="{{linkTitle}}"
-          bindinput="onLinkTitleInput"
+          placeholder="请输入人员职务"
+          value="{{personTitle}}"
+          bindinput="onPersonTitleInput"
         />
-        <button class="add-link-btn" bindtap="confirmAddLink">确认添加</button>
+        <button class="add-btn" bindtap="confirmAddPerson">添加人员</button>
       </view>
 
       <!-- 已添加的内容列表 -->
@@ -201,6 +259,139 @@
 
     <view class="button-group">
       <button class="save-btn" bindtap="saveAddition" disabled="{{addedItems.length === 0}}">保存添加</button>
+      <button class="back-btn" bindtap="prevStep">上一步</button>
+    </view>
+  </view>
+
+  <!-- 步骤4：删除内容 -->
+  <view class="step-section" wx:if="{{currentStep === 4 && selectedAction === 'delete'}}">
+    <view class="step-header">
+      <text class="step-title">删除内容</text>
+      <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
+    </view>
+
+    <!-- 时间筛选区域 -->
+    <view class="delete-filter-section">
+      <view class="filter-title-area">
+        <view class="filter-icon">🕒</view>
+        <text class="filter-main-title">时间筛选选择时间段查看进度记录</text>
+      </view>
+
+      <!-- 时间段按钮 -->
+      <view class="time-filter-buttons">
+        <view class="time-filter-item {{timeFilter === 'week' ? 'active' : ''}}" bindtap="filterByTime" data-filter="week">
+          <text class="filter-text">最近一周</text>
+        </view>
+        <view class="time-filter-item {{timeFilter === 'month' ? 'active' : ''}}" bindtap="filterByTime" data-filter="month">
+          <text class="filter-text">最近一月</text>
+        </view>
+        <view class="time-filter-item {{timeFilter === 'year' ? 'active' : ''}}" bindtap="filterByTime" data-filter="year">
+          <text class="filter-text">最近一年</text>
+        </view>
+        <view class="time-filter-item {{timeFilter === 'all' ? 'active' : ''}}" bindtap="filterByTime" data-filter="all">
+          <text class="filter-text">查看全部</text>
+        </view>
+      </view>
+
+      <!-- 自定义日期选择 -->
+      <view class="custom-date-area">
+        <picker mode="date" value="{{selectedDeleteDate}}" bindchange="onDeleteDateChange">
+          <view class="custom-date-picker">
+            <view class="date-icon">📅</view>
+            <text class="date-text">{{selectedDeleteDate || '选择具体日期'}}</text>
+            <view class="date-arrow">▼</view>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 统计信息卡片 -->
+    <view class="delete-stats-area">
+      <view class="stats-item">
+        <text class="stats-num">{{filteredProgressList.length}}</text>
+        <text class="stats-desc">当前记录数</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-num">{{selectedDeleteCount}}</text>
+        <text class="stats-desc">已选择</text>
+      </view>
+    </view>
+
+    <!-- 批量操作按钮 -->
+    <view class="batch-operation-area" wx:if="{{selectedDeleteCount > 0}}">
+      <view class="batch-select-btn" bindtap="selectAllProgress">
+        <text class="batch-text">{{isAllProgressSelected ? '取消全选' : '全选'}}</text>
+      </view>
+      <view class="batch-delete-btn" bindtap="batchDeleteProgress">
+        <text class="batch-text">批量删除 ({{selectedDeleteCount}})</text>
+      </view>
+    </view>
+
+    <!-- 进度记录区域 -->
+    <view class="delete-progress-area">
+      <view class="progress-area-header">
+        <view class="progress-icon">📋</view>
+        <view class="progress-header-text">
+          <text class="progress-main-text">进度记录点击选择要删除的记录</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="delete-empty-state" wx:if="{{filteredProgressList.length === 0}}">
+        <view class="empty-icon-large">📭</view>
+        <text class="empty-message">暂无符合条件的进度记录</text>
+      </view>
+
+      <!-- 进度记录列表 -->
+      <view class="delete-progress-list" wx:if="{{filteredProgressList.length > 0}}">
+        <view
+          class="delete-progress-item {{item.selected ? 'item-selected' : ''}}"
+          wx:for="{{filteredProgressList}}"
+          wx:key="id"
+          bindtap="toggleProgressSelect"
+          data-id="{{item.id}}"
+        >
+          <!-- 选择框 -->
+          <view class="item-checkbox {{item.selected ? 'checkbox-checked' : ''}}">
+            <text class="checkbox-icon">{{item.selected ? '✓' : ''}}</text>
+          </view>
+
+          <!-- 进度信息 -->
+          <view class="item-content">
+            <view class="item-header">
+              <view class="item-time-info">
+                <view class="time-status-dot {{item.status}}"></view>
+                <view class="time-details">
+                  <text class="item-date">{{item.date}}</text>
+                  <text class="item-time">{{item.time}}</text>
+                </view>
+              </view>
+              <text class="item-status {{item.status}}">{{item.statusText}}</text>
+            </view>
+
+            <text class="item-title">{{item.title}}</text>
+
+            <view class="item-details">
+              <view class="detail-row">
+                <text class="detail-label">📍</text>
+                <text class="detail-value">{{item.location}}</text>
+              </view>
+              <view class="detail-row">
+                <text class="detail-label">👤</text>
+                <text class="detail-value">{{item.person}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 删除按钮 -->
+          <view class="item-delete-btn" bindtap="singleDeleteProgress" data-id="{{item.id}}" catchtap="singleDeleteProgress">
+            <text class="delete-btn-icon">🗑️</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="button-group">
       <button class="back-btn" bindtap="prevStep">上一步</button>
     </view>
   </view>

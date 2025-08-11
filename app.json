@@ -20,6 +20,7 @@
     "pages/fifteenprojects/fifteenprojects",
     "pages/fifteenprojectsquery/fifteenprojectsquery",
     "pages/project_progress/project_progress",
+    "pages/progress_delete_manager/progress_delete_manager",
 
     "pages/fifteenprojectsalter/fifteenprojectsalter",
     "pages/fifteenprojects_add/fifteenprojects_add",

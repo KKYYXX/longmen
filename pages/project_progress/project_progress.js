@@ -4,6 +4,7 @@ Page({
     projectData: null,
     loading: true,
     selectedDate: '',
+    timeFilter: 'all', // 时间筛选：week, month, year, all
     progressList: [],
     filteredProgressList: [],
     progressStats: {
@@ -26,6 +27,13 @@ Page({
 
   navigateBack: function() {
     wx.navigateBack();
+  },
+
+  // 跳转到删除管理页面
+  goToDeletePage: function() {
+    wx.navigateTo({
+      url: `/pages/progress_delete_manager/progress_delete_manager?projectId=${this.data.projectId}`
+    });
   },
 
   loadProjectData: function() {
@@ -661,10 +669,53 @@ Page({
     };
   },
 
+  // 按时间段筛选
+  filterByTime: function(e) {
+    const filter = e.currentTarget.dataset.filter;
+    this.setData({
+      timeFilter: filter,
+      selectedDate: '' // 清除具体日期选择
+    });
+    this.applyTimeFilter(filter);
+  },
+
+  // 应用时间筛选
+  applyTimeFilter: function(filter) {
+    const now = new Date();
+    let filtered = this.data.progressList;
+
+    if (filter === 'week') {
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      filtered = this.data.progressList.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= weekAgo;
+      });
+    } else if (filter === 'month') {
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      filtered = this.data.progressList.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= monthAgo;
+      });
+    } else if (filter === 'year') {
+      const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+      filtered = this.data.progressList.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= yearAgo;
+      });
+    }
+
+    this.setData({
+      filteredProgressList: filtered
+    });
+  },
+
   // 日期选择
   onDateChange: function(e) {
     const selectedDate = e.detail.value;
-    this.setData({ selectedDate });
+    this.setData({
+      selectedDate,
+      timeFilter: '' // 清除时间段筛选
+    });
     this.filterProgressByDate(selectedDate);
   },
 
@@ -683,11 +734,37 @@ Page({
     });
   },
 
-  // 显示全部进度
-  showAllProgress: function() {
-    this.setData({
-      selectedDate: '',
-      filteredProgressList: this.data.progressList
+  // 删除进度记录
+  deleteProgress: function(e) {
+    const progressId = e.currentTarget.dataset.id;
+
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这条进度记录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // 从进度列表中删除
+          const updatedProgressList = this.data.progressList.filter(item => item.id !== progressId);
+          const updatedFilteredList = this.data.filteredProgressList.filter(item => item.id !== progressId);
+
+          // 重新计算统计数据
+          const stats = this.calculateStats(updatedProgressList);
+
+          this.setData({
+            progressList: updatedProgressList,
+            filteredProgressList: updatedFilteredList,
+            progressStats: stats
+          });
+
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success'
+          });
+
+          // TODO: 调用后端API删除数据
+          console.log('删除进度记录:', progressId);
+        }
+      }
     });
   },
 

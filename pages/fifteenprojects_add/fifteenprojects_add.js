@@ -148,7 +148,8 @@ Page({
       filePath: files[0].tempFilePath,
       name: 'file',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       formData: {
         fileType: fileType,
@@ -258,7 +259,8 @@ Page({
       url: 'http://127.0.0.1:5000/api/fifteen-projects/add-news-link',
       method: 'POST',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`,
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`,
         'Content-Type': 'application/json'
       },
       data: {
@@ -374,7 +376,8 @@ Page({
       filePath: videos[0].tempFilePath,
       name: 'video',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       formData: {
         projectId: Date.now() // 临时项目ID
@@ -437,7 +440,8 @@ Page({
       url: `http://127.0.0.1:5000/api/fifteen-projects/delete-file/${fileId}`,
       method: 'DELETE',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       success: (res) => {
         if (res.data.success) {
@@ -476,7 +480,8 @@ Page({
       url: `http://127.0.0.1:5000/api/fifteen-projects/delete-news-link/${linkId}`,
       method: 'DELETE',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       success: (res) => {
         if (res.data.success) {
@@ -515,7 +520,8 @@ Page({
       url: `http://127.0.0.1:5000/api/fifteen-projects/delete-video/${videoId}`,
       method: 'DELETE',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       success: (res) => {
         if (res.data.success) {
@@ -618,7 +624,8 @@ Page({
       url: 'http://127.0.0.1:5000/api/fifteen-projects/submit-content',
       method: 'POST',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`,
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`,
         'Content-Type': 'application/json'
       },
       data: {

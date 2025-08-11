@@ -5,10 +5,23 @@ Page({
     selectedColumn: null,
     selectedAction: '',
     newContent: '',
-    showLinkInput: false,
-    linkUrl: '',
-    linkTitle: '',
+    showTimeInput: false,
+    showLocationInput: false,
+    showPersonInput: false,
+    selectedDate: '',
+    selectedTime: '',
+    locationName: '',
+    personName: '',
+    personTitle: '',
     addedItems: [],
+
+    // 删除内容相关
+    timeFilter: 'all',
+    selectedDeleteDate: '',
+    progressList: [],
+    filteredProgressList: [],
+    selectedDeleteCount: 0,
+    isAllProgressSelected: false,
     editMode: false, // 是否为编辑模式
     editingProjectId: null, // 正在编辑的项目ID
     projectList: [
@@ -16,64 +29,94 @@ Page({
         id: 1,
         name: '智慧城市建设项目',
         description: '利用物联网技术建设智慧城市管理平台',
+        serialNumber: '001',
+        cityLevel: '杭州市',
+        pairedCounty: '临安区',
+        pairedInstitution: '浙江大学',
         projectName: '智慧城市建设项目',
+        implementationUnit: '浙江大学计算机学院',
+        isKeyProject: '是',
+        involvedAreas: '临安区青山湖街道',
         projectType: '基础设施建设',
         startDate: '2024-01-01',
         endDate: '2024-12-31',
         background: '随着城市化进程加快，传统城市管理模式面临挑战...',
         content: '建设智慧城市管理平台，整合各类城市数据...',
         objectives: '提升城市治理效率，改善市民生活质量...',
-        contactName: '张三',
-        contactPosition: '项目经理',
-        contactPhone: '13800138000',
+        contacts: '张三:13800138000',
         remarks: '重点项目，优先推进',
-        progress: 75,
-        projectManager: '李四',
-        budget: '5000',
-        status: '进行中'
+        progress: 75
       },
       {
         id: 2,
         name: '绿色能源发展项目',
         description: '推广太阳能和风能等清洁能源技术',
+        serialNumber: '002',
+        cityLevel: '宁波市',
+        pairedCounty: '象山县',
+        pairedInstitution: '浙江工业大学',
         projectName: '绿色能源发展项目',
+        implementationUnit: '浙江工业大学环境学院',
+        isKeyProject: '是',
+        involvedAreas: '象山县丹西街道',
         projectType: '环保治理',
         startDate: '2024-02-01',
         endDate: '2024-11-30',
         background: '为响应国家碳中和目标，推进清洁能源发展...',
         content: '建设太阳能发电站，推广风能利用技术...',
         objectives: '减少碳排放，提高清洁能源使用比例...',
-        contactName: '王五',
-        contactPosition: '技术总监',
-        contactPhone: '13900139000',
+        contacts: '王五:13900139000',
         remarks: '环保重点项目',
-        progress: 60,
-        projectManager: '赵六',
-        budget: '8000',
-        status: '进行中'
+        progress: 60
       }
     ],
     projectColumns: [
+      { name: '序号', key: 'serialNumber', type: 'text' },
+      { name: '地级市', key: 'cityLevel', type: 'text' },
+      { name: '结对县（市、区）', key: 'pairedCounty', type: 'text' },
+      { name: '组团结对高校院所', key: 'pairedInstitution', type: 'text' },
       { name: '项目名称', key: 'projectName', type: 'text' },
+      { name: '项目实施单位（高校院所）', key: 'implementationUnit', type: 'text' },
+      { name: '是否重点项目', key: 'isKeyProject', type: 'text' },
+      { name: '涉及典型县镇村', key: 'involvedAreas', type: 'text' },
       { name: '项目类型', key: 'projectType', type: 'text' },
-      { name: '开始时间', key: 'startDate', type: 'text' },
-      { name: '结束时间', key: 'endDate', type: 'text' },
+      { name: '项目开始时间', key: 'startDate', type: 'text' },
+      { name: '项目结束时间', key: 'endDate', type: 'text' },
       { name: '项目背景', key: 'background', type: 'textarea' },
       { name: '项目内容和落实举措', key: 'content', type: 'textarea' },
       { name: '主要任务目标', key: 'objectives', type: 'textarea' },
-      { name: '联系人姓名', key: 'contactName', type: 'text' },
-      { name: '联系人职务', key: 'contactPosition', type: 'text' },
-      { name: '联系方式', key: 'contactPhone', type: 'text' },
+      { name: '联系人信息', key: 'contacts', type: 'text' },
       { name: '备注', key: 'remarks', type: 'textarea' },
-      { name: '项目进度', key: 'progress', type: 'text' },
-      { name: '项目负责人', key: 'projectManager', type: 'text' },
-      { name: '预算金额', key: 'budget', type: 'text' },
-      { name: '完成状态', key: 'status', type: 'text' }
+      { name: '项目进度', key: 'progress', type: 'text' }
     ]
   },
 
   onLoad() {
-    // 数据已在data中初始化
+    console.log('修改页面加载，当前列配置：', this.data.projectColumns);
+    // 强制刷新页面数据
+    const newColumns = [
+      { name: '序号', key: 'serialNumber', type: 'text' },
+      { name: '地级市', key: 'cityLevel', type: 'text' },
+      { name: '结对县（市、区）', key: 'pairedCounty', type: 'text' },
+      { name: '组团结对高校院所', key: 'pairedInstitution', type: 'text' },
+      { name: '项目名称', key: 'projectName', type: 'text' },
+      { name: '项目实施单位（高校院所）', key: 'implementationUnit', type: 'text' },
+      { name: '是否重点项目', key: 'isKeyProject', type: 'text' },
+      { name: '涉及典型县镇村', key: 'involvedAreas', type: 'text' },
+      { name: '项目类型', key: 'projectType', type: 'text' },
+      { name: '项目开始时间', key: 'startDate', type: 'text' },
+      { name: '项目结束时间', key: 'endDate', type: 'text' },
+      { name: '项目背景', key: 'background', type: 'textarea' },
+      { name: '项目内容和落实举措', key: 'content', type: 'textarea' },
+      { name: '主要任务目标', key: 'objectives', type: 'textarea' },
+      { name: '联系人信息', key: 'contacts', type: 'text' },
+      { name: '备注', key: 'remarks', type: 'textarea' },
+      { name: '项目进度', key: 'progress', type: 'text' }
+    ];
+    this.setData({
+      projectColumns: newColumns
+    });
+    console.log('修改页面加载完成，新列配置：', newColumns);
   },
 
   // 选择项目
@@ -109,6 +152,11 @@ Page({
     this.setData({
       currentStep: currentStep + 1
     });
+
+    // 如果选择了删除内容，加载进度数据
+    if (this.data.selectedAction === 'delete' && currentStep + 1 === 4) {
+      this.loadProgressData();
+    }
   },
 
   // 上一步
@@ -280,63 +328,158 @@ Page({
     });
   },
 
-  // 添加链接
-  addLink() {
+  // 添加时间
+  addTime() {
     this.setData({
-      showLinkInput: true,
-      linkUrl: '',
-      linkTitle: ''
+      showTimeInput: true,
+      showLocationInput: false,
+      showPersonInput: false,
+      selectedDate: '',
+      selectedTime: ''
     });
   },
 
-  // 链接地址输入
-  onLinkInput(e) {
+  // 添加地点
+  addLocation() {
     this.setData({
-      linkUrl: e.detail.value
+      showTimeInput: false,
+      showLocationInput: true,
+      showPersonInput: false,
+      locationName: ''
     });
   },
 
-  // 链接标题输入
-  onLinkTitleInput(e) {
+  // 添加人员
+  addPerson() {
     this.setData({
-      linkTitle: e.detail.value
+      showTimeInput: false,
+      showLocationInput: false,
+      showPersonInput: true,
+      personName: '',
+      personTitle: ''
     });
   },
 
-  // 确认添加链接
-  confirmAddLink() {
-    const { linkUrl, linkTitle } = this.data;
+  // 日期选择
+  onDateChange(e) {
+    this.setData({
+      selectedDate: e.detail.value
+    });
+  },
 
-    if (!linkUrl.trim()) {
+  // 时间选择
+  onTimeChange(e) {
+    this.setData({
+      selectedTime: e.detail.value
+    });
+  },
+
+  // 地点输入
+  onLocationInput(e) {
+    this.setData({
+      locationName: e.detail.value
+    });
+  },
+
+  // 人员姓名输入
+  onPersonNameInput(e) {
+    this.setData({
+      personName: e.detail.value
+    });
+  },
+
+  // 人员职务输入
+  onPersonTitleInput(e) {
+    this.setData({
+      personTitle: e.detail.value
+    });
+  },
+
+  // 确认添加时间
+  confirmAddTime() {
+    const { selectedDate, selectedTime } = this.data;
+
+    if (!selectedDate || !selectedTime) {
       wx.showToast({
-        title: '请输入链接地址',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (!linkTitle.trim()) {
-      wx.showToast({
-        title: '请输入链接标题',
+        title: '请选择完整的日期和时间',
         icon: 'none'
       });
       return;
     }
 
     this.addItem({
-      type: '链接',
-      name: linkTitle.trim(),
-      url: linkUrl.trim()
+      type: '时间',
+      name: `${selectedDate} ${selectedTime}`,
+      date: selectedDate,
+      time: selectedTime
     });
 
     this.setData({
-      showLinkInput: false,
-      linkUrl: '',
-      linkTitle: ''
+      showTimeInput: false,
+      selectedDate: '',
+      selectedTime: ''
     });
 
     wx.showToast({
-      title: '已添加链接',
+      title: '已添加时间',
+      icon: 'success'
+    });
+  },
+
+  // 确认添加地点
+  confirmAddLocation() {
+    const { locationName } = this.data;
+
+    if (!locationName.trim()) {
+      wx.showToast({
+        title: '请输入地点名称',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.addItem({
+      type: '地点',
+      name: locationName.trim()
+    });
+
+    this.setData({
+      showLocationInput: false,
+      locationName: ''
+    });
+
+    wx.showToast({
+      title: '已添加地点',
+      icon: 'success'
+    });
+  },
+
+  // 确认添加人员
+  confirmAddPerson() {
+    const { personName, personTitle } = this.data;
+
+    if (!personName.trim()) {
+      wx.showToast({
+        title: '请输入人员姓名',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.addItem({
+      type: '人员',
+      name: personName.trim(),
+      title: personTitle.trim() || '工作人员'
+    });
+
+    this.setData({
+      showPersonInput: false,
+      personName: '',
+      personTitle: ''
+    });
+
+    wx.showToast({
+      title: '已添加人员',
       icon: 'success'
     });
   },
@@ -493,6 +636,28 @@ Page({
   // 页面显示
   onShow: function() {
     console.log('修改页面显示');
+    // 强制刷新列配置，确保显示最新的字段
+    this.setData({
+      projectColumns: [
+        { name: '序号', key: 'serialNumber', type: 'text' },
+        { name: '地级市', key: 'cityLevel', type: 'text' },
+        { name: '结对县（市、区）', key: 'pairedCounty', type: 'text' },
+        { name: '组团结对高校院所', key: 'pairedInstitution', type: 'text' },
+        { name: '项目名称', key: 'projectName', type: 'text' },
+        { name: '项目实施单位（高校院所）', key: 'implementationUnit', type: 'text' },
+        { name: '是否重点项目', key: 'isKeyProject', type: 'text' },
+        { name: '涉及典型县镇村', key: 'involvedAreas', type: 'text' },
+        { name: '项目类型', key: 'projectType', type: 'text' },
+        { name: '项目开始时间', key: 'startDate', type: 'text' },
+        { name: '项目结束时间', key: 'endDate', type: 'text' },
+        { name: '项目背景', key: 'background', type: 'textarea' },
+        { name: '项目内容和落实举措', key: 'content', type: 'textarea' },
+        { name: '主要任务目标', key: 'objectives', type: 'textarea' },
+        { name: '联系人信息', key: 'contacts', type: 'text' },
+        { name: '备注', key: 'remarks', type: 'textarea' },
+        { name: '项目进度', key: 'progress', type: 'text' }
+      ]
+    });
   },
 
   // 页面卸载
@@ -502,5 +667,290 @@ Page({
     if (app && app.globalData && app.globalData.editingProject) {
       app.globalData.editingProject = null;
     }
+  },
+
+  // ========== 删除内容功能 ==========
+
+  // 加载进度数据
+  loadProgressData: function() {
+    wx.showLoading({
+      title: '加载中...'
+    });
+
+    // 模拟加载数据
+    setTimeout(() => {
+      const progressData = this.generateProgressData();
+      this.setData({
+        progressList: progressData,
+        filteredProgressList: progressData,
+        timeFilter: 'all'
+      });
+      wx.hideLoading();
+    }, 500);
+  },
+
+  // 按时间段筛选
+  filterByTime: function(e) {
+    const filter = e.currentTarget.dataset.filter;
+    this.setData({
+      timeFilter: filter,
+      selectedDeleteDate: '' // 清除具体日期选择
+    });
+    this.applyTimeFilter(filter);
+  },
+
+  // 应用时间筛选
+  applyTimeFilter: function(filter) {
+    const now = new Date();
+    let filtered = this.data.progressList;
+
+    if (filter === 'week') {
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      filtered = this.data.progressList.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= weekAgo;
+      });
+    } else if (filter === 'month') {
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      filtered = this.data.progressList.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= monthAgo;
+      });
+    } else if (filter === 'year') {
+      const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+      filtered = this.data.progressList.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= yearAgo;
+      });
+    }
+
+    // 重置选择状态
+    filtered = filtered.map(item => ({ ...item, selected: false }));
+
+    this.setData({
+      filteredProgressList: filtered,
+      selectedDeleteCount: 0,
+      isAllProgressSelected: false
+    });
+  },
+
+  // 日期选择
+  onDeleteDateChange: function(e) {
+    const selectedDate = e.detail.value;
+    this.setData({
+      selectedDeleteDate: selectedDate,
+      timeFilter: '' // 清除时间段筛选
+    });
+    this.filterProgressByDate(selectedDate);
+  },
+
+  // 按日期筛选进度
+  filterProgressByDate: function(date) {
+    if (!date) {
+      this.setData({
+        filteredProgressList: this.data.progressList.map(item => ({ ...item, selected: false })),
+        selectedDeleteCount: 0,
+        isAllProgressSelected: false
+      });
+      return;
+    }
+
+    const filtered = this.data.progressList
+      .filter(item => item.date === date)
+      .map(item => ({ ...item, selected: false }));
+
+    this.setData({
+      filteredProgressList: filtered,
+      selectedDeleteCount: 0,
+      isAllProgressSelected: false
+    });
+  },
+
+  // 切换选择状态
+  toggleProgressSelect: function(e) {
+    const id = parseInt(e.currentTarget.dataset.id);
+    const filteredList = this.data.filteredProgressList.map(item => {
+      if (item.id === id) {
+        return { ...item, selected: !item.selected };
+      }
+      return item;
+    });
+
+    const selectedCount = filteredList.filter(item => item.selected).length;
+    const isAllSelected = selectedCount === filteredList.length && filteredList.length > 0;
+
+    this.setData({
+      filteredProgressList: filteredList,
+      selectedDeleteCount: selectedCount,
+      isAllProgressSelected: isAllSelected
+    });
+  },
+
+  // 全选/取消全选
+  selectAllProgress: function() {
+    const isAllSelected = !this.data.isAllProgressSelected;
+    const filteredList = this.data.filteredProgressList.map(item => ({
+      ...item,
+      selected: isAllSelected
+    }));
+
+    this.setData({
+      filteredProgressList: filteredList,
+      selectedDeleteCount: isAllSelected ? filteredList.length : 0,
+      isAllProgressSelected: isAllSelected
+    });
+  },
+
+  // 单个删除
+  singleDeleteProgress: function(e) {
+    const id = parseInt(e.currentTarget.dataset.id);
+    this.confirmDeleteProgress([id]);
+  },
+
+  // 批量删除
+  batchDeleteProgress: function() {
+    const selectedIds = this.data.filteredProgressList
+      .filter(item => item.selected)
+      .map(item => item.id);
+
+    if (selectedIds.length === 0) {
+      wx.showToast({
+        title: '请先选择要删除的记录',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.confirmDeleteProgress(selectedIds);
+  },
+
+  // 确认删除
+  confirmDeleteProgress: function(ids) {
+    const count = ids.length;
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除${count}条进度记录吗？删除后无法恢复。`,
+      confirmColor: '#ff4444',
+      success: (res) => {
+        if (res.confirm) {
+          this.performDeleteProgress(ids);
+        }
+      }
+    });
+  },
+
+  // 执行删除
+  performDeleteProgress: function(ids) {
+    wx.showLoading({
+      title: '删除中...'
+    });
+
+    // 模拟删除操作
+    setTimeout(() => {
+      // 从原始列表中删除
+      const updatedProgressList = this.data.progressList.filter(item => !ids.includes(item.id));
+
+      // 从筛选列表中删除
+      const updatedFilteredList = this.data.filteredProgressList.filter(item => !ids.includes(item.id));
+
+      this.setData({
+        progressList: updatedProgressList,
+        filteredProgressList: updatedFilteredList,
+        selectedDeleteCount: 0,
+        isAllProgressSelected: false
+      });
+
+      wx.hideLoading();
+      wx.showToast({
+        title: `已删除${ids.length}条记录`,
+        icon: 'success'
+      });
+
+      // TODO: 调用后端API删除数据
+      console.log('删除进度记录:', ids);
+    }, 1000);
+  },
+
+  // 生成进度数据
+  generateProgressData: function() {
+    const progressTemplates = [
+      {
+        id: 1,
+        date: "2024-01-15",
+        time: "09:00",
+        title: "项目启动会议",
+        location: "市政府会议室",
+        person: "项目经理张三",
+        description: "召开项目启动会议，确定项目目标和时间节点",
+        status: "completed",
+        statusText: "已完成",
+        selected: false
+      },
+      {
+        id: 2,
+        date: "2024-02-20",
+        time: "14:30",
+        title: "设备采购招标",
+        location: "市采购中心",
+        person: "采购专员李四",
+        description: "完成物联网设备和服务器设备的招标采购工作",
+        status: "completed",
+        statusText: "已完成",
+        selected: false
+      },
+      {
+        id: 3,
+        date: "2024-03-10",
+        time: "10:15",
+        title: "数据中心建设开工",
+        location: "高新区数据中心基地",
+        person: "工程师王五",
+        description: "数据中心基础设施建设正式开工",
+        status: "completed",
+        statusText: "已完成",
+        selected: false
+      },
+      {
+        id: 4,
+        date: "2024-06-15",
+        time: "16:20",
+        title: "传感器网络部署",
+        location: "市区各主要路口",
+        person: "技术员赵六",
+        description: "在全市主要路口部署物联网传感器设备",
+        status: "ongoing",
+        statusText: "进行中",
+        selected: false
+      },
+      {
+        id: 5,
+        date: "2024-08-01",
+        time: "11:30",
+        title: "系统集成测试",
+        location: "数据中心机房",
+        person: "系统工程师孙七",
+        description: "进行智慧城市系统的集成测试和调试",
+        status: "ongoing",
+        statusText: "进行中",
+        selected: false
+      },
+      {
+        id: 6,
+        date: "2024-09-10",
+        time: "14:00",
+        title: "用户培训计划",
+        location: "市民服务中心",
+        person: "培训师周八",
+        description: "为市民和工作人员提供系统使用培训",
+        status: "pending",
+        statusText: "待开始",
+        selected: false
+      }
+    ];
+
+    // 按时间倒序排列
+    return progressTemplates.sort((a, b) =>
+      new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time)
+    );
   }
 });

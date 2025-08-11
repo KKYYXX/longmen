@@ -110,7 +110,13 @@
   color: rgba(92,80,50,0.8);
 }
 
-.share-btn {
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.action-btn, .share-btn {
   width: 40px;
   height: 40px;
   background: rgba(255,255,255,0.3);
@@ -122,7 +128,12 @@
   border: 1px solid rgba(139,117,65,0.3);
 }
 
-.share-icon {
+.action-btn:active, .share-btn:active {
+  background: rgba(255,255,255,0.5);
+  transform: scale(0.95);
+}
+
+.action-icon, .share-icon {
   font-size: 18px;
   color: #5c5032;
 }
@@ -233,10 +244,14 @@
 
 /* 时间筛选 */
 .time-filter {
-  display: flex;
-  gap: 15px;
   margin-bottom: 25px;
-  align-items: center;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
 .date-picker-btn {
@@ -268,11 +283,20 @@
 .filter-btn {
   background: #FFDD8F;
   color: #5c5032;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
   font-weight: 500;
   border: 1px solid rgba(139,117,65,0.3);
+  flex: 1;
+  text-align: center;
+  min-width: 70px;
+}
+
+.filter-btn.active {
+  background: #8B7541;
+  color: white;
+  border-color: #8B7541;
 }
 
 .filter-btn:active {
@@ -363,6 +387,12 @@
   margin-bottom: 12px;
 }
 
+.progress-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .progress-title {
   font-size: 16px;
   font-weight: 600;
@@ -390,6 +420,28 @@
 .progress-status.pending {
   background: rgba(158,158,158,0.2);
   color: #9E9E9E;
+}
+
+/* 删除按钮 */
+.delete-btn {
+  padding: 6px;
+  border-radius: 50%;
+  background: rgba(244,67,54,0.1);
+  border: 1px solid rgba(244,67,54,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.delete-btn:active {
+  background: rgba(244,67,54,0.2);
+  transform: scale(0.9);
+}
+
+.delete-icon {
+  font-size: 14px;
 }
 
 /* 详情信息 */

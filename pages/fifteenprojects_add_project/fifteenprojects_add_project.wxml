@@ -81,33 +81,89 @@
           />
           <text class="slider-unit">{{item.unit || ''}}</text>
         </view>
+
+        <!-- 联系人管理 -->
+        <view wx:if="{{item.type === 'contacts'}}" class="contacts-container">
+          <!-- 联系人列表 -->
+          <view wx:if="{{contacts.length > 0}}" class="contacts-list">
+            <view
+              class="contact-item"
+              wx:for="{{contacts}}"
+              wx:key="index"
+            >
+              <view class="contact-info">
+                <text class="contact-name">{{item.name}}</text>
+                <text class="contact-phone">{{item.phone}}</text>
+              </view>
+              <view class="contact-actions">
+                <text
+                  class="contact-edit-btn"
+                  bindtap="showEditContactModal"
+                  data-index="{{index}}"
+                >编辑</text>
+                <text
+                  class="contact-delete-btn"
+                  bindtap="deleteContact"
+                  data-index="{{index}}"
+                >删除</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 添加联系人按钮 -->
+          <view class="add-contact-btn" bindtap="showAddContactModal">
+            <text class="add-contact-icon">+</text>
+            <text class="add-contact-text">添加联系人</text>
+          </view>
+        </view>
       </view>
     </view>
 
-    <!-- 文件上传 -->
-    <view class="form-section">
-      <text class="section-title">文件上传</text>
 
-      <view class="form-item">
-        <text class="form-label">项目报告</text>
-        <view class="upload-area" bindtap="uploadReport">
-          <text class="upload-icon">📊</text>
-          <text class="upload-text">点击上传项目报告</text>
-        </view>
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">相关文件</text>
-        <view class="upload-area" bindtap="uploadFiles">
-          <text class="upload-icon">📄</text>
-          <text class="upload-text">点击上传相关文件</text>
-        </view>
-      </view>
-    </view>
 
     <view class="button-group">
       <button class="save-btn" bindtap="saveProject">保存项目</button>
       <button class="cancel-btn" bindtap="cancel">取消</button>
+    </view>
+  </view>
+</view>
+
+<!-- 联系人弹窗 -->
+<view class="contact-modal" wx:if="{{showContactModal}}">
+  <view class="contact-modal-mask" bindtap="closeContactModal"></view>
+  <view class="contact-modal-content">
+    <view class="contact-modal-header">
+      <text class="contact-modal-title">
+        {{editingContactIndex >= 0 ? '编辑联系人' : '添加联系人'}}
+      </text>
+      <text class="contact-modal-close" bindtap="closeContactModal">✕</text>
+    </view>
+
+    <view class="contact-modal-body">
+      <view class="contact-form-item">
+        <text class="contact-form-label">姓名 *</text>
+        <input
+          class="contact-form-input"
+          placeholder="请输入联系人姓名"
+          value="{{currentContact.name}}"
+          bindinput="onContactNameInput"
+        />
+      </view>
+
+      <view class="contact-form-item">
+        <text class="contact-form-label">联系方式 *</text>
+        <input
+          class="contact-form-input"
+          placeholder="请输入手机号或其他联系方式"
+          value="{{currentContact.phone}}"
+          bindinput="onContactPhoneInput"
+        />
+      </view>
+    </view>
+
+    <view class="contact-modal-footer">
+      <button class="contact-cancel-btn" bindtap="closeContactModal">取消</button>
+      <button class="contact-save-btn" bindtap="saveContact">保存</button>
     </view>
   </view>
 </view>

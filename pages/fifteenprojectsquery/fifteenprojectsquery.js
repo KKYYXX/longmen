@@ -98,7 +98,8 @@ Page({
         endDate: this.data.endDate
       },
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
+        // 注释掉token验证
+        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       success: (res) => {
         this.setData({

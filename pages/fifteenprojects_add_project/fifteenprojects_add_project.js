@@ -2,23 +2,32 @@ Page({
   data: {
     projectData: {},
     projectColumns: [
+      { name: '序号', key: 'serialNumber', type: 'text', required: true, placeholder: '请输入序号' },
+      { name: '地级市', key: 'cityLevel', type: 'text', required: true, placeholder: '请输入地级市' },
+      { name: '结对县（市、区）', key: 'pairedCounty', type: 'text', required: false, placeholder: '请输入结对县（市、区）' },
+      { name: '组团结对高校院所', key: 'pairedInstitution', type: 'text', required: false, placeholder: '请输入组团结对高校院所' },
       { name: '项目名称', key: 'projectName', type: 'text', required: true, placeholder: '请输入项目名称' },
+      { name: '项目实施单位（高校院所）', key: 'implementationUnit', type: 'text', required: false, placeholder: '请输入项目实施单位（高校院所）' },
+      { name: '是否重点项目', key: 'isKeyProject', type: 'select', required: false, options: ['是', '否'] },
+      { name: '涉及典型县镇村', key: 'involvedAreas', type: 'text', required: false, placeholder: '请输入涉及典型县镇村' },
       { name: '项目类型', key: 'projectType', type: 'select', required: true, options: ['基础设施建设', '科技创新', '环保治理', '民生改善', '产业发展', '其他'] },
-      { name: '开始时间', key: 'startDate', type: 'date', required: true, placeholder: '请选择开始时间' },
-      { name: '结束时间', key: 'endDate', type: 'date', required: false, placeholder: '请选择结束时间' },
+      { name: '项目开始时间', key: 'startDate', type: 'date', required: true, placeholder: '请选择项目开始时间' },
+      { name: '项目结束时间', key: 'endDate', type: 'date', required: false, placeholder: '请选择项目结束时间' },
       { name: '项目背景', key: 'background', type: 'textarea', required: false, placeholder: '请输入项目背景' },
       { name: '项目内容和落实举措', key: 'content', type: 'textarea', required: false, placeholder: '请输入项目内容和落实举措' },
       { name: '主要任务目标', key: 'objectives', type: 'textarea', required: false, placeholder: '请输入主要任务目标' },
-      { name: '联系人姓名', key: 'contactName', type: 'text', required: false, placeholder: '请输入联系人姓名' },
-      { name: '联系人职务', key: 'contactPosition', type: 'text', required: false, placeholder: '请输入联系人职务' },
-      { name: '联系方式', key: 'contactPhone', type: 'text', required: false, placeholder: '请输入联系方式' },
+      { name: '联系人信息', key: 'contacts', type: 'contacts', required: false, placeholder: '添加联系人' },
       { name: '备注', key: 'remarks', type: 'textarea', required: false, placeholder: '请输入备注信息' },
-      { name: '项目进度', key: 'progress', type: 'slider', required: false, min: 0, max: 100, unit: '%' },
-      // 示例：动态添加的列
-      { name: '项目负责人', key: 'projectManager', type: 'text', required: false, placeholder: '请输入项目负责人' },
-      { name: '预算金额', key: 'budget', type: 'text', required: false, placeholder: '请输入预算金额（万元）' },
-      { name: '完成状态', key: 'status', type: 'select', required: false, options: ['未开始', '进行中', '已完成', '已暂停'] }
-    ]
+      { name: '项目进度', key: 'progress', type: 'slider', required: false, min: 0, max: 100, unit: '%' }
+    ],
+    // 联系人相关数据
+    contacts: [],
+    showContactModal: false,
+    currentContact: {
+      name: '',
+      phone: ''
+    },
+    editingContactIndex: -1
   },
 
   onLoad() {
@@ -27,6 +36,8 @@ Page({
     this.data.projectColumns.forEach(column => {
       if (column.type === 'slider') {
         projectData[column.key] = 0;
+      } else if (column.type === 'contacts') {
+        projectData[column.key] = [];
       } else {
         projectData[column.key] = '';
       }
@@ -69,35 +80,7 @@ Page({
     });
   },
 
-  // 上传项目报告
-  uploadReport() {
-    wx.chooseMessageFile({
-      count: 1,
-      type: 'file',
-      success: (res) => {
-        // TODO: 上传文件到服务器
-        wx.showToast({
-          title: '文件上传功能待实现',
-          icon: 'none'
-        });
-      }
-    });
-  },
 
-  // 上传相关文件
-  uploadFiles() {
-    wx.chooseMessageFile({
-      count: 5,
-      type: 'file',
-      success: (res) => {
-        // TODO: 上传文件到服务器
-        wx.showToast({
-          title: '文件上传功能待实现',
-          icon: 'none'
-        });
-      }
-    });
-  },
 
   // 保存项目
   saveProject() {
@@ -119,8 +102,18 @@ Page({
     // 构建提交数据
     const submitData = {
       ...projectData,
-      createDate: new Date().toISOString().split('T')[0]
+      createDate: new Date().toISOString().split('T')[0],
+      // 确保联系人数据被包含
+      contacts: this.data.contacts || []
     };
+
+    // 为了兼容性，如果有联系人，设置第一个联系人为主要联系人
+    if (this.data.contacts && this.data.contacts.length > 0) {
+      const primaryContact = this.data.contacts[0];
+      submitData.contactName = primaryContact.name;
+      submitData.contactPhone = primaryContact.phone;
+      submitData.contactPosition = ''; // 职务字段已移除，设为空
+    }
 
     wx.showLoading({
       title: '保存中...'
@@ -190,6 +183,132 @@ Page({
         });
       }
     }, 1500);
+  },
+
+  // 联系人管理相关方法
+  // 显示添加联系人弹窗
+  showAddContactModal() {
+    this.setData({
+      showContactModal: true,
+      currentContact: {
+        name: '',
+        phone: ''
+      },
+      editingContactIndex: -1
+    });
+  },
+
+  // 显示编辑联系人弹窗
+  showEditContactModal(e) {
+    const index = e.currentTarget.dataset.index;
+    const contact = this.data.contacts[index];
+    this.setData({
+      showContactModal: true,
+      currentContact: {
+        name: contact.name,
+        phone: contact.phone
+      },
+      editingContactIndex: index
+    });
+  },
+
+  // 关闭联系人弹窗
+  closeContactModal() {
+    this.setData({
+      showContactModal: false,
+      currentContact: {
+        name: '',
+        phone: ''
+      },
+      editingContactIndex: -1
+    });
+  },
+
+  // 联系人姓名输入
+  onContactNameInput(e) {
+    this.setData({
+      'currentContact.name': e.detail.value
+    });
+  },
+
+  // 联系人电话输入
+  onContactPhoneInput(e) {
+    this.setData({
+      'currentContact.phone': e.detail.value
+    });
+  },
+
+  // 保存联系人
+  saveContact() {
+    const { name, phone } = this.data.currentContact;
+
+    if (!name.trim()) {
+      wx.showToast({
+        title: '请输入联系人姓名',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!phone.trim()) {
+      wx.showToast({
+        title: '请输入联系方式',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const contact = {
+      name: name.trim(),
+      phone: phone.trim()
+    };
+
+    let contacts = [...this.data.contacts];
+
+    if (this.data.editingContactIndex >= 0) {
+      // 编辑现有联系人
+      contacts[this.data.editingContactIndex] = contact;
+    } else {
+      // 添加新联系人
+      contacts.push(contact);
+    }
+
+    this.setData({
+      contacts: contacts,
+      'projectData.contacts': contacts
+    });
+
+    this.closeContactModal();
+
+    wx.showToast({
+      title: this.data.editingContactIndex >= 0 ? '联系人已更新' : '联系人已添加',
+      icon: 'success'
+    });
+  },
+
+  // 删除联系人
+  deleteContact(e) {
+    const index = e.currentTarget.dataset.index;
+    const contact = this.data.contacts[index];
+
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除联系人"${contact.name}"吗？`,
+      success: (res) => {
+        if (res.confirm) {
+          const contacts = this.data.contacts.filter((_, i) => i !== index);
+          this.setData({
+            contacts: contacts,
+            'projectData.contacts': contacts
+          });
+
+          wx.showToast({
+            title: '联系人已删除',
+            icon: 'success'
+          });
+        }
+      }
+    });
   },
 
   // 取消

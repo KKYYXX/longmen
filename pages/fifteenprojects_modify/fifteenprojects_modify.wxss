@@ -288,42 +288,90 @@
   text-align: center;
 }
 
-/* 链接输入 */
-.link-input {
+/* 输入区域 */
+.input-section {
   background: #ffffff;
   border-radius: 12rpx;
-  padding: 30rpx;
+  padding: 40rpx 30rpx;
   margin-bottom: 30rpx;
   border: 1rpx solid #e9ecef;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.input-label {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 25rpx;
+  padding: 10rpx 0;
+}
+
+.picker-text {
+  color: #333333;
+  font-size: 28rpx;
+  padding: 5rpx 0;
+  min-height: 40rpx;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
 }
 
 .form-input {
   width: 100%;
-  padding: 20rpx;
+  padding: 25rpx 20rpx;
   border: 2rpx solid #e9ecef;
   border-radius: 8rpx;
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #333333;
-  background: #f8f9fa;
+  background: #ffffff;
   box-sizing: border-box;
   margin-bottom: 20rpx;
+  min-height: 80rpx;
+  line-height: 1.4;
 }
 
 .form-input:focus {
   border-color: #2196F3;
   background: #ffffff;
+  box-shadow: 0 0 0 2rpx rgba(33, 150, 243, 0.2);
 }
 
-.add-link-btn {
+/* 占位符样式 */
+.form-input::placeholder {
+  color: #999999;
+  font-size: 28rpx;
+}
+
+/* 选择器样式优化 */
+picker {
   width: 100%;
-  height: 80rpx;
-  line-height: 80rpx;
+}
+
+picker .form-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
   background: #2196F3;
   color: white;
   border: none;
-  border-radius: 8rpx;
-  font-size: 28rpx;
+  border-radius: 12rpx;
+  font-size: 30rpx;
   font-weight: 600;
+  margin-top: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(33, 150, 243, 0.3);
+}
+
+.add-btn:active {
+  background: #1976D2;
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(33, 150, 243, 0.3);
 }
 
 /* 已添加内容 */
@@ -448,4 +496,381 @@
 .cancel-btn:active {
   transform: translateY(2rpx);
   box-shadow: 0 2rpx 10rpx rgba(204, 204, 204, 0.3);
+}
+
+/* 删除内容页面样式 */
+.delete-filter-section {
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin: 30rpx 0;
+  padding: 40rpx 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.filter-title-area {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.filter-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+}
+
+.filter-main-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.time-filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+  margin-bottom: 30rpx;
+}
+
+.time-filter-item {
+  flex: 1;
+  min-width: 140rpx;
+  height: 70rpx;
+  background: #f8f9fa;
+  border: 2rpx solid #e9ecef;
+  border-radius: 35rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.time-filter-item.active {
+  background: #2196F3;
+  border-color: #2196F3;
+}
+
+.time-filter-item.active .filter-text {
+  color: white;
+  font-weight: 600;
+}
+
+.filter-text {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.custom-date-area {
+  margin-top: 20rpx;
+}
+
+.custom-date-picker {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  padding: 20rpx 25rpx;
+  height: 80rpx;
+  box-sizing: border-box;
+}
+
+.date-icon {
+  font-size: 28rpx;
+  margin-right: 15rpx;
+}
+
+.date-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.date-arrow {
+  font-size: 20rpx;
+  color: #999999;
+}
+
+/* 统计信息区域 */
+.delete-stats-area {
+  display: flex;
+  gap: 20rpx;
+  margin: 30rpx 0;
+}
+
+.stats-item {
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16rpx;
+  padding: 30rpx 20rpx;
+  text-align: center;
+  color: white;
+}
+
+.stats-num {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.stats-desc {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+/* 批量操作区域 */
+.batch-operation-area {
+  display: flex;
+  gap: 15rpx;
+  margin: 30rpx 0;
+}
+
+.batch-select-btn, .batch-delete-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.batch-select-btn {
+  background: #17a2b8;
+  color: white;
+}
+
+.batch-delete-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.batch-text {
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+/* 进度记录区域 */
+.delete-progress-area {
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin: 30rpx 0;
+  padding: 40rpx 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.progress-area-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.progress-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+}
+
+.progress-main-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+/* 空状态 */
+.delete-empty-state {
+  text-align: center;
+  padding: 80rpx 20rpx;
+}
+
+.empty-icon-large {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.5;
+}
+
+.empty-message {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+/* 进度记录列表 */
+.delete-progress-list {
+  margin-top: 20rpx;
+}
+
+.delete-progress-item {
+  display: flex;
+  align-items: flex-start;
+  background: #f8f9fa;
+  border: 2rpx solid transparent;
+  border-radius: 16rpx;
+  padding: 25rpx 20rpx;
+  margin-bottom: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.delete-progress-item.item-selected {
+  background: rgba(33, 150, 243, 0.1);
+  border-color: #2196F3;
+}
+
+.item-checkbox {
+  width: 40rpx;
+  height: 40rpx;
+  border: 3rpx solid #ddd;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+  margin-top: 5rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.item-checkbox.checkbox-checked {
+  background: #2196F3;
+  border-color: #2196F3;
+}
+
+.checkbox-icon {
+  color: white;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+/* 进度项内容 */
+.item-content {
+  flex: 1;
+  margin-right: 15rpx;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15rpx;
+}
+
+.item-time-info {
+  display: flex;
+  align-items: center;
+}
+
+.time-status-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.time-status-dot.completed {
+  background: #4CAF50;
+}
+
+.time-status-dot.ongoing {
+  background: #FF9800;
+}
+
+.time-status-dot.pending {
+  background: #9E9E9E;
+}
+
+.time-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-date {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+}
+
+.item-time {
+  font-size: 20rpx;
+  color: #666;
+  line-height: 1.2;
+}
+
+.item-status {
+  font-size: 20rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.item-status.completed {
+  background: rgba(76,175,80,0.2);
+  color: #4CAF50;
+}
+
+.item-status.ongoing {
+  background: rgba(255,152,0,0.2);
+  color: #FF9800;
+}
+
+.item-status.pending {
+  background: rgba(158,158,158,0.2);
+  color: #9E9E9E;
+}
+
+.item-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15rpx;
+  line-height: 1.3;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.detail-label {
+  font-size: 20rpx;
+  margin-right: 10rpx;
+  width: 30rpx;
+  text-align: center;
+}
+
+.detail-value {
+  color: #666;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 删除按钮 */
+.item-delete-btn {
+  padding: 12rpx;
+  border-radius: 50%;
+  background: rgba(244,67,54,0.1);
+  border: 2rpx solid rgba(244,67,54,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60rpx;
+  min-height: 60rpx;
+  margin-top: 5rpx;
+  flex-shrink: 0;
+}
+
+.item-delete-btn:active {
+  background: rgba(244,67,54,0.2);
+  transform: scale(0.9);
+}
+
+.delete-btn-icon {
+  font-size: 28rpx;
 }

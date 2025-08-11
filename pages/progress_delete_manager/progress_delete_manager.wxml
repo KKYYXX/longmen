@@ -1,0 +1,145 @@
+<view class="delete-manager-container">
+  <view class="texture-overlay"></view>
+  <view class="light-spot"></view>
+  
+  <!-- 头部导航 -->
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="title-box">
+      <text class="title">删除内容</text>
+      <text class="subtitle">管理项目进度记录</text>
+    </view>
+    <view class="placeholder"></view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 主要内容 -->
+  <view class="main-content" wx:if="{{!loading}}">
+    
+    <!-- 时间筛选器 -->
+    <view class="time-filter-section">
+      <view class="section-header">
+        <text class="section-title">🕒 时间筛选</text>
+        <text class="section-subtitle">选择时间段查看进度记录</text>
+      </view>
+      
+      <view class="filter-buttons">
+        <view class="filter-btn {{timeFilter === 'week' ? 'active' : ''}}" bindtap="filterByTime" data-filter="week">
+          <text>最近一周</text>
+        </view>
+        <view class="filter-btn {{timeFilter === 'month' ? 'active' : ''}}" bindtap="filterByTime" data-filter="month">
+          <text>最近一月</text>
+        </view>
+        <view class="filter-btn {{timeFilter === 'year' ? 'active' : ''}}" bindtap="filterByTime" data-filter="year">
+          <text>最近一年</text>
+        </view>
+        <view class="filter-btn {{timeFilter === 'all' ? 'active' : ''}}" bindtap="filterByTime" data-filter="all">
+          <text>查看全部</text>
+        </view>
+      </view>
+      
+      <!-- 自定义日期选择 -->
+      <view class="custom-date-section">
+        <picker mode="date" value="{{selectedDate}}" bindchange="onDateChange">
+          <view class="date-picker-btn">
+            <text class="picker-icon">📅</text>
+            <text class="picker-text">{{selectedDate || '选择具体日期'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section">
+      <view class="stats-card">
+        <text class="stats-number">{{filteredProgressList.length}}</text>
+        <text class="stats-label">当前记录数</text>
+      </view>
+      <view class="stats-card">
+        <text class="stats-number">{{selectedCount}}</text>
+        <text class="stats-label">已选择</text>
+      </view>
+    </view>
+
+    <!-- 批量操作 -->
+    <view class="batch-actions" wx:if="{{selectedCount > 0}}">
+      <view class="batch-btn" bindtap="selectAll">
+        <text>{{isAllSelected ? '取消全选' : '全选'}}</text>
+      </view>
+      <view class="batch-btn delete" bindtap="batchDelete">
+        <text>批量删除 ({{selectedCount}})</text>
+      </view>
+    </view>
+
+    <!-- 进度记录列表 -->
+    <view class="progress-list-section">
+      <view class="section-header">
+        <text class="section-title">📋 进度记录</text>
+        <text class="section-subtitle">点击选择要删除的记录</text>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{filteredProgressList.length === 0}}">
+        <text class="empty-icon">📭</text>
+        <text class="empty-text">暂无符合条件的进度记录</text>
+      </view>
+
+      <!-- 进度列表 -->
+      <view class="progress-list" wx:if="{{filteredProgressList.length > 0}}">
+        <view 
+          class="progress-item {{item.selected ? 'selected' : ''}}" 
+          wx:for="{{filteredProgressList}}" 
+          wx:key="id"
+          bindtap="toggleSelect"
+          data-id="{{item.id}}"
+        >
+          <!-- 选择框 -->
+          <view class="select-checkbox {{item.selected ? 'checked' : ''}}">
+            <text class="check-icon">{{item.selected ? '✓' : ''}}</text>
+          </view>
+
+          <!-- 时间信息 -->
+          <view class="progress-time">
+            <view class="time-dot {{item.status}}"></view>
+            <view class="time-info">
+              <text class="time-date">{{item.date}}</text>
+              <text class="time-period">{{item.time}}</text>
+            </view>
+          </view>
+          
+          <!-- 进度内容 -->
+          <view class="progress-content">
+            <view class="progress-header">
+              <text class="progress-title">{{item.title}}</text>
+              <text class="progress-status {{item.status}}">{{item.statusText}}</text>
+            </view>
+            
+            <view class="progress-details">
+              <view class="detail-item">
+                <text class="detail-icon">📍</text>
+                <text class="detail-text">{{item.location}}</text>
+              </view>
+              <view class="detail-item">
+                <text class="detail-icon">👤</text>
+                <text class="detail-text">{{item.person}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 单独删除按钮 -->
+          <view class="single-delete-btn" bindtap="singleDelete" data-id="{{item.id}}" catchtap="singleDelete">
+            <text class="delete-icon">🗑️</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
