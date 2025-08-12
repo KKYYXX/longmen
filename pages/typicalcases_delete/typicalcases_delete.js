@@ -143,11 +143,25 @@ Page({
 
   // 执行删除操作
   performDelete(caseItem) {
-    console.log('开始执行删除操作，案例ID：', caseItem.id);
+    console.log('开始执行删除操作，案例标题：', caseItem.title);
     wx.showLoading({
       title: '删除中...'
     });
 
+    // 新逻辑：根据案例名称到数据库查询对应ID，未找到则删除失败
+    this.findModelIdByName(caseItem.title, (modelId) => {
+      if (modelId) {
+        this.callDeleteAPI(modelId, caseItem);
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: '未找到对应案例，删除失败',
+          icon: 'none'
+        });
+      }
+    });
+
+    /* 原本地删除逻辑（保留为注释）
     try {
       console.log('删除案例，ID：', caseItem.id);
 
@@ -193,5 +207,78 @@ Page({
         icon: 'none'
       });
     }
+    */
+  },
+
+  // 通过案例名称在数据库中查找模型ID
+  findModelIdByName(caseTitle, callback) {
+    const normalizedTitle = (caseTitle || '').trim();
+    if (!normalizedTitle) {
+      console.warn('案例标题为空，无法查询ID');
+      callback(null);
+      return;
+    }
+
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/models',
+      method: 'GET',
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
+          const list = res.data.data;
+          // 严格匹配：去除首尾空格后全等比较
+          const found = list.find(item => ((item && item.model_name) ? String(item.model_name).trim() : '') === normalizedTitle);
+          if (found && found.id) {
+            console.log('根据案例名称找到模型：', normalizedTitle, 'ID：', found.id);
+            callback(found.id);
+            return;
+          }
+        }
+        console.warn('未在数据库中找到案例（严格匹配）：', normalizedTitle);
+        callback(null);
+      },
+      fail: (err) => {
+        console.error('请求模型列表失败:', err);
+        callback(null);
+      }
+    });
+  },
+
+  // 调用后端删除接口
+  callDeleteAPI(modelId, caseItem) {
+    wx.request({
+      url: `http://127.0.0.1:5000/app/api/models/${modelId}`,
+      method: 'DELETE',
+      success: (res) => {
+        wx.hideLoading();
+        console.log('删除接口响应:', res);
+
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          // 删除成功：从当前列表中移除（按标题移除，避免前端ID与后端ID不一致）
+          const caseList = this.data.caseList.filter(item => item.title !== caseItem.title);
+          this.setData({ caseList });
+
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success'
+          });
+
+          // 通知其他页面数据已更新
+          wx.setStorageSync('caseListNeedRefresh', true);
+        } else {
+          wx.showToast({
+            title: (res.data && res.data.message) ? res.data.message : '删除失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('删除请求失败:', err);
+        wx.showToast({
+          title: '删除失败',
+          icon: 'none'
+        });
+      }
+    });
   }
 });
