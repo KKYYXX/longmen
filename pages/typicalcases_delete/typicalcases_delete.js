@@ -18,6 +18,44 @@ Page({
   // 加载案例列表
   loadCaseList() {
     try {
+      // 从后端获取数据库中的典型案例列表
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/api/models',
+        method: 'GET',
+        success: (res) => {
+          if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
+            const list = res.data.data;
+            // 映射为页面展示所需字段
+            const mapped = list.map(item => ({
+              id: item.id, // 后端真实ID，仅用于显示或后续参考
+              title: item.model_name || item.file_name || '', // 页面用作名称
+              category: item.file_type ? String(item.file_type).toUpperCase() : '未分类',
+              createDate: item.upload_time || '',
+              updateDate: '',
+              summary: item.file_name || '',
+              author: '',
+              contact: ''
+            }));
+
+            this.setData({
+              caseList: mapped
+            });
+
+            console.log('从数据库加载案例列表完成，数量：', mapped.length);
+          } else {
+            console.warn('获取数据库案例列表失败或数据为空：', res);
+            this.setData({ caseList: [] });
+            wx.showToast({ title: '获取数据失败', icon: 'none' });
+          }
+        },
+        fail: (err) => {
+          console.error('请求数据库案例列表失败:', err);
+          this.setData({ caseList: [] });
+          wx.showToast({ title: '网络请求失败', icon: 'none' });
+        }
+      });
+
+      /* 原逻辑：从本地存储和默认示例数据加载（保留为注释）
       // 从本地存储获取用户添加的案例
       const storedCases = wx.getStorageSync('typicalCases') || [];
 
@@ -70,13 +108,14 @@ Page({
       console.log('用户添加的案例数量：', storedCases.length);
       console.log('用户添加的案例详情：', storedCases);
       console.log('所有案例列表：', allCases);
+      */
 
     } catch (error) {
       console.error('加载案例列表失败:', error);
-      wx.showToast({
-        title: '加载数据失败',
-        icon: 'none'
+      this.setData({
+        caseList: []
       });
+      wx.showToast({ title: '加载数据失败', icon: 'none' });
     }
   },
 

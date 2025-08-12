@@ -31,38 +31,95 @@ Page({
 
   // 加载项目列表
   loadProjectList() {
-    // TODO: 调用后端API获取十五项项目列表
-    // wx.request({
-    //   url: 'your-api-endpoint/fifteen-projects',
-    //   method: 'GET',
-    //   success: (res) => {
-    //     this.setData({
-    //       projectList: res.data.data || []
-    //     });
-    //   },
-    //   fail: (err) => {
-    //     console.error('获取十五项项目列表失败:', err);
-    //     wx.showToast({
-    //       title: '获取数据失败',
-    //       icon: 'none'
-    //     });
-    //   }
-    // });
-
-    // 临时：使用模拟数据，与其他页面保持一致
     try {
-      const allProjects = this.getDefaultProjects();
-      console.log('删除页面获取到项目数据:', allProjects);
+      // 从后端获取数据库中的十五项项目列表
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/api/15projects/names',
+        method: 'GET',
+        success: (res) => {
+          if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
+            const projectNames = res.data.data;
+            // 将项目名称映射为页面展示所需的结构
+            const mappedProjects = projectNames.map((projectName, index) => ({
+              id: index + 1, // 临时ID，用于前端显示
+              projectName: projectName,
+              projectType: '待分类',
+              startDate: '',
+              endDate: '',
+              createDate: '',
+              background: '',
+              content: '',
+              objectives: '',
+              contactName: '',
+              contactPosition: '',
+              contactPhone: '',
+              remarks: '',
+              progress: 0,
+              projectManager: '',
+              budget: '',
+              status: '进行中'
+            }));
 
-      this.setData({
-        projectList: allProjects || []
+            this.setData({
+              projectList: mappedProjects
+            });
+
+            console.log('从数据库加载项目列表完成，数量：', mappedProjects.length);
+          } else {
+            console.warn('获取数据库项目列表失败或数据为空：', res);
+            this.setData({ projectList: [] });
+            wx.showToast({ title: '获取数据失败', icon: 'none' });
+          }
+        },
+        fail: (err) => {
+          console.error('请求数据库项目列表失败:', err);
+          this.setData({ projectList: [] });
+          wx.showToast({ title: '网络请求失败', icon: 'none' });
+        }
       });
-      console.log('删除页面项目列表设置完成，当前列表长度:', this.data.projectList.length);
+
+      /* 原逻辑：使用模拟数据（保留为注释）
+      // TODO: 调用后端API获取十五项项目列表
+      // wx.request({
+      //   url: 'your-api-endpoint/fifteen-projects',
+      //   method: 'GET',
+      //   success: (res) => {
+      //     this.setData({
+      //       projectList: res.data.data || []
+      //     });
+      //   },
+      //   fail: (err) => {
+      //     console.error('获取十五项项目列表失败:', err);
+      //     wx.showToast({
+      //       title: '获取数据失败',
+      //       icon: 'none'
+      //     });
+      //   }
+      // });
+
+      // 临时：使用模拟数据，与其他页面保持一致
+      try {
+        const allProjects = this.getDefaultProjects();
+        console.log('删除页面获取到项目数据:', allProjects);
+
+        this.setData({
+          projectList: allProjects || []
+        });
+        console.log('删除页面项目列表设置完成，当前列表长度:', this.data.projectList.length);
+      } catch (error) {
+        console.error('加载项目数据失败:', error);
+        this.setData({
+          projectList: []
+        });
+      }
+      */
+
     } catch (error) {
-      console.error('加载项目数据失败:', error);
+      console.error('加载项目列表失败:', error);
       this.setData({
         projectList: []
       });
+      wx.showToast({ title: '加载数据失败', icon: 'none' });
     }
   },
 
@@ -219,7 +276,8 @@ Page({
   // 获取项目ID（通过项目名称在数据库中查找）
   getProjectIdByName(projectName, callback) {
     // 通过项目名称在数据库中查找项目ID
-    // 这里需要调用后端接口来获取项目的完整信息
+    // 调用新的搜索接口获取项目信息
+    
     wx.request({
       url: 'http://127.0.0.1:5000/app/api/15projects/search',
       method: 'GET',
@@ -227,19 +285,23 @@ Page({
         project_name: projectName
       },
       success: (res) => {
-        if (res.statusCode === 200 && res.data.success && res.data.data) {
-          // 找到项目，返回数据库中的ID
+        if (res.statusCode === 200 && res.data && res.data.success && res.data.data) {
+          // 找到项目，返回数据库中的真实ID
           const projectId = res.data.data.id;
-          console.log('在数据库中找到项目:', projectName, 'ID:', projectId);
+          console.log('在数据库中找到项目:', projectName, '真实ID:', projectId);
           callback(projectId);
+        } else if (res.statusCode === 404) {
+          // 数据库中没有找到该项目名称
+          console.error('数据库中没有找到项目名称:', projectName);
+          callback(null);
         } else {
-          // 数据库中没有找到该项目
-          console.error('数据库中没有找到项目:', projectName);
+          // 其他错误
+          console.error('查询项目信息失败:', res);
           callback(null);
         }
       },
       fail: (err) => {
-        console.error('查询项目信息失败:', err);
+        console.error('请求项目信息失败:', err);
         callback(null);
       }
     });
@@ -247,6 +309,7 @@ Page({
 
   // 调用删除API
   callDeleteAPI(projectId, projectItem) {
+    // 现在有了真实的项目ID，调用删除接口
     wx.request({
       url: `http://127.0.0.1:5000/app/api/15projects/${projectId}`,
       method: 'DELETE',
@@ -254,9 +317,9 @@ Page({
         wx.hideLoading();
         console.log('删除接口响应:', res);
         
-        if (res.statusCode === 200 && res.data.success) {
+        if (res.statusCode === 200 && res.data && res.data.success) {
           // 删除成功，从列表中移除项目
-          const projectList = this.data.projectList.filter(item => item.id !== projectItem.id);
+          const projectList = this.data.projectList.filter(item => item.projectName !== projectItem.projectName);
           this.setData({
             projectList: projectList
           });
@@ -264,12 +327,15 @@ Page({
             title: '删除成功',
             icon: 'success'
           });
+          
+          console.log('项目删除成功，项目名称:', projectItem.projectName, 'ID:', projectId);
         } else {
           // 删除失败
           wx.showToast({
             title: res.data.message || '删除失败',
             icon: 'none'
           });
+          console.error('删除失败:', res);
         }
       },
       fail: (err) => {
