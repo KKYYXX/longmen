@@ -22,6 +22,15 @@ Page({
     filteredProgressList: [],
     selectedDeleteCount: 0,
     isAllProgressSelected: false,
+
+    // 修改内容相关
+    modifyTimeFilter: 'all',
+    selectedModifyDate: '',
+    modifyProgressList: [],
+    filteredModifyProgressList: [],
+    selectedModifyRecord: null,
+    modifyRecord: {},
+
     editMode: false, // 是否为编辑模式
     editingProjectId: null, // 正在编辑的项目ID
     projectList: [
@@ -156,6 +165,11 @@ Page({
     // 如果选择了删除内容，加载进度数据
     if (this.data.selectedAction === 'delete' && currentStep + 1 === 4) {
       this.loadProgressData();
+    }
+
+    // 如果选择了修改内容，加载进度数据
+    if (this.data.selectedAction === 'modify' && currentStep + 1 === 4) {
+      this.loadModifyProgressData();
     }
   },
 
@@ -952,5 +966,226 @@ Page({
     return progressTemplates.sort((a, b) =>
       new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time)
     );
+  },
+
+  // ========== 修改内容相关方法 ==========
+
+  // 加载修改进度数据
+  loadModifyProgressData() {
+    const progressData = this.generateProgressData();
+    this.setData({
+      modifyProgressList: progressData,
+      filteredModifyProgressList: progressData,
+      modifyTimeFilter: 'all'
+    });
+  },
+
+  // 修改时间筛选
+  filterModifyByTime(e) {
+    const filter = e.currentTarget.dataset.filter;
+    this.setData({
+      modifyTimeFilter: filter,
+      selectedModifyDate: ''
+    });
+    this.applyModifyTimeFilter(filter);
+  },
+
+  // 应用修改时间筛选
+  applyModifyTimeFilter(filter, customDate = null) {
+    let filteredList = [...this.data.modifyProgressList];
+    const now = new Date();
+
+    if (customDate) {
+      // 自定义日期筛选
+      filteredList = filteredList.filter(item => item.date === customDate);
+    } else {
+      switch (filter) {
+        case 'week':
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          filteredList = filteredList.filter(item => new Date(item.date) >= weekAgo);
+          break;
+        case 'month':
+          const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          filteredList = filteredList.filter(item => new Date(item.date) >= monthAgo);
+          break;
+        case 'year':
+          const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+          filteredList = filteredList.filter(item => new Date(item.date) >= yearAgo);
+          break;
+        case 'all':
+        default:
+          // 显示全部
+          break;
+      }
+    }
+
+    this.setData({
+      filteredModifyProgressList: filteredList
+    });
+  },
+
+  // 修改日期选择
+  onModifyDateChange(e) {
+    const selectedDate = e.detail.value;
+    this.setData({
+      selectedModifyDate: selectedDate,
+      modifyTimeFilter: ''
+    });
+    this.applyModifyTimeFilter('custom', selectedDate);
+  },
+
+  // 选择要修改的记录
+  selectModifyRecord(e) {
+    const record = e.currentTarget.dataset.record;
+    this.setData({
+      selectedModifyRecord: record,
+      modifyRecord: {
+        ...record,
+        images: record.images || [],
+        videos: record.videos || [],
+        news: record.news || ''
+      }
+    });
+  },
+
+  // 进入修改详情页面
+  nextStepToModifyDetail() {
+    if (!this.data.selectedModifyRecord) {
+      wx.showToast({
+        title: '请选择要修改的记录',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.setData({
+      currentStep: 5
+    });
+  },
+
+  // 返回修改列表
+  backToModifyList() {
+    this.setData({
+      currentStep: 4,
+      selectedModifyRecord: null,
+      modifyRecord: {}
+    });
+  },
+
+  // 修改详情 - 日期变更
+  onModifyDetailDateChange(e) {
+    this.setData({
+      'modifyRecord.date': e.detail.value
+    });
+  },
+
+  // 修改详情 - 人员输入
+  onModifyPersonInput(e) {
+    this.setData({
+      'modifyRecord.person': e.detail.value
+    });
+  },
+
+  // 修改详情 - 地点输入
+  onModifyLocationInput(e) {
+    this.setData({
+      'modifyRecord.location': e.detail.value
+    });
+  },
+
+  // 修改详情 - 新闻稿输入
+  onModifyNewsInput(e) {
+    this.setData({
+      'modifyRecord.news': e.detail.value
+    });
+  },
+
+  // 上传修改图片
+  uploadModifyImage() {
+    wx.chooseImage({
+      count: 9,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const currentImages = this.data.modifyRecord.images || [];
+        const newImages = [...currentImages, ...res.tempFilePaths];
+        this.setData({
+          'modifyRecord.images': newImages
+        });
+      }
+    });
+  },
+
+  // 移除修改图片
+  removeModifyImage(e) {
+    const index = e.currentTarget.dataset.index;
+    const images = [...this.data.modifyRecord.images];
+    images.splice(index, 1);
+    this.setData({
+      'modifyRecord.images': images
+    });
+  },
+
+  // 上传修改视频
+  uploadModifyVideo() {
+    wx.chooseVideo({
+      sourceType: ['album', 'camera'],
+      maxDuration: 60,
+      camera: 'back',
+      success: (res) => {
+        const currentVideos = this.data.modifyRecord.videos || [];
+        const newVideos = [...currentVideos, res.tempFilePath];
+        this.setData({
+          'modifyRecord.videos': newVideos
+        });
+      }
+    });
+  },
+
+  // 移除修改视频
+  removeModifyVideo(e) {
+    const index = e.currentTarget.dataset.index;
+    const videos = [...this.data.modifyRecord.videos];
+    videos.splice(index, 1);
+    this.setData({
+      'modifyRecord.videos': videos
+    });
+  },
+
+  // 保存修改详情
+  saveModifyDetail() {
+    const { selectedModifyRecord, modifyRecord } = this.data;
+
+    wx.showLoading({
+      title: '保存中...'
+    });
+
+    // TODO: 调用后端API保存修改
+    setTimeout(() => {
+      wx.hideLoading();
+
+      // 更新本地数据
+      const progressList = [...this.data.modifyProgressList];
+      const recordIndex = progressList.findIndex(item => item.id === selectedModifyRecord.id);
+      if (recordIndex !== -1) {
+        progressList[recordIndex] = { ...progressList[recordIndex], ...modifyRecord };
+      }
+
+      this.setData({
+        modifyProgressList: progressList
+      });
+
+      // 重新应用筛选
+      this.applyModifyTimeFilter(this.data.modifyTimeFilter, this.data.selectedModifyDate);
+
+      wx.showModal({
+        title: '修改成功',
+        content: '进度记录已成功修改！',
+        showCancel: false,
+        success: () => {
+          this.backToModifyList();
+        }
+      });
+    }, 1500);
   }
 });

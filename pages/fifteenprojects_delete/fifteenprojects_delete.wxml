@@ -8,16 +8,13 @@
   <!-- 搜索区域 -->
   <view class="search-section">
     <view class="search-box">
-      <input 
-        class="search-input" 
-        placeholder="搜索项目名称..." 
-        value="{{searchKeyword}}"
-        bindinput="onSearchInput"
-        bindconfirm="onSearch"
-      />
-      <view class="search-btn" bindtap="onSearch">
-        <text class="search-icon">🔍</text>
-      </view>
+      <text class="search-icon">🔍</text>
+      <input class="search-input"
+             placeholder="搜索项目名称..."
+             value="{{searchKeyword}}"
+             bindinput="onSearchInput"
+             bindconfirm="onSearch"/>
+      <text class="search-btn" bindtap="onSearch">搜索</text>
     </view>
   </view>
 

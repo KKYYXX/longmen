@@ -130,36 +130,7 @@ page {
   border-radius: 16rpx;
 }
 
-/* 筛选区域 */
-.filter-container {
-  padding: 0 60rpx 20rpx;
-  position: relative;
-  z-index: 5;
-}
 
-.filter-tabs {
-  display: flex;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 24rpx;
-  padding: 8rpx;
-  box-shadow: 0 4rpx 16rpx rgba(150, 127, 73, 0.1);
-}
-
-.filter-tab {
-  flex: 1;
-  text-align: center;
-  padding: 16rpx 20rpx;
-  font-size: 26rpx;
-  color: #7d6f4f;
-  border-radius: 16rpx;
-  transition: all 0.3s ease;
-}
-
-.filter-tab.active {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  color: white;
-  box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
-}
 
 /* 案例列表 */
 .cases-container {

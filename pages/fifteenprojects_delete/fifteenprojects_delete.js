@@ -1,7 +1,9 @@
 Page({
   data: {
     searchKeyword: '',
-    projectList: []
+    projectList: [],
+    allProjects: [], // 存储所有项目，用于搜索
+    filteredProjects: [] // 搜索过滤后的项目
   },
 
   onLoad() {
@@ -55,7 +57,9 @@ Page({
       console.log('删除页面获取到项目数据:', allProjects);
 
       this.setData({
-        projectList: allProjects || []
+        allProjects: allProjects || [],
+        projectList: allProjects || [],
+        filteredProjects: allProjects || []
       });
       console.log('删除页面项目列表设置完成，当前列表长度:', this.data.projectList.length);
     } catch (error) {
@@ -132,44 +136,41 @@ Page({
 
   // 搜索输入
   onSearchInput(e) {
+    console.log('删除页面搜索输入:', e.detail.value);
     this.setData({
       searchKeyword: e.detail.value
     });
+    // 实时搜索
+    this.filterProjects();
   },
 
   // 搜索
   onSearch() {
-    const keyword = this.data.searchKeyword.trim();
+    console.log('删除页面执行搜索，关键词:', this.data.searchKeyword);
+    this.filterProjects();
+  },
 
-    // TODO: 调用后端API进行搜索
-    // wx.request({
-    //   url: 'your-api-endpoint/fifteen-projects/search',
-    //   method: 'GET',
-    //   data: {
-    //     keyword: keyword
-    //   },
-    //   success: (res) => {
-    //     this.setData({
-    //       projectList: res.data.data || []
-    //     });
-    //   },
-    //   fail: (err) => {
-    //     console.error('搜索十五项项目失败:', err);
-    //     wx.showToast({
-    //       title: '搜索失败',
-    //       icon: 'none'
-    //     });
-    //   }
-    // });
+  // 筛选项目
+  filterProjects() {
+    console.log('删除页面开始筛选项目，总数:', this.data.allProjects.length);
+    console.log('搜索关键词:', this.data.searchKeyword);
 
-    // 临时：如果没有关键词就重新加载，否则显示空列表
-    if (!keyword) {
-      this.loadProjectList();
-    } else {
-      this.setData({
-        projectList: []
+    let filtered = this.data.allProjects;
+
+    if (this.data.searchKeyword) {
+      const keyword = this.data.searchKeyword.toLowerCase();
+      filtered = filtered.filter(project => {
+        const projectName = (project.projectName || '').toLowerCase();
+        return projectName.includes(keyword);
       });
+      console.log('筛选后数量:', filtered.length);
     }
+
+    this.setData({
+      projectList: filtered,
+      filteredProjects: filtered
+    });
+    console.log('删除页面筛选完成，显示项目数量:', filtered.length);
   },
 
   // 删除项目
@@ -225,9 +226,12 @@ Page({
     // 临时：模拟删除成功
     setTimeout(() => {
       wx.hideLoading();
+      const allProjects = this.data.allProjects.filter(item => item.id !== projectItem.id);
       const projectList = this.data.projectList.filter(item => item.id !== projectItem.id);
       this.setData({
-        projectList: projectList
+        allProjects: allProjects,
+        projectList: projectList,
+        filteredProjects: projectList
       });
       wx.showToast({
         title: '删除成功',
@@ -238,9 +242,12 @@ Page({
 
   // 添加新项目到列表
   addProjectToList: function(newProject) {
+    const allProjects = [newProject, ...this.data.allProjects];
     const projectList = [newProject, ...this.data.projectList];
     this.setData({
-      projectList: projectList
+      allProjects: allProjects,
+      projectList: projectList,
+      filteredProjects: allProjects
     });
   }
 });

@@ -4,7 +4,7 @@
   <view class="search-section">
     <!-- 时间筛选 -->
     <view class="filter-row">
-      <text class="filter-label">时间筛选：</text>
+      <text class="filter-label">按项目开始时间筛选：</text>
       <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
         <view class="date-picker">
           <text>{{startDate || '开始时间'}}</text>
@@ -20,16 +20,13 @@
     
     <!-- 名称搜索 -->
     <view class="search-box">
-      <input
-        class="search-input"
-        placeholder="搜索项目名称..."
-        value="{{searchKeyword}}"
-        bindinput="onSearchInput"
-        bindconfirm="onSearch"
-      />
-      <view class="search-btn" bindtap="onSearch">
-        <text class="search-icon">🔍</text>
-      </view>
+      <text class="search-icon">🔍</text>
+      <input class="search-input"
+             placeholder="搜索项目名称..."
+             value="{{searchKeyword}}"
+             bindinput="onSearchInput"
+             bindconfirm="onSearch"/>
+      <text class="search-btn" bindtap="onSearch">搜索</text>
     </view>
   </view>
 
@@ -49,9 +46,8 @@
           <view class="project-details">
             <view class="project-name">{{item.projectName}}</view>
             <view class="project-meta">
-              <text class="project-date">{{item.createDate || item.startDate}}</text>
+              <text class="project-start-date">开始时间：{{item.startDate || '未设置'}}</text>
             </view>
-            <view class="project-type">{{item.projectType}}</view>
           </view>
         </view>
         <view class="project-actions">
@@ -62,9 +58,10 @@
         </view>
       </view>
 
-      <!-- 项目简介 -->
+      <!-- 主要目标 -->
       <view class="project-summary">
-        <text class="summary-text">{{item.objectives}}</text>
+        <view class="summary-label">主要目标：</view>
+        <text class="summary-text">{{item.objectives || '暂无目标描述'}}</text>
       </view>
     </view>
   </view>
@@ -104,8 +101,43 @@
     <!-- 项目详细信息 -->
     <view class="project-info-section">
       <view class="info-item">
+        <view class="info-label">序号</view>
+        <view class="info-value">{{selectedProject.serialNumber || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">地级市</view>
+        <view class="info-value">{{selectedProject.cityLevel || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">结对县（市、区）</view>
+        <view class="info-value">{{selectedProject.pairedCounty || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">组团结对高校院所</view>
+        <view class="info-value">{{selectedProject.pairedInstitution || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
         <view class="info-label">项目名称</view>
         <view class="info-value">{{selectedProject.projectName}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">项目实施单位（高校院所）</view>
+        <view class="info-value">{{selectedProject.implementationUnit || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">是否重点项目</view>
+        <view class="info-value">{{selectedProject.isKeyProject || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">涉及典型县镇村</view>
+        <view class="info-value">{{selectedProject.involvedAreas || '未设置'}}</view>
       </view>
 
       <view class="info-item">
@@ -114,13 +146,57 @@
       </view>
 
       <view class="info-item">
-        <view class="info-label">创建时间</view>
-        <view class="info-value">{{selectedProject.createDate || selectedProject.startDate}}</view>
+        <view class="info-label">项目开始时间</view>
+        <view class="info-value">{{selectedProject.startDate || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">项目结束时间</view>
+        <view class="info-value">{{selectedProject.endDate || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">项目背景</view>
+        <view class="info-value long-text">{{selectedProject.background || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">项目内容和落实举措</view>
+        <view class="info-value long-text">{{selectedProject.content || '未设置'}}</view>
       </view>
 
       <view class="info-item">
         <view class="info-label">主要任务目标</view>
-        <view class="info-value objectives-text">{{selectedProject.objectives}}</view>
+        <view class="info-value long-text">{{selectedProject.objectives || '未设置'}}</view>
+      </view>
+
+      <view class="info-item" wx:if="{{selectedProject.contacts && selectedProject.contacts.length > 0}}">
+        <view class="info-label">联系人信息</view>
+        <view class="info-value">
+          <view class="contact-list">
+            <view class="contact-item" wx:for="{{selectedProject.contacts}}" wx:key="index">
+              <text class="contact-name">{{item.name}}</text>
+              <text class="contact-phone">{{item.phone}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">备注</view>
+        <view class="info-value long-text">{{selectedProject.remarks || '未设置'}}</view>
+      </view>
+
+      <view class="info-item">
+        <view class="info-label">项目进度</view>
+        <view class="info-value">
+          <view class="progress-display">
+            <view class="progress-bar">
+              <view class="progress-fill" style="width: {{selectedProject.progress || 0}}%"></view>
+            </view>
+            <text class="progress-text">{{selectedProject.progress || 0}}%</text>
+          </view>
+        </view>
       </view>
     </view>
 

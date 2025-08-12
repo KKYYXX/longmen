@@ -8,6 +8,7 @@ Page({
     page: 1,
     pageSize: 10,
     projectList: [],
+    allProjects: [], // 存储所有项目，用于搜索
     showProjectDetail: false,
     selectedProject: null,
 
@@ -63,7 +64,7 @@ Page({
     this.setData({
       startDate: e.detail.value
     });
-    this.onSearch();
+    this.filterProjects();
   },
 
   // 结束时间选择
@@ -71,7 +72,7 @@ Page({
     this.setData({
       endDate: e.detail.value
     });
-    this.onSearch();
+    this.filterProjects();
   },
 
   // 加载项目列表
@@ -146,6 +147,7 @@ Page({
       console.log('获取到项目数据:', allProjects);
 
       this.setData({
+        allProjects: allProjects || [],
         projectList: allProjects || [],
         loading: false,
         hasMore: false
@@ -166,33 +168,74 @@ Page({
     var projects = [
       {
         id: 1,
+        serialNumber: '001',
+        cityLevel: '杭州市',
+        pairedCounty: '临安区',
+        pairedInstitution: '浙江大学、杭州电子科技大学',
         projectName: '智慧城市基础设施建设项目',
+        implementationUnit: '浙江大学计算机学院',
+        isKeyProject: '是',
+        involvedAreas: '临安区青山湖街道、锦城街道',
         projectType: '基础设施建设',
         startDate: '2024-01-15',
         endDate: '2024-12-31',
+        background: '随着城市化进程加快，传统城市管理模式已无法满足现代化需求，急需通过智慧化手段提升城市治理水平。',
+        content: '建设覆盖全市的智慧城市基础设施网络，包括物联网传感器部署、数据中心建设、智能交通系统等，分三个阶段实施。',
         objectives: '建设覆盖全市的智慧城市基础设施网络，包括物联网传感器部署、数据中心建设、智能交通系统等，提升城市管理效率和市民生活质量。预计完成后将服务人口500万，实现城市管理数字化转型。项目总投资15亿元，分三个阶段实施，将打造全国领先的智慧城市示范区。',
+        contacts: [
+          { name: '张三', phone: '13800138001' },
+          { name: '李四', phone: '13800138002' }
+        ],
+        remarks: '项目需要与市政府各部门密切配合，确保数据互联互通。',
         progress: 68,
         status: '进行中',
         createDate: '2024-01-15'
       },
       {
         id: 2,
+        serialNumber: '002',
+        cityLevel: '宁波市',
+        pairedCounty: '慈溪市',
+        pairedInstitution: '宁波大学、中科院宁波材料所',
         projectName: '绿色能源产业园区建设',
+        implementationUnit: '中科院宁波材料所',
+        isKeyProject: '是',
+        involvedAreas: '慈溪市观海卫镇、龙山镇',
         projectType: '产业发展',
         startDate: '2024-02-01',
         endDate: '2025-01-31',
+        background: '为响应国家碳达峰碳中和目标，推动区域绿色低碳发展，建设清洁能源产业集群。',
+        content: '建设集太阳能、风能、储能技术于一体的绿色能源产业园区，包括50MW太阳能发电站、20MW风力发电站和大型储能设施建设。',
         objectives: '建设集太阳能、风能、储能技术于一体的绿色能源产业园区，打造清洁能源产业集群。园区规划面积1000亩，预计引入企业50家，年产值达到100亿元，成为区域绿色发展示范基地。项目将建设50MW太阳能发电站、20MW风力发电站和大型储能设施。',
+        contacts: [
+          { name: '王五', phone: '13800138003' },
+          { name: '赵六', phone: '13800138004' }
+        ],
+        remarks: '项目建设需要考虑环保要求，确保与当地生态环境协调发展。',
         progress: 52,
         status: '进行中',
         createDate: '2024-02-01'
       },
       {
         id: 3,
+        serialNumber: '003',
+        cityLevel: '温州市',
+        pairedCounty: '瑞安市',
+        pairedInstitution: '温州大学、温州医科大学',
         projectName: '数字化教育改革试点',
+        implementationUnit: '温州大学教育学院',
+        isKeyProject: '否',
+        involvedAreas: '瑞安市安阳街道、玉海街道',
         projectType: '民生改善',
         startDate: '2024-03-01',
         endDate: '2024-11-30',
+        background: '为推进教育现代化，缩小城乡教育差距，提升教育质量，实施数字化教育改革试点。',
+        content: '在全市200所学校实施数字化教育改革，建设智慧教室、在线学习平台、教师培训体系等，包括建设1000间智慧教室、培训5000名教师、开发100门在线课程。',
         objectives: '在全市200所学校实施数字化教育改革，建设智慧教室、在线学习平台、教师培训体系等。通过技术手段实现个性化教学，提升教育质量，缩小城乡教育差距，惠及师生15万人。项目包括建设1000间智慧教室、培训5000名教师、开发100门在线课程。',
+        contacts: [
+          { name: '孙七', phone: '13800138005' }
+        ],
+        remarks: '项目实施过程中需要加强教师培训，确保技术应用效果。',
         progress: 82,
         status: '即将完成',
         createDate: '2024-03-01'
@@ -218,6 +261,54 @@ Page({
         progress: 28,
         status: '建设中',
         createDate: '2024-04-01'
+      },
+      {
+        id: 6,
+        serialNumber: '006',
+        cityLevel: '嘉兴市',
+        pairedCounty: '桐乡市',
+        pairedInstitution: '浙江理工大学',
+        projectName: '智能制造产业升级项目',
+        implementationUnit: '浙江理工大学机械学院',
+        isKeyProject: '是',
+        involvedAreas: '桐乡市梧桐街道、凤鸣街道',
+        projectType: '产业发展',
+        startDate: '2025-08-01',
+        endDate: '2026-07-31',
+        background: '推动传统制造业向智能制造转型升级，提升产业竞争力。',
+        content: '建设智能制造示范基地，引入工业4.0技术，改造提升传统制造企业。',
+        objectives: '通过智能制造技术改造传统制造业，建设10个智能工厂示范点，培训技术人员1000名，提升制造业整体水平和竞争力。',
+        contacts: [
+          { name: '陈八', phone: '13800138006' }
+        ],
+        remarks: '项目需要与当地制造企业深度合作。',
+        progress: 0,
+        status: '准备启动',
+        createDate: '2024-12-01'
+      },
+      {
+        id: 7,
+        serialNumber: '007',
+        cityLevel: '湖州市',
+        pairedCounty: '安吉县',
+        pairedInstitution: '浙江农林大学',
+        projectName: '生态旅游开发项目',
+        implementationUnit: '浙江农林大学旅游学院',
+        isKeyProject: '否',
+        involvedAreas: '安吉县天荒坪镇、梅溪镇',
+        projectType: '旅游发展',
+        startDate: '2025-08-05',
+        endDate: '2026-08-04',
+        background: '依托安吉优美的自然环境，发展高品质生态旅游。',
+        content: '开发生态旅游线路，建设民宿集群，打造特色旅游产品。',
+        objectives: '开发5条精品生态旅游线路，建设50家精品民宿，年接待游客100万人次，带动当地农民就业创业。',
+        contacts: [
+          { name: '刘九', phone: '13800138007' }
+        ],
+        remarks: '注重生态保护与旅游开发的平衡。',
+        progress: 0,
+        status: '准备启动',
+        createDate: '2024-12-15'
       }
     ];
     console.log('返回项目数据，共', projects.length, '个项目');
@@ -226,14 +317,69 @@ Page({
 
   // 搜索输入
   onSearchInput: function(e) {
+    console.log('搜索输入:', e.detail.value);
     this.setData({
       searchKeyword: e.detail.value
     });
+    // 实时搜索
+    this.filterProjects();
   },
 
   // 搜索
   onSearch: function() {
-    this.refreshData();
+    console.log('执行搜索，关键词:', this.data.searchKeyword);
+    this.filterProjects();
+  },
+
+  // 筛选项目
+  filterProjects: function() {
+    console.log('开始筛选项目，总数:', this.data.allProjects.length);
+    console.log('搜索关键词:', this.data.searchKeyword);
+    console.log('开始时间:', this.data.startDate);
+    console.log('结束时间:', this.data.endDate);
+
+    let filtered = this.data.allProjects;
+
+    // 关键词搜索 - 只搜索项目名称
+    if (this.data.searchKeyword) {
+      const keyword = this.data.searchKeyword.toLowerCase();
+      filtered = filtered.filter(project => {
+        const projectName = (project.projectName || '').toLowerCase();
+        return projectName.includes(keyword);
+      });
+      console.log('关键词筛选后数量:', filtered.length);
+    }
+
+    // 按项目开始时间筛选
+    if (this.data.startDate || this.data.endDate) {
+      filtered = filtered.filter(project => {
+        if (!project.startDate) {
+          return false; // 没有开始时间的项目不显示
+        }
+
+        const projectStartDate = new Date(project.startDate);
+        let matchStart = true;
+        let matchEnd = true;
+
+        if (this.data.startDate) {
+          const filterStartDate = new Date(this.data.startDate);
+          matchStart = projectStartDate >= filterStartDate;
+        }
+
+        if (this.data.endDate) {
+          const filterEndDate = new Date(this.data.endDate);
+          matchEnd = projectStartDate <= filterEndDate;
+        }
+
+        return matchStart && matchEnd;
+      });
+      console.log('按项目开始时间筛选后数量:', filtered.length);
+    }
+
+    console.log('最终筛选结果数量:', filtered.length);
+    this.setData({
+      projectList: filtered
+    });
   },
 
   // 刷新数据
@@ -458,8 +604,10 @@ Page({
 
   // 添加新项目到列表
   addProjectToList: function(newProject) {
+    const allProjects = [newProject, ...this.data.allProjects];
     const projectList = [newProject, ...this.data.projectList];
     this.setData({
+      allProjects: allProjects,
       projectList: projectList
     });
   },

@@ -1,7 +1,9 @@
 Page({
   data: {
     searchKeyword: '',
-    caseList: []
+    caseList: [],
+    allCases: [], // 存储所有案例，用于搜索
+    filteredCases: [] // 搜索过滤后的案例
   },
 
   onLoad() {
@@ -63,7 +65,9 @@ Page({
       const allCases = [...storedCases, ...defaultCases];
 
       this.setData({
-        caseList: allCases
+        allCases: allCases,
+        caseList: allCases,
+        filteredCases: allCases
       });
 
       console.log('案例列表加载完成，总数量：', allCases.length);
@@ -85,41 +89,36 @@ Page({
     this.setData({
       searchKeyword: e.detail.value
     });
+    // 实时搜索
+    this.filterCases();
   },
 
   // 搜索
   onSearch() {
-    const keyword = this.data.searchKeyword.trim();
+    this.filterCases();
+  },
 
-    // TODO: 调用后端API进行搜索
-    // wx.request({
-    //   url: 'your-api-endpoint/typical-cases/search',
-    //   method: 'GET',
-    //   data: {
-    //     keyword: keyword
-    //   },
-    //   success: (res) => {
-    //     this.setData({
-    //       caseList: res.data.data || []
-    //     });
-    //   },
-    //   fail: (err) => {
-    //     console.error('搜索典型案例失败:', err);
-    //     wx.showToast({
-    //       title: '搜索失败',
-    //       icon: 'none'
-    //     });
-    //   }
-    // });
+  // 筛选案例
+  filterCases() {
+    let filtered = this.data.allCases;
 
-    // 临时：如果没有关键词就重新加载，否则显示空列表
-    if (!keyword) {
-      this.loadCaseList();
-    } else {
-      this.setData({
-        caseList: []
+    if (this.data.searchKeyword) {
+      const keyword = this.data.searchKeyword.toLowerCase();
+      filtered = filtered.filter(caseItem => {
+        const title = (caseItem.title || caseItem.caseName || '').toLowerCase();
+        const description = (caseItem.description || caseItem.summary || '').toLowerCase();
+        const category = (caseItem.category || caseItem.type || '').toLowerCase();
+
+        return title.includes(keyword) ||
+               description.includes(keyword) ||
+               category.includes(keyword);
       });
     }
+
+    this.setData({
+      caseList: filtered,
+      filteredCases: filtered
+    });
   },
 
   // 删除案例
@@ -165,13 +164,16 @@ Page({
         wx.setStorageSync('typicalCases', updatedCases);
       }
 
-      // 从当前列表中移除
+      // 从所有列表中移除
+      const allCases = this.data.allCases.filter(item => item.id !== caseItem.id);
       const caseList = this.data.caseList.filter(item => item.id !== caseItem.id);
 
       setTimeout(() => {
         wx.hideLoading();
         this.setData({
-          caseList: caseList
+          allCases: allCases,
+          caseList: caseList,
+          filteredCases: caseList
         });
 
         wx.showToast({

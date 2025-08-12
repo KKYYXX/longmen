@@ -30,28 +30,35 @@
 .search-box {
   display: flex;
   align-items: center;
-  background: #ffffff;
-  border-radius: 12rpx;
-  padding: 0 20rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
-
-.search-input {
-  flex: 1;
-  height: 80rpx;
-  font-size: 28rpx;
-  color: #333333;
-  padding: 0;
-}
-
-.search-btn {
-  padding: 10rpx;
-  margin-left: 10rpx;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 32rpx;
+  padding: 20rpx 30rpx;
+  box-shadow: 0 8rpx 24rpx rgba(150, 127, 73, 0.15);
+  border: 2rpx solid rgba(255, 236, 179, 0.3);
 }
 
 .search-icon {
   font-size: 32rpx;
+  color: #7d6f4f;
+  margin-right: 20rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #5c5032;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.search-btn {
+  font-size: 26rpx;
   color: #FFB74D;
+  font-weight: 600;
+  padding: 8rpx 20rpx;
+  background: rgba(255, 183, 77, 0.1);
+  border-radius: 16rpx;
 }
 
 /* 项目列表 */

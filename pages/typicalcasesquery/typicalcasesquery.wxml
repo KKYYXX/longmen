@@ -27,27 +27,7 @@
     </view>
   </view>
 
-  <!-- 筛选区域 -->
-  <view class="filter-container">
-    <view class="filter-tabs">
-      <view class="filter-tab {{currentFilter === 'all' ? 'active' : ''}}" 
-            bindtap="setFilter" data-filter="all">
-        <text>全部</text>
-      </view>
-      <view class="filter-tab {{currentFilter === 'files' ? 'active' : ''}}" 
-            bindtap="setFilter" data-filter="files">
-        <text>文件</text>
-      </view>
-      <view class="filter-tab {{currentFilter === 'links' ? 'active' : ''}}" 
-            bindtap="setFilter" data-filter="links">
-        <text>链接</text>
-      </view>
-      <view class="filter-tab {{currentFilter === 'videos' ? 'active' : ''}}" 
-            bindtap="setFilter" data-filter="videos">
-        <text>视频</text>
-      </view>
-    </view>
-  </view>
+
 
   <!-- 案例列表 -->
   <view class="cases-container">

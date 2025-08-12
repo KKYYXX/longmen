@@ -1,7 +1,6 @@
 Page({
   data: {
     searchKeyword: '',
-    currentFilter: 'all',
     allCases: [],
     filteredCases: [],
     page: 1,
@@ -53,7 +52,6 @@ Page({
           filteredCases: casesWithStats,
           loading: false
         });
-        this.filterCases();
       }, 500);
       return;
     }
@@ -64,8 +62,7 @@ Page({
       const db = new dbService();
 
       db.getTypicalCases({
-        keyword: this.data.searchKeyword,
-        filter: this.data.currentFilter
+        keyword: this.data.searchKeyword
       }).then(result => {
         if (result.success) {
           this.setData({
@@ -89,7 +86,6 @@ Page({
           filteredCases: defaultCases,
           loading: false
         });
-        this.filterCases();
       });
     } catch (error) {
       console.error('加载案例失败:', error);
@@ -100,7 +96,6 @@ Page({
         filteredCases: defaultCases,
         loading: false
       });
-      this.filterCases();
     }
   },
 
@@ -200,40 +195,17 @@ Page({
     this.filterCases();
   },
 
-  setFilter: function(e) {
-    const filter = e.currentTarget.dataset.filter;
-    this.setData({
-      currentFilter: filter
-    });
-    this.filterCases();
-  },
-
   filterCases: function() {
     let filtered = this.data.allCases;
-    
-    if (this.data.currentFilter !== 'all') {
-      filtered = filtered.filter(case_item => {
-        switch (this.data.currentFilter) {
-          case 'files':
-            return case_item.fileCount > 0;
-          case 'links':
-            return case_item.linkCount > 0;
-          case 'videos':
-            return case_item.videoCount > 0;
-          default:
-            return true;
-        }
-      });
-    }
-    
+
     if (this.data.searchKeyword) {
       const keyword = this.data.searchKeyword.toLowerCase();
-      filtered = filtered.filter(case_item => 
+      filtered = filtered.filter(case_item =>
         case_item.title.toLowerCase().includes(keyword) ||
         case_item.description.toLowerCase().includes(keyword)
       );
     }
-    
+
     this.setData({
       filteredCases: filtered
     });

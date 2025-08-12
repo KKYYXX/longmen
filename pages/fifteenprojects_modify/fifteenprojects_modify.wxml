@@ -124,27 +124,221 @@
       <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
     </view>
 
-    <view class="modify-content">
-      <view class="current-content">
-        <text class="content-label">当前内容：</text>
-        <text class="content-text">{{selectedProject[selectedColumn.key] || '暂无内容'}}</text>
+    <!-- 时间筛选区域 -->
+    <view class="modify-filter-section">
+      <view class="filter-title-area">
+        <view class="filter-icon">🕒</view>
+        <text class="filter-main-title">时间筛选选择时间段查看进度记录</text>
       </view>
 
-      <view class="new-content">
-        <text class="content-label">新内容：</text>
+      <!-- 时间段按钮 -->
+      <view class="time-filter-buttons">
+        <view class="time-filter-item {{modifyTimeFilter === 'week' ? 'active' : ''}}" bindtap="filterModifyByTime" data-filter="week">
+          <text class="filter-text">最近一周</text>
+        </view>
+        <view class="time-filter-item {{modifyTimeFilter === 'month' ? 'active' : ''}}" bindtap="filterModifyByTime" data-filter="month">
+          <text class="filter-text">最近一月</text>
+        </view>
+        <view class="time-filter-item {{modifyTimeFilter === 'year' ? 'active' : ''}}" bindtap="filterModifyByTime" data-filter="year">
+          <text class="filter-text">最近一年</text>
+        </view>
+        <view class="time-filter-item {{modifyTimeFilter === 'all' ? 'active' : ''}}" bindtap="filterModifyByTime" data-filter="all">
+          <text class="filter-text">查看全部</text>
+        </view>
+      </view>
+
+      <!-- 自定义日期选择 -->
+      <view class="custom-date-area">
+        <picker mode="date" value="{{selectedModifyDate}}" bindchange="onModifyDateChange">
+          <view class="custom-date-picker">
+            <view class="date-icon">📅</view>
+            <text class="date-text">{{selectedModifyDate || '选择具体日期'}}</text>
+            <view class="date-arrow">▼</view>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 统计信息卡片 -->
+    <view class="modify-stats-area">
+      <view class="stats-item">
+        <text class="stats-num">{{filteredModifyProgressList.length}}</text>
+        <text class="stats-desc">当前记录数</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-num">{{selectedModifyRecord ? 1 : 0}}</text>
+        <text class="stats-desc">已选择</text>
+      </view>
+    </view>
+
+    <!-- 进度记录区域 -->
+    <view class="modify-progress-area">
+      <view class="progress-area-header">
+        <view class="progress-icon">📋</view>
+        <text class="progress-main-text">选择要修改的进度记录</text>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="modify-empty-state" wx:if="{{filteredModifyProgressList.length === 0}}">
+        <view class="empty-icon-large">📝</view>
+        <text class="empty-message">暂无符合条件的进度记录</text>
+      </view>
+
+      <!-- 进度记录列表 -->
+      <view class="modify-progress-list" wx:else>
+        <view
+          class="modify-progress-item {{selectedModifyRecord && selectedModifyRecord.id === item.id ? 'item-selected' : ''}}"
+          wx:for="{{filteredModifyProgressList}}"
+          wx:key="id"
+          bindtap="selectModifyRecord"
+          data-record="{{item}}"
+        >
+          <view class="progress-checkbox">
+            <view class="checkbox-icon">{{selectedModifyRecord && selectedModifyRecord.id === item.id ? '✓' : '○'}}</view>
+          </view>
+
+          <view class="progress-content">
+            <view class="item-title">{{item.title || '进度记录'}}</view>
+            <view class="item-details">
+              <view class="detail-row">
+                <text class="detail-label">📅</text>
+                <text class="detail-value">{{item.date}}</text>
+              </view>
+              <view class="detail-row">
+                <text class="detail-label">👤</text>
+                <text class="detail-value">{{item.person || '未设置'}}</text>
+              </view>
+              <view class="detail-row">
+                <text class="detail-label">📍</text>
+                <text class="detail-value">{{item.location || '未设置'}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="progress-status-area">
+            <view class="status-time-info">
+              <text class="status-date">{{item.date}}</text>
+              <text class="status-time">{{item.time}}</text>
+            </view>
+            <view class="status-badge {{item.status}}">{{item.statusText}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="next-btn" bindtap="nextStepToModifyDetail" disabled="{{!selectedModifyRecord}}">修改详情</button>
+      <button class="back-btn" bindtap="prevStep">上一步</button>
+    </view>
+  </view>
+
+  <!-- 步骤5：修改详情 -->
+  <view class="step-section" wx:if="{{currentStep === 5 && selectedAction === 'modify'}}">
+    <view class="step-header">
+      <text class="step-title">修改详情</text>
+      <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
+    </view>
+
+    <view class="modify-detail-content">
+      <!-- 时间修改 -->
+      <view class="modify-item">
+        <view class="modify-label">
+          <view class="label-icon">📅</view>
+          <text class="label-text">时间</text>
+        </view>
+        <picker mode="date" value="{{modifyRecord.date}}" bindchange="onModifyDetailDateChange">
+          <view class="modify-input-area">
+            <text class="modify-input-text">{{modifyRecord.date || '选择日期'}}</text>
+            <view class="input-arrow">▼</view>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 人员修改 -->
+      <view class="modify-item">
+        <view class="modify-label">
+          <view class="label-icon">👤</view>
+          <text class="label-text">人员</text>
+        </view>
+        <input
+          class="modify-input"
+          placeholder="请输入人员信息"
+          value="{{modifyRecord.person}}"
+          bindinput="onModifyPersonInput"
+        />
+      </view>
+
+      <!-- 地点修改 -->
+      <view class="modify-item">
+        <view class="modify-label">
+          <view class="label-icon">📍</view>
+          <text class="label-text">地点</text>
+        </view>
+        <input
+          class="modify-input"
+          placeholder="请输入地点信息"
+          value="{{modifyRecord.location}}"
+          bindinput="onModifyLocationInput"
+        />
+      </view>
+
+      <!-- 图片修改 -->
+      <view class="modify-item">
+        <view class="modify-label">
+          <view class="label-icon">🖼️</view>
+          <text class="label-text">图片</text>
+        </view>
+        <view class="media-upload-area">
+          <view class="current-media" wx:if="{{modifyRecord.images && modifyRecord.images.length > 0}}">
+            <view class="media-item" wx:for="{{modifyRecord.images}}" wx:key="index">
+              <image class="media-preview" src="{{item}}" mode="aspectFill"></image>
+              <view class="media-remove" bindtap="removeModifyImage" data-index="{{index}}">×</view>
+            </view>
+          </view>
+          <view class="upload-btn" bindtap="uploadModifyImage">
+            <text class="upload-text">{{modifyRecord.images && modifyRecord.images.length > 0 ? '添加更多图片' : '上传图片'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 视频修改 -->
+      <view class="modify-item">
+        <view class="modify-label">
+          <view class="label-icon">🎥</view>
+          <text class="label-text">视频</text>
+        </view>
+        <view class="media-upload-area">
+          <view class="current-media" wx:if="{{modifyRecord.videos && modifyRecord.videos.length > 0}}">
+            <view class="media-item" wx:for="{{modifyRecord.videos}}" wx:key="index">
+              <video class="media-preview" src="{{item}}" controls></video>
+              <view class="media-remove" bindtap="removeModifyVideo" data-index="{{index}}">×</view>
+            </view>
+          </view>
+          <view class="upload-btn" bindtap="uploadModifyVideo">
+            <text class="upload-text">{{modifyRecord.videos && modifyRecord.videos.length > 0 ? '添加更多视频' : '上传视频'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 新闻稿修改 -->
+      <view class="modify-item">
+        <view class="modify-label">
+          <view class="label-icon">📰</view>
+          <text class="label-text">新闻稿</text>
+        </view>
         <textarea
-          class="content-input"
-          placeholder="请输入新的内容"
-          value="{{newContent}}"
-          bindinput="onNewContentInput"
-          maxlength="1000"
+          class="modify-textarea"
+          placeholder="请输入新闻稿内容"
+          value="{{modifyRecord.news}}"
+          bindinput="onModifyNewsInput"
+          maxlength="2000"
         />
       </view>
     </view>
 
     <view class="button-group">
-      <button class="save-btn" bindtap="saveModification">保存修改</button>
-      <button class="back-btn" bindtap="prevStep">上一步</button>
+      <button class="save-btn" bindtap="saveModifyDetail">保存修改</button>
+      <button class="back-btn" bindtap="backToModifyList">返回列表</button>
     </view>
   </view>
 
@@ -358,29 +552,31 @@
 
           <!-- 进度信息 -->
           <view class="item-content">
-            <view class="item-header">
-              <view class="item-time-info">
-                <view class="time-status-dot {{item.status}}"></view>
-                <view class="time-details">
-                  <text class="item-date">{{item.date}}</text>
-                  <text class="item-time">{{item.time}}</text>
-                </view>
-              </view>
-              <text class="item-status {{item.status}}">{{item.statusText}}</text>
-            </view>
-
             <text class="item-title">{{item.title}}</text>
 
             <view class="item-details">
               <view class="detail-row">
-                <text class="detail-label">📍</text>
-                <text class="detail-value">{{item.location}}</text>
+                <text class="detail-label">📅</text>
+                <text class="detail-value">{{item.date}}</text>
               </view>
               <view class="detail-row">
                 <text class="detail-label">👤</text>
                 <text class="detail-value">{{item.person}}</text>
               </view>
+              <view class="detail-row">
+                <text class="detail-label">📍</text>
+                <text class="detail-value">{{item.location}}</text>
+              </view>
             </view>
+          </view>
+
+          <!-- 状态区域 -->
+          <view class="delete-status-area">
+            <view class="status-time-info">
+              <text class="status-date">{{item.date}}</text>
+              <text class="status-time">{{item.time}}</text>
+            </view>
+            <view class="status-badge {{item.status}}">{{item.statusText}}</view>
           </view>
 
           <!-- 删除按钮 -->
