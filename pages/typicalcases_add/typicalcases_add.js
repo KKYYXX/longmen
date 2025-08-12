@@ -26,22 +26,24 @@ Page({
   // 初始化页面
   initPage() {
     // 检查用户权限
-    this.checkUserPermission();
+    //this.checkUserPermission();
   },
 
+  /*
   // 检查用户权限
   checkUserPermission() {
-    // 开发环境跳过权限检查
-    const apiConfig = require('../../config/api.js');
-    if (apiConfig.isMockEnabled()) {
-      console.log('开发环境：跳过权限检查');
-      return;
-    }
+    // 注释掉开发环境跳过权限检查，进行前后端联调
+    // const apiConfig = require('../../config/api.js');
+    // if (apiConfig.isMockEnabled()) {
+    //   console.log('开发环境：跳过权限检查');
+    //   return;
+    // }
 
     // TODO: 调用后端接口检查用户是否有添加典型案例的权限
     // 接口：GET /api/user/permissions
+    
     wx.request({
-      url: apiConfig.buildApiUrl(apiConfig.api.user.permissions),
+      url: 'http://127.0.0.1:5000/app/api/user/permissions',
       method: 'GET',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
@@ -62,10 +64,11 @@ Page({
       },
       fail: (err) => {
         console.error('检查权限失败:', err);
-        // 开发环境下允许继续操作
+        // 前后端联调阶段允许继续操作
+        console.log('前后端联调阶段：允许继续操作');
       }
     });
-  },
+  },*/
 
   // 文件上传功能
   uploadFiles: function() {
@@ -122,31 +125,31 @@ Page({
     console.log('开始选择文件，类型:', fileType);
     var self = this;
 
-    // 开发环境下模拟文件选择
-    var apiConfig = require('../../config/api.js');
-    if (apiConfig.isMockEnabled()) {
-      // 模拟文件选择成功
-      var mockFile = {
-        name: fileType === 'pdf' ? '测试文档.pdf' : '测试文档.docx',
-        size: 1024 * 1024 * 2, // 2MB
-        tempFilePath: '/mock/path/test.' + (fileType === 'pdf' ? 'pdf' : 'docx')
-      };
+    // 注释掉开发环境模拟文件选择，进行前后端联调
+    // var apiConfig = require('../../config/api.js');
+    // if (apiConfig.isMockEnabled()) {
+    //   // 模拟文件选择成功
+    //   var mockFile = {
+    //     name: fileType === 'pdf' ? '测试文档.pdf' : '测试文档.docx',
+    //     size: 1024 * 1024 * 2, // 2MB
+    //     tempFilePath: '/mock/path/test.' + (fileType === 'pdf' ? 'pdf' : 'docx')
+    //   };
 
-      wx.showModal({
-        title: '模拟文件选择',
-        content: '已选择文件：' + mockFile.name + '\n文件大小：' + self.formatFileSize(mockFile.size) + '\n\n这是开发模式的模拟选择，实际环境中会打开文件选择器。',
-        confirmText: '确认上传',
-        cancelText: '取消',
-        success: function(res) {
-          if (res.confirm) {
-            self.uploadFilesToServer([mockFile], fileType);
-          }
-        }
-      });
-      return;
-    }
+    //   wx.showModal({
+    //     title: '模拟文件选择',
+    //     content: '已选择文件：' + mockFile.name + '\n文件大小：' + self.formatFileSize(mockFile.size) + '\n\n这是开发模式的模拟选择，实际环境中会打开文件选择器。',
+    //     confirmText: '确认上传',
+    //     cancelText: '取消',
+    //     success: function(res) {
+    //       if (res.confirm) {
+    //         self.uploadFilesToServer([mockFile], fileType);
+    //       }
+    //     }
+    //   });
+    //   return;
+    // }
 
-    // 生产环境使用真实的文件选择API
+    // 前后端联调阶段使用真实的文件选择API
     try {
       wx.chooseMessageFile({
         count: 1,
@@ -190,12 +193,62 @@ Page({
 
   // 上传文件到服务器
   uploadFilesToServer(files, fileType) {
-    const apiConfig = require('../../config/api.js');
+    // 注释掉开发环境模拟上传，进行前后端联调
+    // const apiConfig = require('../../config/api.js');
+
+    // 参数验证：检查文件是否存在且有效
+    if (!files || files.length === 0) {
+      wx.showToast({
+        title: '没有选择文件',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const file = files[0];
+    
+    // 检查文件的必要属性 - 兼容不同的文件路径属性
+    let filePath = file.tempFilePath || file.path;
+    if (!filePath) {
+      console.error('文件路径为空，文件对象:', file);
+      wx.showToast({
+        title: '文件路径无效，请重新选择文件',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!file.name) {
+      console.error('文件名为空:', file);
+      wx.showToast({
+        title: '文件名无效，请重新选择文件',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!file.size || file.size <= 0) {
+      console.error('文件大小无效:', file);
+      wx.showToast({
+        title: '文件大小无效，请重新选择文件',
+        icon: 'none'
+      });
+      return;
+    }
+
+    console.log('准备上传文件:', {
+      name: file.name,
+      size: file.size,
+      filePath: filePath,
+      type: fileType,
+      fileObject: file
+    });
     
     this.setData({
       isUploading: true,
       fileUploadProgress: 0
     });
+ 
 
     // 显示上传进度
     const progressTimer = setInterval(() => {
@@ -206,63 +259,62 @@ Page({
       }
     }, 200);
 
-    // 开发环境：模拟上传成功
-    if (apiConfig.isMockEnabled()) {
-      setTimeout(() => {
-        clearInterval(progressTimer);
-        this.setData({
-          fileUploadProgress: 100,
-          isUploading: false
-        });
+    // 注释掉开发环境模拟上传成功，进行前后端联调
+    // if (apiConfig.isMockEnabled()) {
+    //   setTimeout(() => {
+    //     clearInterval(progressTimer);
+    //     this.setData({
+    //       fileUploadProgress: 100,
+    //       isUploading: false
+    //     });
 
-        // 模拟上传成功
-        const fileSize = files[0].size || 1024 * 1024;
-        const uploadedFile = {
-          id: Date.now(),
-          name: files[0].name || `文件_${Date.now()}.${fileType}`,
-          url: files[0].tempFilePath,
-          type: fileType,
-          size: fileSize,
-          sizeFormatted: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
-          uploadTime: new Date().toISOString()
-        };
+    //     // 模拟上传成功
+    //     const fileSize = files[0].size || 1024 * 1024;
+    //     const uploadedFile = {
+    //       id: Date.now(),
+    //       name: files[0].name || `文件_${Date.now()}.${fileType}`,
+    //       url: files[0].tempFilePath,
+    //       type: fileType,
+    //       size: fileSize,
+    //       sizeFormatted: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
+    //       uploadTime: new Date().toISOString()
+    //     };
 
-        this.setData({
-          uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
-        });
+    //     this.setData({
+    //       uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
+    //     });
 
-        // 显示更明显的成功提示
-        wx.showModal({
-          title: '✅ 上传成功',
-          content: `文件"${uploadedFile.name}"已成功上传！\n\n文件大小：${uploadedFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}`,
-          showCancel: false,
-          confirmText: '确定',
-          success: () => {
-            // 显示Toast提示
-            wx.showToast({
-              title: '文件已添加到预览列表',
-              icon: 'success',
-              duration: 2000
-            });
-          }
-        });
-      }, 2000);
-      return;
-    }
+    //     // 显示更明显的成功提示
+    //     wx.showModal({
+    //       title: '✅ 上传成功',
+    //       content: `文件"${uploadedFile.name}"已成功上传！\n\n文件大小：${uploadedFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}`,
+    //       showCancel: false,
+    //       confirmText: '确定',
+    //       success: () => {
+    //         // 显示Toast提示
+    //         wx.showToast({
+    //           title: '文件已添加到预览列表',
+    //           icon: 'success',
+    //           duration: 2000
+    //         });
+    //       }
+    //     });
+    //   }, 2000);
+    //   return;
+    // }
 
-    // 生产环境：实际上传到服务器
-    const serverUrl = apiConfig.buildApiUrl(apiConfig.api.typicalCases.uploadFiles);
+    // 前后端联调阶段：先上传文件到文件服务器，然后调用后端接口
+    const uploadServerUrl = 'http://127.0.0.1:5000/app/api/upload';
     
     wx.uploadFile({
-      url: serverUrl,
-      filePath: files[0].tempFilePath,
+      url: uploadServerUrl,
+      filePath: filePath, // 使用兼容的文件路径 
       name: 'file',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       formData: {
-        fileType: fileType,
-        caseId: Date.now() // 临时案例ID
+        fileType: fileType
       },
       success: (res) => {
         clearInterval(progressTimer);
@@ -274,36 +326,8 @@ Page({
         try {
           const result = JSON.parse(res.data);
           if (result.success) {
-            // 添加到已上传文件列表
-            const fileSize = files[0].size;
-            const uploadedFile = {
-              id: result.fileId,
-              name: files[0].name,
-              url: result.fileUrl,
-              type: fileType,
-              size: fileSize,
-              sizeFormatted: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
-              uploadTime: new Date().toISOString()
-            };
-
-            this.setData({
-              uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
-            });
-
-            // 显示更明显的成功提示
-            wx.showModal({
-              title: '✅ 上传成功',
-              content: `文件"${uploadedFile.name}"已成功上传到服务器！\n\n文件大小：${uploadedFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}`,
-              showCancel: false,
-              confirmText: '确定',
-              success: () => {
-                wx.showToast({
-                  title: '文件已添加到预览列表',
-                  icon: 'success',
-                  duration: 2000
-                });
-              }
-            });
+            // 文件上传成功后，调用后端接口保存文件信息
+            this.saveFileInfoToBackend(files[0], fileType, result.file_url);
           } else {
             wx.showToast({
               title: result.message || '文件上传失败',
@@ -326,14 +350,80 @@ Page({
         console.error('文件上传失败:', err);
         
         let errorMsg = '文件上传失败';
-        if (err.errMsg.includes('timeout')) {
+        if (err.errMsg && err.errMsg.includes('timeout')) {
           errorMsg = '上传超时，请检查网络';
-        } else if (err.errMsg.includes('fail')) {
+        } else if (err.errMsg && err.errMsg.includes('fail')) {
           errorMsg = '网络连接失败';
+        } else if (err.errMsg && err.errMsg.includes('parameter error')) {
+          errorMsg = '文件参数错误，请重新选择文件';
         }
         
         wx.showToast({
           title: errorMsg,
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 保存文件信息到后端
+  saveFileInfoToBackend(file, fileType, fileUrl) {
+    // 调用后端 /api/models 接口保存文件信息
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/models',
+      method: 'POST',
+      header: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        model_name: this.data.caseName, // 典型案例名称
+        file_name: file.name, // 文件名
+        file_size: file.size, // 文件大小
+        file_url: fileUrl, // 文件URL
+        file_type: fileType // 文件类型
+      },
+      success: (res) => {
+        if (res.data.success) {
+          // 添加到已上传文件列表
+          const uploadedFile = {
+            id: res.data.data.id,
+            name: file.name,
+            url: fileUrl,
+            type: fileType,
+            size: file.size,
+            sizeFormatted: this.formatFileSize(file.size),
+            uploadTime: new Date().toISOString()
+          };
+
+          this.setData({
+            uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
+          });
+
+          // 显示成功提示
+          wx.showModal({
+            title: '✅ 上传成功',
+            content: `文件"${uploadedFile.name}"已成功上传并保存到后端！\n\n文件大小：${uploadedFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}`,
+            showCancel: false,
+            confirmText: '确定',
+            success: () => {
+              wx.showToast({
+                title: '文件已添加到预览列表',
+                icon: 'success',
+                duration: 2000
+              });
+            }
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '保存文件信息失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('保存文件信息失败:', err);
+        wx.showToast({
+          title: '保存文件信息失败',
           icon: 'none'
         });
       }
@@ -365,7 +455,8 @@ Page({
 
   // 添加新闻链接
   addNewsLink(title, url) {
-    const apiConfig = require('../../config/api.js');
+    // 注释掉开发环境模拟添加，进行前后端联调
+    // const apiConfig = require('../../config/api.js');
     
     // 验证URL格式
     if (!this.isValidUrl(url)) {
@@ -376,54 +467,52 @@ Page({
       return;
     }
 
-    // 开发环境：模拟添加成功
-    if (apiConfig.isMockEnabled()) {
-      const newsLink = {
-        id: Date.now(),
-        title: title,
-        url: url,
-        addTime: new Date().toISOString()
-      };
+    // 注释掉开发环境模拟添加成功，进行前后端联调
+    // if (apiConfig.isMockEnabled()) {
+    //   const newsLink = {
+    //     id: Date.now(),
+    //     title: title,
+    //     url: url,
+    //     addTime: new Date().toISOString()
+    //   };
 
-      this.setData({
-        newsLinks: [...this.data.newsLinks, newsLink]
-      });
+    //   this.setData({
+    //     newsLinks: [...this.data.newsLinks, newsLink]
+    //   });
 
-      // 显示更明显的成功提示
-      wx.showModal({
-        title: '✅ 链接添加成功',
-        content: `新闻链接"${title}"已成功添加！\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
-        showCancel: false,
-        confirmText: '确定',
-        success: () => {
-          wx.showToast({
-            title: '链接已添加到预览列表',
-            icon: 'success',
-            duration: 2000
-          });
-        }
-      });
-      return;
-    }
+    //   // 显示更明显的成功提示
+    //   wx.showModal({
+    //     title: '✅ 链接添加成功',
+    //     content: `新闻链接"${title}"已成功添加！\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
+    //     showCancel: false,
+    //     confirmText: '确定',
+    //     success: () => {
+    //       wx.showToast({
+    //         title: '链接已添加到预览列表',
+    //         icon: 'success',
+    //         duration: 2000
+    //       });
+    //     }
+    //   });
+    //   return;
+    // }
 
-    // 生产环境：调用后端接口保存新闻链接
-    // 接口：POST /api/typical-cases/add-news-link
+    // 前后端联调阶段：调用后端接口保存新闻链接
     wx.request({
-      url: apiConfig.buildApiUrl(apiConfig.api.typicalCases.addNewsLink),
+      url: 'http://127.0.0.1:5000/app/api/news',
       method: 'POST',
       header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`,
         'Content-Type': 'application/json'
       },
       data: {
-        title: title,
-        url: url,
-        caseId: Date.now() // 临时案例ID
+        model_name: this.data.caseName, // 典型案例名称
+        news_title: title, // 新闻标题
+        news_url: url // 新闻链接
       },
       success: (res) => {
         if (res.data.success) {
           const newsLink = {
-            id: res.data.linkId,
+            id: res.data.data.id,
             title: title,
             url: url,
             addTime: new Date().toISOString()
@@ -433,10 +522,10 @@ Page({
             newsLinks: [...this.data.newsLinks, newsLink]
           });
 
-          // 显示更明显的成功提示
+          // 显示成功提示
           wx.showModal({
             title: '✅ 链接添加成功',
-            content: `新闻链接"${title}"已成功保存到服务器！\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
+            content: `新闻链接"${title}"已成功保存到后端！\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
             showCancel: false,
             confirmText: '确定',
             success: () => {
@@ -514,8 +603,50 @@ Page({
 
   // 上传视频到服务器
   uploadVideosToServer(videos) {
-    const apiConfig = require('../../config/api.js');
+    // 注释掉开发环境模拟上传，进行前后端联调
+    // const apiConfig = require('../../config/api.js');
     
+
+    // 参数验证：检查视频是否存在且有效
+    if (!videos || videos.length === 0) {
+      wx.showToast({
+        title: '没有选择视频',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const video = videos[0];
+    
+     // 检查视频的必要属性 - 兼容不同的视频路径属性
+     let videoPath = video.tempFilePath || video.path;
+     if (!videoPath) {
+       console.error('视频路径为空，视频对象:', video);
+       wx.showToast({
+         title: '视频路径无效，请重新选择视频',
+         icon: 'none'
+       });
+       return;
+     }
+
+   
+
+    if (!video.size || video.size <= 0) {
+      console.error('视频大小无效:', video);
+      wx.showToast({
+        title: '视频大小无效，请重新选择视频',
+        icon: 'none'
+      });
+      return;
+    }
+
+    console.log('准备上传视频:', {
+      size: video.size,
+      videoPath: videoPath,
+      duration: video.duration,
+      videoObject: video
+    });
+
     this.setData({
       isUploading: true,
       videoUploadProgress: 0
@@ -530,61 +661,61 @@ Page({
       }
     }, 300);
 
-    // 开发环境：模拟上传成功
-    if (apiConfig.isMockEnabled()) {
-      setTimeout(() => {
-        clearInterval(progressTimer);
-        this.setData({
-          videoUploadProgress: 100,
-          isUploading: false
-        });
+    // 注释掉开发环境模拟上传成功，进行前后端联调
+    // if (apiConfig.isMockEnabled()) {
+    //   setTimeout(() => {
+    //     clearInterval(progressTimer);
+    //     this.setData({
+    //       videoUploadProgress: 100,
+    //       isUploading: false
+    //     });
 
-        // 模拟上传成功
-        const videoSize = videos[0].size || 1024 * 1024;
-        const uploadedVideo = {
-          id: Date.now(),
-          name: videos[0].name || `视频_${Date.now()}.mp4`,
-          url: videos[0].tempFilePath,
-          size: videoSize,
-          sizeFormatted: `${(videoSize / 1024 / 1024).toFixed(2)}MB`,
-          duration: videos[0].duration || 60,
-          uploadTime: new Date().toISOString()
-        };
+    //     // 模拟上传成功
+    //     const videoSize = videos[0].size || 1024 * 1024;
+    //     const uploadedVideo = {
+    //       id: Date.now(),
+    //       name: videos[0].name || `视频_${Date.now()}.mp4`,
+    //       url: videos[0].tempFilePath,
+    //       size: videoSize,
+    //       sizeFormatted: `${(videoSize / 1024 / 1024).toFixed(2)}MB`,
+    //       duration: videos[0].duration || 60,
+    //       uploadTime: new Date().toISOString()
+    //     };
 
-        this.setData({
-          uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
-        });
+    //     this.setData({
+    //       uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
+    //     });
 
-        // 显示更明显的成功提示
-        wx.showModal({
-          title: '✅ 视频上传成功',
-          content: `视频"${uploadedVideo.name}"已成功上传！\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
-          showCancel: false,
-          confirmText: '确定',
-          success: () => {
-            wx.showToast({
-              title: '视频已添加到预览列表',
-              icon: 'success',
-              duration: 2000
-            });
-          }
-        });
-      }, 2000);
-      return;
-    }
+    //     // 显示更明显的成功提示
+    //     wx.showModal({
+    //       title: '✅ 视频上传成功',
+    //       content: `视频"${uploadedVideo.name}"已成功上传！\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
+    //       showCancel: false,
+    //       confirmText: '确定',
+    //       success: () => {
+    //         wx.showToast({
+    //           title: '视频已添加到预览列表',
+    //           icon: 'success',
+    //           duration: 2000
+    //         });
+    //       }
+    //     });
+    //   }, 2000);
+    //   return;
+    // }
 
-    // 生产环境：实际上传到服务器
-    const serverUrl = apiConfig.buildApiUrl(apiConfig.api.typicalCases.uploadVideos);
+    // 前后端联调阶段：先上传视频到文件服务器，然后调用后端接口
+    const uploadServerUrl = 'http://127.0.0.1:5000/app/api/upload';
     
     wx.uploadFile({
-      url: serverUrl,
-      filePath: videos[0].tempFilePath,
-      name: 'video',
+      url: uploadServerUrl,
+      filePath: videoPath, // 使用兼容的视频路径
+      name: 'file',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
       },
       formData: {
-        caseId: Date.now() // 临时案例ID
+        fileType: 'video'
       },
       success: (res) => {
         clearInterval(progressTimer);
@@ -596,36 +727,8 @@ Page({
         try {
           const result = JSON.parse(res.data);
           if (result.success) {
-            // 添加到已上传视频列表
-            const videoSize = videos[0].size;
-            const uploadedVideo = {
-              id: result.videoId,
-              name: videos[0].name || `视频_${Date.now()}.mp4`,
-              url: result.videoUrl,
-              size: videoSize,
-              sizeFormatted: `${(videoSize / 1024 / 1024).toFixed(2)}MB`,
-              duration: videos[0].duration,
-              uploadTime: new Date().toISOString()
-            };
-
-            this.setData({
-              uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
-            });
-
-            // 显示更明显的成功提示
-            wx.showModal({
-              title: '✅ 视频上传成功',
-              content: `视频"${uploadedVideo.name}"已成功上传到服务器！\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
-              showCancel: false,
-              confirmText: '确定',
-              success: () => {
-                wx.showToast({
-                  title: '视频已添加到预览列表',
-                  icon: 'success',
-                  duration: 2000
-                });
-              }
-            });
+            // 视频上传成功后，调用后端接口保存视频信息
+            this.saveVideoInfoToBackend(videos[0], result.file_url);
           } else {
             wx.showToast({
               title: result.message || '视频上传失败',
@@ -648,14 +751,77 @@ Page({
         console.error('视频上传失败:', err);
         
         let errorMsg = '视频上传失败';
-        if (err.errMsg.includes('timeout')) {
+        if (err.errMsg && err.errMsg.includes('timeout')) {
           errorMsg = '上传超时，请检查网络';
-        } else if (err.errMsg.includes('fail')) {
+        } else if (err.errMsg && err.errMsg.includes('fail')) {
           errorMsg = '网络连接失败';
+        } else if (err.errMsg && err.errMsg.includes('parameter error')) {
+          errorMsg = '视频参数错误，请重新选择视频';
         }
         
         wx.showToast({
           title: errorMsg,
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 保存视频信息到后端
+  saveVideoInfoToBackend(video, videoUrl) {
+    // 调用后端 /api/video 接口保存视频信息
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/video',
+      method: 'POST',
+      header: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        model_name: this.data.caseName, // 典型案例名称
+        video_url: videoUrl // 视频URL
+      },
+      success: (res) => {
+        if (res.data.success) {
+          // 添加到已上传视频列表
+          const uploadedVideo = {
+            id: res.data.data.id,
+            name: video.name || `视频_${Date.now()}.mp4`,
+            url: videoUrl,
+            size: video.size,
+            sizeFormatted: this.formatFileSize(video.size),
+            duration: video.duration,
+            uploadTime: new Date().toISOString()
+          };
+
+          this.setData({
+            uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
+          });
+
+          // 显示成功提示
+          wx.showModal({
+            title: '✅ 视频上传成功',
+            content: `视频"${uploadedVideo.name}"已成功上传并保存到后端！\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
+            showCancel: false,
+            confirmText: '确定',
+            success: () => {
+              wx.showToast({
+                title: '视频已添加到预览列表',
+                icon: 'success',
+                duration: 2000
+              });
+            }
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '保存视频信息失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('保存视频信息失败:', err);
+        wx.showToast({
+          title: '保存视频信息失败',
           icon: 'none'
         });
       }
@@ -669,7 +835,7 @@ Page({
     // 调用后端接口删除文件
     // 接口：DELETE /api/typical-cases/delete-file/{fileId}
     wx.request({
-      url: `http://127.0.0.1:5000/api/typical-cases/delete-file/${fileId}`,
+      url: `http://127.0.0.1:5000/app/api/models/${fileId}`,
       method: 'DELETE',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
@@ -708,7 +874,7 @@ Page({
     // 调用后端接口删除新闻链接
     // 接口：DELETE /api/typical-cases/delete-news-link/{linkId}
     wx.request({
-      url: `http://127.0.0.1:5000/api/typical-cases/delete-news-link/${linkId}`,
+      url: `http://127.0.0.1:5000/app/api/news/${linkId}`,
       method: 'DELETE',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
@@ -747,7 +913,7 @@ Page({
     // 调用后端接口删除视频
     // 接口：DELETE /api/typical-cases/delete-video/{videoId}
     wx.request({
-      url: `http://127.0.0.1:5000/api/typical-cases/delete-video/${videoId}`,
+      url: `http://127.0.0.1:5000/app/api/video/${videoId}`,
       method: 'DELETE',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
@@ -966,128 +1132,152 @@ Page({
 
   // 提交到服务器
   submitToServer() {
-    const apiConfig = require('../../config/api.js');
+    // 注释掉开发环境保存到本地存储，进行前后端联调
+    // const apiConfig = require('../../config/api.js');
     
     wx.showLoading({
       title: '提交中...'
     });
 
-    // 开发环境：保存到本地存储并模拟提交成功
-    if (apiConfig.isMockEnabled()) {
-      setTimeout(() => {
-        // 构建案例数据对象
-        const newCase = {
-          id: Date.now(), // 使用时间戳作为ID，确保大于2000
-          caseName: this.data.caseName,
-          title: this.data.caseName,
-          category: '用户上传', // 添加分类字段
-          uploadTime: new Date().toLocaleString(),
-          createDate: new Date().toISOString().split('T')[0],
-          updateDate: new Date().toISOString().split('T')[0], // 添加更新日期
-          description: `用户上传的典型案例：${this.data.caseName}`,
-          summary: `用户上传的典型案例：${this.data.caseName}`,
-          author: '当前用户',
-          contact: '用户联系方式',
-          files: this.data.uploadedFiles.map(file => ({
-            name: file.name,
-            size: file.size,
-            sizeFormatted: file.sizeFormatted || this.formatFileSize(file.size)
-          })),
-          videos: this.data.uploadedVideos.map(video => ({
-            name: video.name,
-            duration: video.duration || '未知时长'
-          })),
-          links: this.data.newsLinks.map(link => ({
-            title: link.title,
-            url: link.url
-          })),
-          fileCount: this.data.uploadedFiles.length,
-          videoCount: this.data.uploadedVideos.length,
-          linkCount: this.data.newsLinks.length
-        };
+    // 注释掉开发环境保存到本地存储并模拟提交成功，进行前后端联调
+    // if (apiConfig.isMockEnabled()) {
+    //   setTimeout(() => {
+    //     // 构建案例数据对象
+    //     const newCase = {
+    //       id: Date.now(), // 使用时间戳作为ID，确保大于2000
+    //       caseName: this.data.caseName,
+    //       title: this.data.caseName,
+    //       category: '用户上传', // 添加分类字段
+    //       uploadTime: new Date().toLocaleString(),
+    //       createDate: new Date().toISOString().split('T')[0],
+    //       updateDate: new Date().toISOString().split('T')[0], // 添加更新日期
+    //       description: `用户上传的典型案例：${this.data.caseName}`,
+    //       summary: `用户上传的典型案例：${this.data.caseName}`,
+    //       author: '当前用户',
+    //       contact: '用户联系方式',
+    //       files: this.data.uploadedFiles.map(file => ({
+    //         name: file.name,
+    //         size: file.size,
+    //         sizeFormatted: file.sizeFormatted || this.formatFileSize(file.size)
+    //       })),
+    //       videos: this.data.uploadedVideos.map(video => ({
+    //         name: video.name,
+    //         duration: video.duration || '未知时长'
+    //       })),
+    //       links: this.data.newsLinks.map(link => ({
+    //         title: link.title,
+    //         url: link.url
+    //       })),
+    //       fileCount: this.data.uploadedFiles.length,
+    //       videoCount: this.data.uploadedVideos.length,
+    //       linkCount: this.data.newsLinks.length
+    //     };
 
-        // 保存到本地存储
-        const storedCases = wx.getStorageSync('typicalCases') || [];
-        storedCases.push(newCase);
-        wx.setStorageSync('typicalCases', storedCases);
+    //     // 保存到本地存储
+    //     const storedCases = wx.getStorageSync('typicalCases') || [];
+    //     storedCases.push(newCase);
+    //     wx.setStorageSync('typicalCases', storedCases);
 
-        // 通知其他页面数据已更新
-        wx.setStorageSync('caseListNeedRefresh', true);
+    //     // 通知其他页面数据已更新
+    //     wx.setStorageSync('caseListNeedRefresh', true);
 
-        wx.hideLoading();
-        const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
-        wx.showModal({
-          title: '🎉 提交成功（开发模式）',
-          content: `典型案例"${this.data.caseName}"已成功提交！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n案例已保存到本地存储`,
-          showCancel: false,
-          confirmText: '完成',
-          success: () => {
-            wx.showToast({
-              title: '提交完成，返回上一页',
-              icon: 'success',
-              duration: 2000
-            });
-            setTimeout(() => {
-              wx.navigateBack();
-            }, 2000);
-          }
-        });
-      }, 2000);
-      return;
-    }
+    //     wx.hideLoading();
+    //     const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
+    //     wx.showModal({
+    //       title: '🎉 提交成功（开发模式）',
+    //       content: `典型案例"${this.data.caseName}"已成功提交！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n案例已保存到本地存储`,
+    //       showCancel: false,
+    //       confirmText: '完成',
+    //       success: () => {
+    //         wx.showToast({
+    //           title: '提交完成，返回上一页',
+    //           icon: 'success',
+    //           duration: 2000
+    //         });
+    //         setTimeout(() => {
+    //           wx.navigateBack();
+    //         }, 2000);
+    //       }
+    //     });
+    //   }, 2000);
+    //   return;
+    // }
 
-    // 生产环境：实际上传到服务器
-    wx.request({
-      url: apiConfig.buildApiUrl('/api/typical-cases/submit-content'),
-      method: 'POST',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`,
-        'Content-Type': 'application/json'
-      },
-      data: {
-        caseName: this.data.caseName,
-        files: this.data.uploadedFiles,
-        newsLinks: this.data.newsLinks,
-        videos: this.data.uploadedVideos,
-        submitTime: new Date().toISOString()
-      },
-      success: (res) => {
-        wx.hideLoading();
-        if (res.data.success) {
-          // 显示详细的成功提示
-          const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
-          wx.showModal({
-            title: '🎉 提交成功',
-            content: `典型案例"${this.data.caseName}"已成功提交到服务器！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目`,
-            showCancel: false,
-            confirmText: '完成',
-            success: () => {
-              wx.showToast({
-                title: '提交完成，返回上一页',
-                icon: 'success',
-                duration: 2000
-              });
-              setTimeout(() => {
-                wx.navigateBack();
-              }, 2000);
-            }
-          });
-        } else {
+    // 前后端联调阶段：显示提交成功提示
+    const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
+    
+    setTimeout(() => {
+      wx.hideLoading();
+      wx.showModal({
+        title: '🎉 提交成功',
+        content: `典型案例"${this.data.caseName}"已成功提交到后端！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n所有数据已保存到后端数据库`,
+        showCancel: false,
+        confirmText: '完成',
+        success: () => {
           wx.showToast({
-            title: res.data.message || '提交失败',
-            icon: 'none'
+            title: '提交完成，返回上一页',
+            icon: 'success',
+            duration: 2000
           });
+          setTimeout(() => {
+            wx.navigateBack();
+          }, 2000);
         }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.error('提交失败:', err);
-        wx.showToast({
-          title: '提交失败',
-          icon: 'none'
-        });
-      }
-    });
+      });
+    }, 1000);
+
+    // 注释掉生产环境实际上传到服务器，进行前后端联调
+    // wx.request({
+    //   url: apiConfig.buildApiUrl('/api/typical-cases/submit-content'),
+    //   method: 'POST',
+    //   header: {
+    //     'Authorization': `Bearer ${wx.getStorageSync('token')}`,
+    //     'Content-Type': 'application/json'
+    //   },
+    //   data: {
+    //     caseName: this.data.caseName,
+    //     files: this.data.uploadedFiles,
+    //     newsLinks: this.data.newsLinks,
+    //     videos: this.data.uploadedVideos,
+    //     submitTime: new Date().toISOString()
+    //   },
+    //   success: (res) => {
+    //     wx.hideLoading();
+    //     if (res.data.success) {
+    //       // 显示详细的成功提示
+    //       const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
+    //       wx.showModal({
+    //         title: '🎉 提交成功',
+    //         content: `典型案例"${this.data.caseName}"已成功提交到服务器！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目`,
+    //         showCancel: false,
+    //         confirmText: '完成',
+    //         success: () => {
+    //           wx.showToast({
+    //             title: '提交完成，返回上一页',
+    //             icon: 'success',
+    //             duration: 2000
+    //           });
+    //           setTimeout(() => {
+    //             wx.navigateBack();
+    //           }, 2000);
+    //         }
+    //       });
+    //     } else {
+    //       wx.showToast({
+    //         title: res.data.message || '提交失败',
+    //         icon: 'none'
+    //       });
+    //     }
+    //   },
+    //   fail: (err) => {
+    //     wx.hideLoading();
+    //     console.error('提交失败:', err);
+    //     wx.showToast({
+    //       title: '提交失败',
+    //       icon: 'none'
+    //     });
+    //   }
+    // });
   },
 
   // 清空文件列表
