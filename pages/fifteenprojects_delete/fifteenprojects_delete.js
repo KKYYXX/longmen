@@ -196,44 +196,91 @@ Page({
       title: '删除中...'
     });
 
-    // TODO: 调用后端API删除十五项项目
-    // wx.request({
-    //   url: 'your-api-endpoint/fifteen-projects/' + projectItem.id,
-    //   method: 'DELETE',
-    //   success: (res) => {
-    //     wx.hideLoading();
-    //     // 从列表中移除项目
-    //     const projectList = this.data.projectList.filter(item => item.id !== projectItem.id);
-    //     this.setData({
-    //       projectList: projectList
-    //     });
-    //     wx.showToast({
-    //       title: '删除成功',
-    //       icon: 'success'
-    //     });
-    //   },
-    //   fail: (err) => {
-    //     wx.hideLoading();
-    //     console.error('删除十五项项目失败:', err);
-    //     wx.showToast({
-    //       title: '删除失败',
-    //       icon: 'none'
-    //     });
-    //   }
-    // });
+    // 通过项目名称查找项目ID，然后调用删除接口
+    this.findProjectIdByName(projectItem.projectName, (projectId) => {
+      if (projectId) {
+        this.callDeleteAPI(projectId, projectItem);
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: '未找到项目ID',
+          icon: 'none'
+        });
+      }
+    });
+  },
 
-    // 临时：模拟删除成功
-    setTimeout(() => {
-      wx.hideLoading();
-      const projectList = this.data.projectList.filter(item => item.id !== projectItem.id);
-      this.setData({
-        projectList: projectList
-      });
-      wx.showToast({
-        title: '删除成功',
-        icon: 'success'
-      });
-    }, 1000);
+  // 通过项目名称查找项目ID
+  findProjectIdByName(projectName, callback) {
+    // 直接调用getProjectIdByName去数据库查找项目ID
+    this.getProjectIdByName(projectName, callback);
+  },
+
+  // 获取项目ID（通过项目名称在数据库中查找）
+  getProjectIdByName(projectName, callback) {
+    // 通过项目名称在数据库中查找项目ID
+    // 这里需要调用后端接口来获取项目的完整信息
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/15projects/search',
+      method: 'GET',
+      data: {
+        project_name: projectName
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data.success && res.data.data) {
+          // 找到项目，返回数据库中的ID
+          const projectId = res.data.data.id;
+          console.log('在数据库中找到项目:', projectName, 'ID:', projectId);
+          callback(projectId);
+        } else {
+          // 数据库中没有找到该项目
+          console.error('数据库中没有找到项目:', projectName);
+          callback(null);
+        }
+      },
+      fail: (err) => {
+        console.error('查询项目信息失败:', err);
+        callback(null);
+      }
+    });
+  },
+
+  // 调用删除API
+  callDeleteAPI(projectId, projectItem) {
+    wx.request({
+      url: `http://127.0.0.1:5000/app/api/15projects/${projectId}`,
+      method: 'DELETE',
+      success: (res) => {
+        wx.hideLoading();
+        console.log('删除接口响应:', res);
+        
+        if (res.statusCode === 200 && res.data.success) {
+          // 删除成功，从列表中移除项目
+          const projectList = this.data.projectList.filter(item => item.id !== projectItem.id);
+          this.setData({
+            projectList: projectList
+          });
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success'
+          });
+        } else {
+          // 删除失败
+          wx.showToast({
+            title: res.data.message || '删除失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('删除请求失败:', err);
+        wx.showToast({
+          title: '删除失败',
+          icon: 'none'
+        });
+      }
+    });
   },
 
   // 添加新项目到列表

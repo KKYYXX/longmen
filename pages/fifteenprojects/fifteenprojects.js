@@ -6,14 +6,14 @@ Page({
 
   onLoad() {
     console.log('十五项项目页面加载');
-    // 页面加载时检查登录状态
-    this.checkLoginStatus();
+    // 页面加载时检查登录状态（登录验证保留，暂不启用）
+    // this.checkLoginStatus();
   },
 
   onShow() {
     console.log('十五项项目页面显示');
-    // 每次显示页面时检查登录状态
-    this.checkLoginStatus();
+    // 每次显示页面时检查登录状态（登录验证保留，暂不启用）
+    // this.checkLoginStatus();
   },
 
   // 检查登录状态
@@ -29,6 +29,8 @@ Page({
 
   // 查询按钮点击事件
   goToFifteenProjectsQuery() {
+    // 登录与权限检查逻辑保留，暂不启用
+    /*
     // 首先检查是否已登录
     if (!this.data.isLoggedIn) {
       this.showLoginModal();
@@ -37,10 +39,18 @@ Page({
 
     // 检查用户查询权限
     this.checkUserQueryPermission();
+    */
+
+    // 普通跳转
+    wx.navigateTo({
+      url: '/pages/fifteenprojectsquery/fifteenprojectsquery'
+    });
   },
 
   // 删改按钮点击事件
   goToFifteenProjectsAlter() {
+    // 登录与权限检查逻辑保留，暂不启用
+    /*
     // 首先检查是否已登录
     if (!this.data.isLoggedIn) {
       this.showLoginModal();
@@ -49,6 +59,12 @@ Page({
 
     // 检查用户修改权限
     this.checkUserAlterPermission();
+    */
+
+    // 普通跳转
+    wx.navigateTo({
+      url: '/pages/fifteenprojectsalter/fifteenprojectsalter'
+    });
   },
 
   // 显示登录提示框
