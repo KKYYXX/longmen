@@ -963,9 +963,12 @@ Page({
     ];
 
     // 按时间倒序排列
-    return progressTemplates.sort((a, b) =>
-      new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time)
-    );
+    return progressTemplates.sort((a, b) => {
+      // 将日期格式转换为iOS兼容格式
+      const dateTimeA = a.date.replace(/-/g, '/') + ' ' + a.time + ':00';
+      const dateTimeB = b.date.replace(/-/g, '/') + ' ' + b.time + ':00';
+      return new Date(dateTimeB) - new Date(dateTimeA);
+    });
   },
 
   // ========== 修改内容相关方法 ==========
