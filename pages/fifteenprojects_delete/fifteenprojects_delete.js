@@ -28,88 +28,93 @@ Page({
           icon: 'success'
         });
       }
+      // 清除已处理的新项目标记
+      app.globalData.newProject = null;
     }
   },
 
-  // 加载项目列表
+  // 加载项目列表（使用方案一：优先调用接口，失败时使用模拟数据）
   loadProjectList() {
-    try {
-      // 从后端获取数据库中的十五项项目列表
-      wx.request({
-        url: 'http://127.0.0.1:5000/app/api/15projects/names',
-        method: 'GET',
-        success: (res) => {
-          if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
-            const projectNames = res.data.data;
-            // 将项目名称映射为页面展示所需的结构
-            const mappedProjects = projectNames.map((projectName, index) => ({
-              id: index + 1, // 临时ID，用于前端显示
-              projectName: projectName,
-              projectType: '待分类',
-              startDate: '',
-              endDate: '',
-              createDate: '',
-              background: '',
-              content: '',
-              objectives: '',
-              contactName: '',
-              contactPosition: '',
-              contactPhone: '',
-              remarks: '',
-              progress: 0,
-              projectManager: '',
-              budget: '',
-              status: '进行中'
-            }));
+    wx.showLoading({
+      title: '加载中...'
+    });
 
-      this.setData({
-        allProjects: allProjects || [],
-        projectList: allProjects || [],
-        filteredProjects: allProjects || []
-      });
+    // 从后端获取数据库中的十五项项目列表
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/15projects/names',
+      method: 'GET',
+      success: (res) => {
+        wx.hideLoading();
+        
+        if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
+          const projectNames = res.data.data;
+          // 将项目名称映射为页面展示所需的结构
+          const mappedProjects = projectNames.map((projectName, index) => ({
+            id: index + 1, // 临时ID，用于前端显示
+            projectName: projectName,
+            projectType: '待分类',
+            startDate: '',
+            endDate: '',
+            createDate: '',
+            background: '',
+            content: '',
+            objectives: '',
+            contactName: '',
+            contactPosition: '',
+            contactPhone: '',
+            remarks: '',
+            progress: 0,
+            projectManager: '',
+            budget: '',
+            status: '进行中'
+          }));
 
-      /* 原逻辑：使用模拟数据（保留为注释）
-      // TODO: 调用后端API获取十五项项目列表
-      // wx.request({
-      //   url: 'your-api-endpoint/fifteen-projects',
-      //   method: 'GET',
-      //   success: (res) => {
-      //     this.setData({
-      //       projectList: res.data.data || []
-      //     });
-      //   },
-      //   fail: (err) => {
-      //     console.error('获取十五项项目列表失败:', err);
-      //     wx.showToast({
-      //       title: '获取数据失败',
-      //       icon: 'none'
-      //     });
-      //   }
-      // });
-
-      // 临时：使用模拟数据，与其他页面保持一致
-      try {
-        const allProjects = this.getDefaultProjects();
-        console.log('删除页面获取到项目数据:', allProjects);
-
-        this.setData({
-          projectList: allProjects || []
+          this.setData({
+            allProjects: mappedProjects,
+            projectList: mappedProjects,
+            filteredProjects: mappedProjects
+          });
+        } else {
+          console.error('接口返回数据格式异常:', res);
+          wx.showToast({
+            title: '数据格式错误',
+            icon: 'none'
+          });
+          //  fallback到模拟数据
+          this.useMockData();
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('获取项目列表接口请求失败:', err);
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
         });
-        console.log('删除页面项目列表设置完成，当前列表长度:', this.data.projectList.length);
-      } catch (error) {
-        console.error('加载项目数据失败:', error);
-        this.setData({
-          projectList: []
-        });
+        //  fallback到模拟数据
+        this.useMockData();
       }
-      */
+    });
+  },
 
-    } catch (error) {
-      console.error('加载项目列表失败:', error);
+  // 使用模拟数据（接口失败时调用）
+  useMockData() {
+    try {
+      const allProjects = this.getDefaultProjects();
+      console.log('使用模拟数据加载项目列表');
+
       this.setData({
-        projectList: []
+        allProjects: allProjects,
+        projectList: allProjects,
+        filteredProjects: allProjects
       });
-      wx.showToast({ title: '加载数据失败', icon: 'none' });
+    } catch (error) {
+      console.error('加载模拟数据失败:', error);
+      this.setData({
+        allProjects: [],
+        projectList: [],
+        filteredProjects: []
+      });
     }
   },
 
@@ -254,24 +259,6 @@ Page({
     });
   },
 
-  // 临时：模拟删除成功
-  simulateDeleteSuccess(projectItem) {
-    setTimeout(() => {
-      wx.hideLoading();
-      const allProjects = this.data.allProjects.filter(item => item.id !== projectItem.id);
-      const projectList = this.data.projectList.filter(item => item.id !== projectItem.id);
-      this.setData({
-        allProjects: allProjects,
-        projectList: projectList,
-        filteredProjects: projectList
-      });
-      wx.showToast({
-        title: '删除成功',
-        icon: 'success'
-      });
-    }, 1000);
-  },
-
   // 通过项目名称查找项目ID
   findProjectIdByName(projectName, callback) {
     // 直接调用getProjectIdByName去数据库查找项目ID
@@ -281,8 +268,6 @@ Page({
   // 获取项目ID（通过项目名称在数据库中查找）
   getProjectIdByName(projectName, callback) {
     // 通过项目名称在数据库中查找项目ID
-    // 调用新的搜索接口获取项目信息
-    
     wx.request({
       url: 'http://127.0.0.1:5000/app/api/15projects/search',
       method: 'GET',
@@ -324,9 +309,11 @@ Page({
         
         if (res.statusCode === 200 && res.data && res.data.success) {
           // 删除成功，从列表中移除项目
-          const projectList = this.data.projectList.filter(item => item.projectName !== projectItem.projectName);
+          const updatedProjects = this.data.allProjects.filter(item => item.projectName !== projectItem.projectName);
           this.setData({
-            projectList: projectList
+            allProjects: updatedProjects,
+            projectList: updatedProjects,
+            filteredProjects: updatedProjects
           });
           wx.showToast({
             title: '删除成功',
@@ -337,7 +324,7 @@ Page({
         } else {
           // 删除失败
           wx.showToast({
-            title: res.data.message || '删除失败',
+            title: res.data?.message || '删除失败',
             icon: 'none'
           });
           console.error('删除失败:', res);
@@ -365,3 +352,4 @@ Page({
     });
   }
 });
+
