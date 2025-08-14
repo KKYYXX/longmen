@@ -7,7 +7,16 @@ Page({
 
   onLoad(options) {
     console.log('视频播放器页面加载', options);
-    if (options.url && options.title) {
+    
+    // 接收从typicalcasesquery页面传递的参数
+    if (options.video_url && options.title) {
+      this.setData({
+        videoUrl: decodeURIComponent(options.video_url),
+        videoTitle: decodeURIComponent(options.title),
+        loading: false
+      });
+    } else if (options.url && options.title) {
+      // 兼容原有的参数格式
       this.setData({
         videoUrl: decodeURIComponent(options.url),
         videoTitle: decodeURIComponent(options.title),

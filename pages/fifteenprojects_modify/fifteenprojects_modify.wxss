@@ -305,6 +305,130 @@
   text-align: center;
 }
 
+/* 文件上传区域样式 */
+.file-upload-area {
+  margin-top: 20rpx;
+}
+
+.upload-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 20rpx;
+  border: 2rpx dashed #d9d9d9;
+  border-radius: 12rpx;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.upload-btn:active {
+  background: #f0f0f0;
+  border-color: #1976D2;
+}
+
+.upload-btn .upload-icon {
+  font-size: 60rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.upload-btn .upload-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.upload-btn .upload-desc {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 已上传文件列表样式 */
+.uploaded-files {
+  margin-top: 30rpx;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: #fff;
+  border: 1rpx solid #e9ecef;
+  border-radius: 8rpx;
+  margin-bottom: 15rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.05);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.file-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+  color: #4a90e2;
+}
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-name {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 5rpx;
+  max-width: 400rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.file-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.file-action {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 6rpx;
+  border: 1rpx solid;
+  text-align: center;
+  min-width: 60rpx;
+}
+
+.file-action.preview {
+  color: #1976D2;
+  border-color: #1976D2;
+  background: rgba(25, 118, 210, 0.05);
+}
+
+.file-action.preview:active {
+  background: rgba(25, 118, 210, 0.1);
+}
+
+.file-action.delete {
+  color: #f44336;
+  border-color: #f44336;
+  background: rgba(244, 67, 54, 0.05);
+}
+
+.file-action.delete:active {
+  background: rgba(244, 67, 54, 0.1);
+}
+
 /* 输入区域 */
 .input-section {
   background: #ffffff;
@@ -1304,4 +1428,194 @@ picker .form-input {
 .upload-btn:active {
   transform: translateY(2rpx);
   box-shadow: 0 2rpx 12rpx rgba(232, 213, 163, 0.3);
+}
+
+/* 简单修改界面样式 */
+.simple-modify-content {
+  padding: 20rpx 0;
+}
+
+.current-value-section,
+.new-value-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.title-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+}
+
+.title-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #6D4C41;
+}
+
+.current-value-display {
+  background: #f8f8f8;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  border: 2rpx solid #e0e0e0;
+}
+
+.current-value {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.modify-input {
+  width: 100%;
+  background: #ffffff;
+  border: 2rpx solid #E8D5A3;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.modify-input:focus {
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 4rpx rgba(212, 175, 55, 0.1);
+}
+
+.modify-textarea {
+  width: 100%;
+  background: #ffffff;
+  border: 2rpx solid #E8D5A3;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  font-size: 28rpx;
+  color: #333;
+  min-height: 200rpx;
+  box-sizing: border-box;
+}
+
+.modify-textarea:focus {
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 4rpx rgba(212, 175, 55, 0.1);
+}
+
+.date-picker-display {
+  background: #ffffff;
+  border: 2rpx solid #E8D5A3;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.date-arrow {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.radio-group {
+  display: flex;
+  gap: 40rpx;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  background: #ffffff;
+  border: 2rpx solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.radio-item.selected {
+  border-color: #D4AF37;
+  background: #fffbf0;
+}
+
+.radio-icon {
+  font-size: 32rpx;
+  color: #D4AF37;
+  margin-right: 16rpx;
+}
+
+.radio-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 简单添加内容界面样式 */
+.add-content-simple {
+  padding: 20rpx 0;
+}
+
+.simple-add-section {
+  margin-bottom: 30rpx;
+}
+
+.add-input-area {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  border: 2rpx solid #E8D5A3;
+}
+
+.input-label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #6D4C41;
+  margin-bottom: 20rpx;
+}
+
+.form-input {
+  width: 100%;
+  background: #f8f8f8;
+  border: 1rpx solid #ddd;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #D4AF37;
+  background: #ffffff;
+}
+
+.form-textarea {
+  width: 100%;
+  background: #f8f8f8;
+  border: 1rpx solid #ddd;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  min-height: 150rpx;
+  box-sizing: border-box;
+}
+
+.form-textarea:focus {
+  border-color: #D4AF37;
+  background: #ffffff;
+}
+
+.input-hint {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 12rpx;
+  line-height: 1.4;
 }

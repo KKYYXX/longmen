@@ -130,8 +130,6 @@ page {
   border-radius: 16rpx;
 }
 
-
-
 /* 案例列表 */
 .cases-container {
   flex: 1;
@@ -221,15 +219,17 @@ page {
 
 .case-actions {
   display: flex;
-  gap: 16rpx;
+  gap: 12rpx;
+  flex-wrap: wrap;
 }
 
 .action-btn {
   flex: 1;
+  min-width: 120rpx;
   text-align: center;
-  padding: 12rpx 20rpx;
+  padding: 12rpx 16rpx;
   border-radius: 16rpx;
-  font-size: 24rpx;
+  font-size: 22rpx;
   font-weight: 600;
   transition: all 0.3s ease;
 }
@@ -237,6 +237,16 @@ page {
 .preview-btn {
   color: #2196f3;
   background: rgba(33, 150, 243, 0.1);
+}
+
+.video-btn {
+  color: #e91e63;
+  background: rgba(233, 30, 99, 0.1);
+}
+
+.news-btn {
+  color: #9c27b0;
+  background: rgba(156, 39, 176, 0.1);
 }
 
 .download-btn {

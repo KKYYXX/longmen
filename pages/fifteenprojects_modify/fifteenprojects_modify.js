@@ -30,6 +30,7 @@ Page({
     filteredModifyProgressList: [],
     selectedModifyRecord: null,
     modifyRecord: {},
+    currentColumnValue: '', // 当前列的值
 
     editMode: false, // 是否为编辑模式
     editingProjectId: null, // 正在编辑的项目ID
@@ -139,17 +140,27 @@ Page({
   // 选择列
   selectColumn(e) {
     const column = e.currentTarget.dataset.column;
+    const currentValue = this.getCurrentColumnValue(this.data.selectedProject, column.key);
     this.setData({
-      selectedColumn: column
+      selectedColumn: column,
+      currentColumnValue: currentValue
     });
   },
 
   // 选择操作类型
   selectAction(e) {
     const action = e.currentTarget.dataset.action;
+    let newContent = '';
+
+    // 如果是修改操作且不是项目进度列，预填充当前值
+    if (action === 'modify' && this.data.selectedColumn.key !== 'progress') {
+      const currentValue = this.getCurrentColumnValue(this.data.selectedProject, this.data.selectedColumn.key);
+      newContent = currentValue || '';
+    }
+
     this.setData({
       selectedAction: action,
-      newContent: '',
+      newContent: newContent,
       addedItems: [],
       showLinkInput: false
     });
@@ -162,14 +173,17 @@ Page({
       currentStep: currentStep + 1
     });
 
-    // 如果选择了删除内容，加载进度数据
-    if (this.data.selectedAction === 'delete' && currentStep + 1 === 4) {
-      this.loadProgressData();
-    }
-
-    // 如果选择了修改内容，加载进度数据
-    if (this.data.selectedAction === 'modify' && currentStep + 1 === 4) {
-      this.loadModifyProgressData();
+    // 只有项目进度列才需要加载进度数据
+    if (this.data.selectedColumn.key === 'progress' && currentStep + 1 === 4) {
+      // 如果选择了删除内容，加载进度数据
+      if (this.data.selectedAction === 'delete') {
+        this.loadProgressData();
+      }
+      // 如果选择了修改内容，加载进度数据
+      if (this.data.selectedAction === 'modify') {
+        this.loadModifyProgressData();
+      }
+      // 项目进度列的添加内容不需要加载数据，直接显示添加界面
     }
   },
 
@@ -736,10 +750,15 @@ Page({
         const itemDate = new Date(item.date);
         return itemDate >= yearAgo;
       });
+    } else if (filter === 'all') {
+      // 显示全部数据
+      filtered = this.data.progressList;
     }
 
     // 重置选择状态
     filtered = filtered.map(item => ({ ...item, selected: false }));
+
+    console.log(`时间筛选 ${filter}：总数据 ${this.data.progressList.length} 条，筛选后 ${filtered.length} 条`);
 
     this.setData({
       filteredProgressList: filtered,
@@ -887,10 +906,12 @@ Page({
 
   // 生成进度数据
   generateProgressData: function() {
+    // 动态生成接近当前时间的测试数据
+    const now = new Date();
     const progressTemplates = [
       {
         id: 1,
-        date: "2024-01-15",
+        date: this.formatDate(new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)), // 2天前
         time: "09:00",
         title: "项目启动会议",
         location: "市政府会议室",
@@ -902,7 +923,7 @@ Page({
       },
       {
         id: 2,
-        date: "2024-02-20",
+        date: this.formatDate(new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000)), // 5天前
         time: "14:30",
         title: "设备采购招标",
         location: "市采购中心",
@@ -914,7 +935,7 @@ Page({
       },
       {
         id: 3,
-        date: "2024-03-10",
+        date: this.formatDate(new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000)), // 10天前
         time: "10:15",
         title: "数据中心建设开工",
         location: "高新区数据中心基地",
@@ -926,7 +947,7 @@ Page({
       },
       {
         id: 4,
-        date: "2024-06-15",
+        date: this.formatDate(new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000)), // 15天前
         time: "16:20",
         title: "传感器网络部署",
         location: "市区各主要路口",
@@ -938,7 +959,7 @@ Page({
       },
       {
         id: 5,
-        date: "2024-08-01",
+        date: this.formatDate(new Date(now.getTime() - 25 * 24 * 60 * 60 * 1000)), // 25天前
         time: "11:30",
         title: "系统集成测试",
         location: "数据中心机房",
@@ -950,7 +971,7 @@ Page({
       },
       {
         id: 6,
-        date: "2024-09-10",
+        date: this.formatDate(new Date(now.getTime() - 40 * 24 * 60 * 60 * 1000)), // 40天前
         time: "14:00",
         title: "用户培训计划",
         location: "市民服务中心",
@@ -958,6 +979,30 @@ Page({
         description: "为市民和工作人员提供系统使用培训",
         status: "pending",
         statusText: "待开始",
+        selected: false
+      },
+      {
+        id: 7,
+        date: this.formatDate(new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)), // 60天前
+        time: "16:30",
+        title: "需求调研",
+        location: "各区县政府",
+        person: "调研员钱九",
+        description: "深入各区县了解智慧城市建设需求",
+        status: "completed",
+        statusText: "已完成",
+        selected: false
+      },
+      {
+        id: 8,
+        date: this.formatDate(new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)), // 90天前
+        time: "10:00",
+        title: "方案设计",
+        location: "设计院",
+        person: "设计师孙十",
+        description: "完成智慧城市总体方案设计",
+        status: "completed",
+        statusText: "已完成",
         selected: false
       }
     ];
@@ -969,6 +1014,14 @@ Page({
       const dateTimeB = b.date.replace(/-/g, '/') + ' ' + b.time + ':00';
       return new Date(dateTimeB) - new Date(dateTimeA);
     });
+  },
+
+  // 格式化日期为YYYY-MM-DD格式
+  formatDate: function(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   },
 
   // ========== 修改内容相关方法 ==========
@@ -1022,6 +1075,8 @@ Page({
       }
     }
 
+    console.log(`修改时间筛选 ${filter}：总数据 ${this.data.modifyProgressList.length} 条，筛选后 ${filteredList.length} 条`);
+
     this.setData({
       filteredModifyProgressList: filteredList
     });
@@ -1046,7 +1101,8 @@ Page({
         ...record,
         images: record.images || [],
         videos: record.videos || [],
-        news: record.news || ''
+        news: record.news || '',
+        newsFiles: record.newsFiles || []
       }
     });
   },
@@ -1096,10 +1152,158 @@ Page({
     });
   },
 
-  // 修改详情 - 新闻稿输入
-  onModifyNewsInput(e) {
+  // 上传新闻稿文件
+  uploadNewsFile() {
+    wx.showActionSheet({
+      itemList: ['选择PDF文档', '选择Word文档', '选择图片文件'],
+      success: (res) => {
+        const fileTypes = ['pdf', 'doc', 'image'];
+        const selectedType = fileTypes[res.tapIndex];
+
+        if (selectedType === 'image') {
+          this.chooseImageFiles();
+        } else {
+          this.chooseDocumentFiles(selectedType);
+        }
+      }
+    });
+  },
+
+  // 选择图片文件
+  chooseImageFiles() {
+    wx.chooseMedia({
+      count: 5,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        this.processSelectedFiles(res.tempFiles, 'image');
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err);
+        wx.showToast({
+          title: '选择图片失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 选择文档文件
+  chooseDocumentFiles(fileType) {
+    wx.chooseMessageFile({
+      count: 3,
+      type: 'file',
+      extension: fileType === 'pdf' ? ['pdf'] : ['doc', 'docx'],
+      success: (res) => {
+        // 过滤文件类型
+        const validFiles = res.tempFiles.filter(file => {
+          const fileName = file.name.toLowerCase();
+          if (fileType === 'pdf') return fileName.endsWith('.pdf');
+          if (fileType === 'doc') return fileName.endsWith('.doc') || fileName.endsWith('.docx');
+          return true;
+        });
+
+        if (validFiles.length > 0) {
+          this.processSelectedFiles(validFiles, fileType);
+        } else {
+          wx.showToast({
+            title: `请选择${fileType.toUpperCase()}格式的文件`,
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('选择文件失败:', err);
+        wx.showToast({
+          title: '选择文件失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 处理选中的文件
+  processSelectedFiles(files, fileType) {
+    const newsFiles = this.data.modifyRecord.newsFiles || [];
+
+    files.forEach(file => {
+      const fileInfo = {
+        name: file.name || `${fileType}文件${newsFiles.length + 1}`,
+        path: file.tempFilePath || file.path,
+        size: file.size,
+        sizeText: this.formatFileSize(file.size),
+        type: fileType,
+        uploadTime: new Date().toLocaleString()
+      };
+      newsFiles.push(fileInfo);
+    });
+
     this.setData({
-      'modifyRecord.news': e.detail.value
+      'modifyRecord.newsFiles': newsFiles
+    });
+
+    wx.showToast({
+      title: `已添加${files.length}个文件`,
+      icon: 'success'
+    });
+  },
+
+  // 格式化文件大小
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  },
+
+  // 预览文件
+  previewFile(e) {
+    const index = e.currentTarget.dataset.index;
+    const file = this.data.modifyRecord.newsFiles[index];
+
+    if (file.type === 'image') {
+      wx.previewImage({
+        urls: [file.path],
+        current: file.path
+      });
+    } else {
+      wx.openDocument({
+        filePath: file.path,
+        success: () => {
+          console.log('打开文档成功');
+        },
+        fail: (err) => {
+          console.error('打开文档失败:', err);
+          wx.showToast({
+            title: '无法预览此文件',
+            icon: 'none'
+          });
+        }
+      });
+    }
+  },
+
+  // 删除新闻稿文件
+  deleteNewsFile(e) {
+    const index = e.currentTarget.dataset.index;
+    const newsFiles = [...this.data.modifyRecord.newsFiles];
+
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除文件"${newsFiles[index].name}"吗？`,
+      success: (res) => {
+        if (res.confirm) {
+          newsFiles.splice(index, 1);
+          this.setData({
+            'modifyRecord.newsFiles': newsFiles
+          });
+          wx.showToast({
+            title: '文件已删除',
+            icon: 'success'
+          });
+        }
+      }
     });
   },
 
@@ -1190,5 +1394,123 @@ Page({
         }
       });
     }, 1500);
+  },
+
+  // 获取当前列的值
+  getCurrentColumnValue(project, columnKey) {
+    if (!project || !columnKey) return '';
+    return project[columnKey] || '';
+  },
+
+  // 新内容输入
+  onNewContentInput(e) {
+    this.setData({
+      newContent: e.detail.value
+    });
+  },
+
+  // 日期选择器变化
+  onDatePickerChange(e) {
+    this.setData({
+      newContent: e.detail.value
+    });
+  },
+
+  // 选择是否重点项目
+  selectKeyProject(e) {
+    const value = e.currentTarget.dataset.value;
+    this.setData({
+      newContent: value
+    });
+  },
+
+  // 确认简单修改
+  confirmSimpleModify() {
+    const { selectedProject, selectedColumn, newContent } = this.data;
+
+    if (!newContent.trim()) {
+      wx.showToast({
+        title: '请输入内容',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 更新项目数据
+    const updatedProject = { ...selectedProject };
+    updatedProject[selectedColumn.key] = newContent;
+
+    // 这里应该调用API保存到后端
+    console.log('修改项目字段：', {
+      projectId: selectedProject.id,
+      field: selectedColumn.key,
+      oldValue: selectedProject[selectedColumn.key],
+      newValue: newContent
+    });
+
+    wx.showModal({
+      title: '修改成功',
+      content: `${selectedColumn.name}已成功修改！`,
+      showCancel: false,
+      success: () => {
+        // 返回项目列表
+        wx.navigateBack();
+      }
+    });
+  },
+
+  // 保存简单添加内容
+  saveSimpleAddition() {
+    const { selectedProject, selectedColumn, newContent } = this.data;
+
+    if (!newContent.trim()) {
+      wx.showToast({
+        title: '请输入要添加的内容',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 获取当前列的值
+    const currentValue = this.getCurrentColumnValue(selectedProject, selectedColumn.key);
+    let updatedValue = '';
+
+    // 根据列类型处理添加逻辑
+    if (selectedColumn.key === 'contacts') {
+      // 联系人信息：用分号分隔多个联系人
+      updatedValue = currentValue ? `${currentValue}; ${newContent}` : newContent;
+    } else if (selectedColumn.key === 'involvedAreas') {
+      // 涉及区域：用逗号分隔多个区域
+      updatedValue = currentValue ? `${currentValue}, ${newContent}` : newContent;
+    } else if (selectedColumn.type === 'textarea') {
+      // 多行文本：换行添加
+      updatedValue = currentValue ? `${currentValue}\n\n${newContent}` : newContent;
+    } else {
+      // 其他文本类型：用分号分隔
+      updatedValue = currentValue ? `${currentValue}; ${newContent}` : newContent;
+    }
+
+    // 更新项目数据
+    const updatedProject = { ...selectedProject };
+    updatedProject[selectedColumn.key] = updatedValue;
+
+    // 这里应该调用API保存到后端
+    console.log('添加项目字段内容：', {
+      projectId: selectedProject.id,
+      field: selectedColumn.key,
+      oldValue: currentValue,
+      addedContent: newContent,
+      newValue: updatedValue
+    });
+
+    wx.showModal({
+      title: '添加成功',
+      content: `${selectedColumn.name}内容已成功添加！`,
+      showCancel: false,
+      success: () => {
+        // 返回项目列表
+        wx.navigateBack();
+      }
+    });
   }
 });

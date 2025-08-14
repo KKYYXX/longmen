@@ -3,7 +3,7 @@ const config = {
   // 开发环境配置
   development: {
     baseUrl: 'http://127.0.0.1:5000',
-    mockEnabled: true
+    mockEnabled: false  // 关闭模拟模式，使用真实后端接口
   },
   
   // 生产环境配置
@@ -26,21 +26,35 @@ const apiConfig = {
   api: {
     // 典型案例相关接口
     typicalCases: {
-      list: '/api/typical-cases',
-      detail: '/api/typical-cases/:id',
-      create: '/api/typical-cases',
-      update: '/api/typical-cases/:id',
-      delete: '/api/typical-cases/:id',
-      uploadFiles: '/api/typical-cases/upload'
+      list: '/api/models',
+      detail: '/api/models/:id',
+      create: '/api/models',
+      update: '/api/models/:id',
+      delete: '/api/models/:id',
+      uploadFiles: '/api/upload'
+    },
+    
+    // 视频相关接口
+    video: {
+      query: '/api/video',
+      add: '/api/video',
+      delete: '/api/video'
+    },
+    
+    // 新闻相关接口
+    news: {
+      query: '/api/news',
+      add: '/api/news',
+      delete: '/api/news'
     },
     
     // 十五个项目相关接口
     fifteenProjects: {
-      list: '/api/fifteen-projects',
-      detail: '/api/fifteen-projects/:id',
-      create: '/api/fifteen-projects',
-      update: '/api/fifteen-projects/:id',
-      delete: '/api/fifteen-projects/:id'
+      list: '/api/15projects',
+      detail: '/api/15projects/:id',
+      create: '/api/15projects',
+      update: '/api/15projects/:id',
+      delete: '/api/15projects/:id'
     },
     
     // 用户相关接口

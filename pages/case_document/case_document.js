@@ -7,7 +7,9 @@ Page({
     videoCount: 0,
     linkCount: 0,
     detailContent: '',
-    fileContent: '' // 文件内容
+    fileContent: '', // 文件内容
+    modelName: '', // 案例名称
+    fileUrl: '' // 文件URL
   },
 
   onLoad(options) {
@@ -16,8 +18,22 @@ Page({
       this.setData({
         caseId: parseInt(options.id)
       });
-      this.loadCaseDetail();
     }
+    
+    // 接收从typicalcasesquery页面传递的参数
+    if (options.model_name) {
+      this.setData({
+        modelName: decodeURIComponent(options.model_name)
+      });
+    }
+    
+    if (options.file_url) {
+      this.setData({
+        fileUrl: decodeURIComponent(options.file_url)
+      });
+    }
+    
+    this.loadCaseDetail();
   },
 
   navigateBack() {
@@ -27,6 +43,13 @@ Page({
   loadCaseDetail() {
     this.setData({ loading: true });
     
+    // 如果有model_name和file_url，直接使用这些数据
+    if (this.data.modelName && this.data.fileUrl) {
+      this.loadCaseFromBackend();
+      return;
+    }
+    
+    // 否则使用原有的逻辑
     const apiConfig = require('../../config/api.js');
     
     if (apiConfig.isMockEnabled()) {
@@ -132,84 +155,227 @@ Page({
     }
   },
 
-  // 生成详细内容
-  generateDetailContent(caseData) {
-    const templates = {
-      '智慧城市建设典型案例': '项目采用先进的物联网技术，建设了全市统一的智慧城市管理平台。通过大数据分析和人工智能算法，实现了城市交通、环境、安全等多个领域的智能化管理。项目覆盖全市12个区县，服务人口超过500万，显著提升了城市治理效率和市民生活质量。',
-      '绿色能源示范园区建设案例': '园区建设了总装机容量50MW的太阳能发电系统和20MW的风力发电系统，配套建设了大型储能设施。通过智能电网技术，实现了清洁能源的高效利用和智能调度。园区年发电量达到1.2亿千瓦时，减少二氧化碳排放8万吨，成为区域绿色发展的典型示范。',
-      '数字化教育改革实践案例': '项目建设了覆盖全市200所学校的数字化教育平台，开发了适合不同年龄段学生的在线学习资源。通过人工智能技术，实现了个性化教学和精准评估。项目惠及师生15万人，显著提升了教育质量和教学效率，缩小了城乡教育差距。'
+  // 从后端加载案例数据
+  loadCaseFromBackend() {
+    // 构建案例数据
+    const caseData = {
+      id: this.data.caseId || 1,
+      caseName: this.data.modelName,
+      title: this.data.modelName,
+      description: `典型案例：${this.data.modelName}`,
+      files: [{
+        name: this.data.modelName + '.pdf',
+        fileType: 'pdf',
+        fileUrl: this.data.fileUrl,
+        fileName: this.data.modelName + '.pdf',
+        fileSize: '未知'
+      }],
+      videos: [],
+      links: []
     };
+
+    // 生成详细内容
+    const detailContent = this.generateDetailContent(caseData);
+
+    this.setData({
+      caseData: caseData,
+      fileCount: 1,
+      videoCount: 0,
+      linkCount: 0,
+      detailContent: detailContent,
+      loading: false
+    });
+
+    // 自动加载并显示文件内容
+    this.autoLoadFileContent(caseData);
+  },
+
+  // 自动加载文件内容
+  autoLoadFileContent(caseData) {
+    console.log('开始自动加载文件内容...');
     
-    return templates[caseData.caseName || caseData.title] || caseData.description || '暂无详细内容';
+    if (caseData.files && caseData.files.length > 0) {
+      const file = caseData.files[0];
+      console.log('自动加载文件:', file.name);
+      
+      // 延迟1秒后加载文件内容
+      setTimeout(() => {
+        this.loadFileContentDirectly(file);
+      }, 1000);
+    }
   },
 
-  // 获取文件类型
-  getFileType(fileName) {
-    const ext = fileName.split('.').pop().toLowerCase();
-    const typeMap = {
-      'pdf': 'pdf',
-      'doc': 'doc',
-      'docx': 'docx',
-      'xls': 'excel',
-      'xlsx': 'excel',
-      'ppt': 'ppt',
-      'pptx': 'ppt',
-      'png': 'image',
-      'jpg': 'image',
-      'jpeg': 'image',
-      'gif': 'image'
-    };
-    return typeMap[ext] || 'other';
-  },
-
-  // 自动打开内容
-  autoOpenContent(caseData) {
-    console.log('开始自动打开文件...');
-
-    // 延迟1秒后自动打开文件
-    setTimeout(() => {
-      if (caseData.files && caseData.files.length > 0) {
-        console.log('自动打开文件:', caseData.files[0].name);
-        this.autoOpenFile(caseData.files[0]);
-      }
-    }, 1000);
-  },
-
-  // 自动打开文件
-  autoOpenFile(file) {
+  // 直接加载文件内容
+  loadFileContentDirectly(file) {
     wx.showToast({
-      title: '正在自动加载文件内容...',
+      title: '正在加载文件内容...',
       icon: 'loading',
       duration: 2000
     });
 
-    // 延迟1秒后加载文件内容
-    setTimeout(() => {
-      this.loadFileContent(file);
-    }, 1000);
+    // 如果是网络文件，尝试下载并解析内容
+    if (file.fileUrl && file.fileUrl.startsWith('http')) {
+      this.downloadAndParseFile(file);
+    } else {
+      // 生成模拟文件内容
+      const mockContent = this.generateMockFileContent(file);
+      this.setData({
+        fileContent: mockContent
+      });
+      wx.showToast({
+        title: '文件内容已加载',
+        icon: 'success',
+        duration: 1500
+      });
+    }
   },
 
-  // 加载文件内容
-  loadFileContent(file) {
-    console.log('加载文件内容:', file.name);
-
-    // 生成模拟文件内容
-    const mockContent = this.generateMockFileContent(file);
-
-    this.setData({
-      fileContent: mockContent
+  // 下载并解析文件内容
+  downloadAndParseFile(file) {
+    wx.showLoading({
+      title: '正在下载文件...'
     });
 
-    wx.showToast({
-      title: '文件内容已加载',
-      icon: 'success',
-      duration: 1500
+    wx.downloadFile({
+      url: file.fileUrl,
+      success: (res) => {
+        wx.hideLoading();
+        if (res.statusCode === 200) {
+          // 根据文件类型处理
+          if (this.isImageFile(file.fileName)) {
+            // 图片文件显示图片
+            this.setData({
+              fileContent: '图片文件',
+              imageUrl: res.tempFilePath
+            });
+          } else if (this.isDocumentFile(file.fileName)) {
+            // 文档文件尝试解析内容
+            this.parseDocumentContent(file, res.tempFilePath);
+          } else {
+            // 其他类型文件显示信息
+            this.showFileInfo(file, res.tempFilePath);
+          }
+        } else {
+          wx.showToast({
+            title: '文件下载失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (error) => {
+        wx.hideLoading();
+        console.error('文件下载失败:', error);
+        wx.showToast({
+          title: '文件下载失败',
+          icon: 'none'
+        });
+      }
     });
   },
 
-  // 生成模拟文件内容
+  // 解析文档内容
+  parseDocumentContent(file, tempFilePath) {
+    wx.showLoading({
+      title: '正在解析文档...'
+    });
+
+    // 根据文件类型选择不同的解析方式
+    const fileType = this.getFileTypeFromName(file.fileName);
+    
+    if (fileType === 'pdf') {
+      // PDF文件尝试使用微信的openDocument预览
+      wx.openDocument({
+        filePath: tempFilePath,
+        fileType: 'pdf',
+        success: () => {
+          wx.hideLoading();
+          console.log('PDF文档打开成功');
+          // 设置文件内容为PDF预览提示
+          this.setData({
+            fileContent: `PDF文档：${file.fileName}\n\n文档已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+          });
+        },
+        fail: (error) => {
+          wx.hideLoading();
+          console.error('PDF打开失败:', error);
+          // 如果无法打开，显示文件信息
+          this.setData({
+            fileContent: `PDF文档：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：PDF\n\n由于技术限制，无法直接预览PDF内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用其他PDF阅读器打开\n3. 联系管理员获取文件内容摘要`
+          });
+        }
+      });
+    } else if (fileType === 'doc' || fileType === 'docx') {
+      // Word文档
+      wx.openDocument({
+        filePath: tempFilePath,
+        fileType: fileType,
+        success: () => {
+          wx.hideLoading();
+          console.log('Word文档打开成功');
+          this.setData({
+            fileContent: `Word文档：${file.fileName}\n\n文档已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+          });
+        },
+        fail: (error) => {
+          wx.hideLoading();
+          console.error('Word文档打开失败:', error);
+          this.setData({
+            fileContent: `Word文档：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览Word文档内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用Microsoft Word或其他兼容软件打开\n3. 联系管理员获取文档摘要`
+          });
+        }
+      });
+    } else if (fileType === 'xls' || fileType === 'xlsx') {
+      // Excel文档
+      wx.openDocument({
+        filePath: tempFilePath,
+        fileType: fileType,
+        success: () => {
+          wx.hideLoading();
+          console.log('Excel文档打开成功');
+          this.setData({
+            fileContent: `Excel表格：${file.fileName}\n\n表格已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+          });
+        },
+        fail: (error) => {
+          wx.hideLoading();
+          console.error('Excel文档打开失败:', error);
+          this.setData({
+            fileContent: `Excel表格：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览Excel表格内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用Microsoft Excel或其他兼容软件打开\n3. 联系管理员获取表格摘要`
+          });
+        }
+      });
+    } else if (fileType === 'ppt' || fileType === 'pptx') {
+      // PowerPoint文档
+      wx.openDocument({
+        filePath: tempFilePath,
+        fileType: fileType,
+        success: () => {
+          wx.hideLoading();
+          console.log('PowerPoint文档打开成功');
+          this.setData({
+            fileContent: `PowerPoint演示文稿：${file.fileName}\n\n演示文稿已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+          });
+        },
+        fail: (error) => {
+          wx.hideLoading();
+          console.error('PowerPoint文档打开失败:', error);
+          this.setData({
+            fileContent: `PowerPoint演示文稿：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览PowerPoint内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用Microsoft PowerPoint或其他兼容软件打开\n3. 联系管理员获取演示文稿摘要`
+          });
+        }
+      });
+    } else {
+      // 其他类型文档
+      wx.hideLoading();
+      this.setData({
+        fileContent: `文档文件：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于文件类型限制，无法直接预览内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用相应的专业软件打开\n3. 联系管理员获取文件摘要`
+      });
+    }
+  },
+
+  // 生成模拟文件内容（用于开发测试）
   generateMockFileContent(file) {
-    const fileName = file.name || '';
+    const fileName = file.fileName || file.name || '';
     const caseData = this.data.caseData;
 
     // 根据案例类型生成不同的文档内容
@@ -403,9 +569,306 @@ Page({
 六、推广建议
 建议在更大范围内推广应用本案例的成功经验和做法，发挥典型示范作用，推动相关领域的发展进步。
 
-文件大小：${file.sizeFormatted || file.size || '未知'}
+文件大小：${file.fileSize || '未知'}
 上传时间：${caseData.uploadTime || '未知'}`;
     }
+  },
+
+  // 自动打开文件
+  autoOpenFile(file) {
+    wx.showToast({
+      title: '正在加载文件内容...',
+      icon: 'loading',
+      duration: 2000
+    });
+
+    // 延迟1秒后加载文件内容
+    setTimeout(() => {
+      this.loadFileContent(file);
+    }, 1000);
+  },
+
+  // 加载文件内容
+  loadFileContent(file) {
+    console.log('加载文件内容:', file.name);
+
+    // 如果是网络文件，尝试下载并显示
+    if (file.fileUrl && file.fileUrl.startsWith('http')) {
+      this.downloadAndShowFile(file);
+    } else {
+      // 生成模拟文件内容
+      const mockContent = this.generateMockFileContent(file);
+      this.setData({
+        fileContent: mockContent
+      });
+      wx.showToast({
+        title: '文件内容已加载',
+        icon: 'success',
+        duration: 1500
+      });
+    }
+  },
+
+  // 下载并显示文件
+  downloadAndShowFile(file) {
+    wx.showLoading({
+      title: '正在下载文件...'
+    });
+
+    wx.downloadFile({
+      url: file.fileUrl,
+      success: (res) => {
+        wx.hideLoading();
+        if (res.statusCode === 200) {
+          // 根据文件类型处理
+          if (this.isImageFile(file.fileName)) {
+            // 图片文件直接预览
+            wx.previewImage({
+              urls: [res.tempFilePath],
+              current: res.tempFilePath
+            });
+          } else if (this.isDocumentFile(file.fileName)) {
+            // 文档文件尝试打开
+            wx.openDocument({
+              filePath: res.tempFilePath,
+              fileType: this.getFileTypeFromName(file.fileName),
+              success: () => {
+                console.log('文档打开成功');
+              },
+              fail: (error) => {
+                console.error('文档打开失败:', error);
+                // 如果无法打开，显示文件信息
+                this.showFileInfo(file, res.tempFilePath);
+              }
+            });
+          } else {
+            // 其他类型文件显示信息
+            this.showFileInfo(file, res.tempFilePath);
+          }
+        } else {
+          wx.showToast({
+            title: '文件下载失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (error) => {
+        wx.hideLoading();
+        console.error('文件下载失败:', error);
+        wx.showToast({
+          title: '文件下载失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 显示文件信息
+  showFileInfo(file, tempFilePath) {
+    wx.showModal({
+      title: '文件信息',
+      content: `文件名：${file.fileName}\n文件大小：${file.fileSize}\n文件类型：${file.fileType}\n\n文件已下载到临时目录，路径：${tempFilePath}`,
+      confirmText: '知道了',
+      showCancel: false
+    });
+  },
+
+  // 预览图片
+  previewImage() {
+    if (this.data.imageUrl) {
+      wx.previewImage({
+        urls: [this.data.imageUrl],
+        current: this.data.imageUrl
+      });
+    }
+  },
+
+  // 下载当前文件
+  downloadCurrentFile() {
+    const caseData = this.data.caseData;
+    if (caseData && caseData.files && caseData.files.length > 0) {
+      const file = caseData.files[0];
+      
+      if (file.fileUrl && file.fileUrl.startsWith('http')) {
+        wx.showLoading({
+          title: '正在下载...'
+        });
+        
+        wx.downloadFile({
+          url: file.fileUrl,
+          success: (res) => {
+            wx.hideLoading();
+            if (res.statusCode === 200) {
+              // 保存文件到本地
+              wx.saveFile({
+                tempFilePath: res.tempFilePath,
+                success: (saveRes) => {
+                  wx.showModal({
+                    title: '下载成功',
+                    content: `文件已保存到本地\n文件名：${file.fileName || file.name}`,
+                    confirmText: '打开文件',
+                    cancelText: '知道了',
+                    success: (modalRes) => {
+                      if (modalRes.confirm) {
+                        // 尝试打开已保存的文件
+                        wx.openDocument({
+                          filePath: saveRes.savedFilePath,
+                          success: () => {
+                            console.log('文件打开成功');
+                          },
+                          fail: (error) => {
+                            console.error('文件打开失败:', error);
+                            wx.showToast({
+                              title: '文件已保存，但无法打开',
+                              icon: 'none'
+                            });
+                          }
+                        });
+                      }
+                    }
+                  });
+                },
+                fail: (error) => {
+                  console.error('文件保存失败:', error);
+                  wx.showToast({
+                    title: '文件保存失败',
+                    icon: 'none'
+                  });
+                }
+              });
+            } else {
+              wx.showToast({
+                title: '文件下载失败',
+                icon: 'none'
+              });
+            }
+          },
+          fail: (error) => {
+            wx.hideLoading();
+            console.error('文件下载失败:', error);
+            wx.showToast({
+              title: '文件下载失败',
+              icon: 'none'
+            });
+          }
+        });
+      } else {
+        wx.showToast({
+          title: '文件链接无效',
+          icon: 'none'
+        });
+      }
+    } else {
+      wx.showToast({
+        title: '没有可下载的文件',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 分享当前文件
+  shareCurrentFile() {
+    const caseData = this.data.caseData;
+    if (caseData && caseData.files && caseData.files.length > 0) {
+      const file = caseData.files[0];
+      
+      wx.showModal({
+        title: '分享文件',
+        content: `文件名：${file.fileName || file.name}\n文件大小：${file.fileSize || file.size}\n\n是否复制文件链接到剪贴板？`,
+        confirmText: '复制链接',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm && file.fileUrl) {
+            wx.setClipboardData({
+              data: file.fileUrl,
+              success: () => {
+                wx.showToast({
+                  title: '文件链接已复制',
+                  icon: 'success'
+                });
+              }
+            });
+          }
+        }
+      });
+    } else {
+      wx.showToast({
+        title: '没有可分享的文件',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 判断是否为图片文件
+  isImageFile(fileName) {
+    const imageExts = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'];
+    const ext = fileName.split('.').pop().toLowerCase();
+    return imageExts.includes(ext);
+  },
+
+  // 判断是否为文档文件
+  isDocumentFile(fileName) {
+    const docExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+    const ext = fileName.split('.').pop().toLowerCase();
+    return docExts.includes(ext);
+  },
+
+  // 从文件名获取文件类型
+  getFileTypeFromName(fileName) {
+    const ext = fileName.split('.').pop().toLowerCase();
+    const typeMap = {
+      'pdf': 'pdf',
+      'doc': 'doc',
+      'docx': 'docx',
+      'xls': 'xls',
+      'xlsx': 'xlsx',
+      'ppt': 'ppt',
+      'pptx': 'pptx'
+    };
+    return typeMap[ext] || ext;
+  },
+
+  // 生成详细内容
+  generateDetailContent(caseData) {
+    const templates = {
+      '智慧城市建设典型案例': '项目采用先进的物联网技术，建设了全市统一的智慧城市管理平台。通过大数据分析和人工智能算法，实现了城市交通、环境、安全等多个领域的智能化管理。项目覆盖全市12个区县，服务人口超过500万，显著提升了城市治理效率和市民生活质量。',
+      '绿色能源示范园区建设案例': '园区建设了总装机容量50MW的太阳能发电系统和20MW的风力发电系统，配套建设了大型储能设施。通过智能电网技术，实现了清洁能源的高效利用和智能调度。园区年发电量达到1.2亿千瓦时，减少二氧化碳排放8万吨，成为区域绿色发展的典型示范。',
+      '数字化教育改革实践案例': '项目建设了覆盖全市200所学校的数字化教育平台，开发了适合不同年龄段学生的在线学习资源。通过人工智能技术，实现了个性化教学和精准评估。项目惠及师生15万人，显著提升了教育质量和教学效率，缩小了城乡教育差距。'
+    };
+    
+    return templates[caseData.caseName || caseData.title] || caseData.description || '暂无详细内容';
+  },
+
+  // 获取文件类型
+  getFileType(fileName) {
+    const ext = fileName.split('.').pop().toLowerCase();
+    const typeMap = {
+      'pdf': 'pdf',
+      'doc': 'doc',
+      'docx': 'docx',
+      'xls': 'excel',
+      'xlsx': 'excel',
+      'ppt': 'ppt',
+      'pptx': 'ppt',
+      'png': 'image',
+      'jpg': 'image',
+      'jpeg': 'image',
+      'gif': 'image'
+    };
+    return typeMap[ext] || 'other';
+  },
+
+  // 自动打开内容
+  autoOpenContent(caseData) {
+    console.log('开始自动加载文件内容...');
+
+    // 延迟1秒后自动加载文件内容
+    setTimeout(() => {
+      if (caseData.files && caseData.files.length > 0) {
+        console.log('自动加载文件:', caseData.files[0].name);
+        this.loadFileContentDirectly(caseData.files[0]);
+      }
+    }, 1000);
   },
 
   // 自动打开新闻链接
@@ -609,35 +1072,6 @@ Page({
         }
       });
     }
-  },
-
-  // 判断是否为图片文件
-  isImageFile(fileName) {
-    const imageExts = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'];
-    const ext = fileName.split('.').pop().toLowerCase();
-    return imageExts.includes(ext);
-  },
-
-  // 判断是否为文档文件
-  isDocumentFile(fileName) {
-    const docExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
-    const ext = fileName.split('.').pop().toLowerCase();
-    return docExts.includes(ext);
-  },
-
-  // 从文件名获取文件类型
-  getFileTypeFromName(fileName) {
-    const ext = fileName.split('.').pop().toLowerCase();
-    const typeMap = {
-      'pdf': 'pdf',
-      'doc': 'doc',
-      'docx': 'docx',
-      'xls': 'xls',
-      'xlsx': 'xlsx',
-      'ppt': 'ppt',
-      'pptx': 'pptx'
-    };
-    return typeMap[ext] || ext;
   },
 
   // 下载文件

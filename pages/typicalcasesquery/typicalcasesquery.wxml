@@ -27,11 +27,9 @@
     </view>
   </view>
 
-
-
   <!-- 案例列表 -->
   <view class="cases-container">
-    <view class="case-item" wx:for="{{filteredCases}}" wx:key="id" bindtap="previewCase" data-case="{{item}}">
+    <view class="case-item" wx:for="{{filteredCases}}" wx:key="id">
       <view class="case-header">
         <view class="case-title">
           <text class="title-text">{{item.title}}</text>
@@ -63,6 +61,8 @@
       
       <view class="case-actions">
         <text class="action-btn preview-btn" bindtap="previewCase" data-case="{{item}}">预览</text>
+        <text class="action-btn video-btn" bindtap="playVideo" data-case="{{item}}">视频</text>
+        <text class="action-btn news-btn" bindtap="viewNews" data-case="{{item}}">新闻</text>
         <text class="action-btn download-btn" bindtap="downloadCase" data-case="{{item}}">下载</text>
         <text class="action-btn share-btn" bindtap="shareCase" data-case="{{item}}">分享</text>
       </view>

@@ -204,3 +204,4 @@ video_url = request.json.get('video_url')
 
 现在视频上传功能应该能够正常与后端接口对接，并且解决了之前控制台报错的问题。
 
+
