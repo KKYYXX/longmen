@@ -75,8 +75,27 @@
         <view class="content-header">
           <text class="content-title">📄 文件内容</text>
         </view>
-        <view class="content-body">
+        
+        <!-- 图片文件显示 -->
+        <view class="image-display" wx:if="{{imageUrl}}">
+          <image class="content-image" src="{{imageUrl}}" mode="widthFix" bindtap="previewImage"></image>
+        </view>
+        
+        <!-- 文本内容显示 -->
+        <view class="content-body" wx:if="{{!imageUrl}}">
           <text class="content-text">{{fileContent}}</text>
+        </view>
+        
+        <!-- 文件操作按钮 -->
+        <view class="file-actions">
+          <view class="action-btn download-action" bindtap="downloadCurrentFile">
+            <text class="action-icon">⬇️</text>
+            <text class="action-text">下载文件</text>
+          </view>
+          <view class="action-btn share-action" bindtap="shareCurrentFile">
+            <text class="action-icon">📤</text>
+            <text class="action-text">分享文件</text>
+          </view>
         </view>
       </view>
 

@@ -355,34 +355,129 @@
 
 /* 文件内容显示区域 */
 .file-content-display {
-  padding: 0;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 24px;
+  margin: 20px;
+  box-shadow: 0 8px 32px rgba(139, 117, 65, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 117, 65, 0.2);
 }
 
 .content-header {
-  padding: 20px 25px 15px; /* 适中的内边距 */
-  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
-  background: rgba(255, 248, 220, 0.3); /* 更淡的背景 */
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .content-title {
-  font-size: 16px; /* 适中的字体大小 */
+  font-size: 20px;
   font-weight: 600;
   color: #5c5032;
-  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #8B7541, #A67C52);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+/* 图片显示区域 */
+.image-display {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.content-image {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.content-image:active {
+  transform: scale(0.98);
+}
+
+/* 文本内容显示 */
 .content-body {
-  padding: 25px; /* 适中的内边距 */
-  background: #fff;
+  margin: 20px 0;
 }
 
 .content-text {
-  font-size: 15px; /* 适中的字体大小 */
-  line-height: 1.8; /* 舒适的行高 */
-  color: #444; /* 更好的阅读颜色 */
-  white-space: pre-line;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #5c5032;
+  white-space: pre-wrap;
   word-wrap: break-word;
-  letter-spacing: 0.3px; /* 适中的字间距 */
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 文件操作按钮 */
+.file-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.download-action {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.download-action:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.share-action {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+  color: white;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.share-action:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.action-icon {
+  font-size: 16px;
+}
+
+.action-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 750px) {
+  .file-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-btn {
+    width: 100%;
+    max-width: 200px;
+    justify-content: center;
+  }
+  
+  .content-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
 }
 
 /* 文件附录区域 */

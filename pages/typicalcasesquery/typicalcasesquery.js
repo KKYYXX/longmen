@@ -22,167 +22,173 @@ Page({
   loadCases: function() {
     this.setData({ loading: true });
 
-    // 使用开发模式，从本地存储和默认数据加载
+    // 调用后端接口获取典型案例数据
+    this.fetchCasesFromBackend();
+  },
+
+  // 从后端获取典型案例数据
+  fetchCasesFromBackend: function() {
     const apiConfig = require('../../config/api.js');
-
-    if (apiConfig.isMockEnabled()) {
-      // 开发模式：从本地存储和默认数据加载
-      setTimeout(() => {
-        const storedCases = wx.getStorageSync('typicalCases') || [];
-        const defaultCases = this.getDefaultCases();
-        const allCases = [...defaultCases, ...storedCases];
-
-        // 为每个案例添加统计信息和格式化数据
-        const casesWithStats = allCases.map(caseItem => ({
-          ...caseItem,
-          title: caseItem.caseName || caseItem.title,
-          type: caseItem.category || '典型案例',
-          description: caseItem.description || caseItem.summary || '暂无描述',
-          uploadTime: caseItem.uploadTime || caseItem.createDate,
-          fileCount: (caseItem.files && caseItem.files.length) || 0,
-          videoCount: (caseItem.videos && caseItem.videos.length) || 0,
-          linkCount: (caseItem.links && caseItem.links.length) || 0,
-          files: caseItem.files || [],
-          videos: caseItem.videos || [],
-          links: caseItem.links || []
-        }));
-
-        this.setData({
-          allCases: casesWithStats,
-          filteredCases: casesWithStats,
-          loading: false
-        });
-      }, 500);
-      return;
-    }
-
-    // 生产模式：调用后端接口
-    try {
-      const dbService = require('../../utils/databaseService.js');
-      const db = new dbService();
-
-      db.getTypicalCases({
-        keyword: this.data.searchKeyword
-      }).then(result => {
-        if (result.success) {
+    const url = apiConfig.buildApiUrl('/app/api/models');
+    
+    wx.request({
+      url: url,
+      method: 'GET',
+      success: (res) => {
+        console.log('后端接口返回数据:', res.data);
+        if (res.data && res.data.success) {
+          // 处理后端返回的数据
+          const casesData = this.processBackendData(res.data.data);
           this.setData({
-            allCases: result.cases,
-            filteredCases: result.cases,
+            allCases: casesData,
+            filteredCases: casesData,
             loading: false
           });
+          
+          // 获取案例数据后，更新视频和新闻数量
+          this.updateCaseCounts();
         } else {
           wx.showToast({
-            title: result.message || '加载失败',
+            title: res.data.message || '加载失败',
             icon: 'none'
           });
           this.setData({ loading: false });
         }
-      }).catch(error => {
-        console.error('加载案例失败:', error);
-        // 如果数据库服务失败，使用默认数据
-        const defaultCases = this.getDefaultCases();
-        this.setData({
-          allCases: defaultCases,
-          filteredCases: defaultCases,
-          loading: false
+      },
+      fail: (error) => {
+        console.error('请求后端接口失败:', error);
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
+        });
+        this.setData({ loading: false });
+      }
+    });
+  },
+
+  // 处理后端返回的数据
+  processBackendData: function(backendData) {
+    if (!Array.isArray(backendData)) {
+      return [];
+    }
+
+    return backendData.map(item => ({
+      id: item.id,
+      title: item.model_name || '未命名案例',
+      type: '典型案例',
+      description: item.file_name || '暂无描述',
+      uploadTime: item.upload_time || '未知时间',
+      fileCount: 1, // 每个案例对应一个文件
+      videoCount: 0, // 暂时设为0，后续通过video接口获取
+      linkCount: 0,  // 暂时设为0，后续通过news接口获取
+      files: [{
+        name: item.file_name,
+        size: this.formatFileSize(item.file_size),
+        url: item.file_url,
+        type: item.file_type
+      }],
+      videos: [], // 后续通过video接口填充
+      links: [],  // 后续通过news接口填充
+      // 保存原始数据用于后续接口调用
+      model_name: item.model_name,
+      file_url: item.file_url
+    }));
+  },
+
+  // 格式化文件大小
+  formatFileSize: function(size) {
+    if (!size) return '0B';
+    const sizeNum = parseInt(size);
+    if (sizeNum < 1024) return sizeNum + 'B';
+    if (sizeNum < 1024 * 1024) return (sizeNum / 1024).toFixed(1) + 'KB';
+    return (sizeNum / (1024 * 1024)).toFixed(1) + 'MB';
+  },
+
+  // 获取案例的视频信息
+  fetchVideoInfo: function(modelName, callback) {
+    const apiConfig = require('../../config/api.js');
+    const url = apiConfig.buildApiUrl('/app/api/video');
+    
+    wx.request({
+      url: url,
+      method: 'GET',
+      data: {
+        model_name: modelName
+      },
+      success: (res) => {
+        console.log('视频接口返回数据:', res.data);
+        if (res.data && res.data.success) {
+          callback(res.data.data);
+        } else {
+          callback([]);
+        }
+      },
+      fail: (error) => {
+        console.error('获取视频信息失败:', error);
+        callback([]);
+      }
+    });
+  },
+
+  // 获取案例的新闻链接信息
+  fetchNewsInfo: function(modelName, callback) {
+    const apiConfig = require('../../config/api.js');
+    const url = apiConfig.buildApiUrl('/app/api/news');
+    
+    wx.request({
+      url: url,
+      method: 'GET',
+      data: {
+        model_name: modelName
+      },
+      success: (res) => {
+        console.log('新闻接口返回数据:', res.data);
+        if (res.data && res.data.success) {
+          callback(res.data.data);
+        } else {
+          callback([]);
+        }
+      },
+      fail: (error) => {
+        console.error('获取新闻信息失败:', error);
+        callback([]);
+      }
+    });
+  },
+
+  // 更新案例的视频和新闻数量
+  updateCaseCounts: function() {
+    const cases = this.data.allCases;
+    let updated = false;
+    
+    cases.forEach((caseItem, index) => {
+      // 获取视频数量
+      this.fetchVideoInfo(caseItem.model_name, (videos) => {
+        const videoCount = videos ? videos.length : 0;
+        
+        // 获取新闻数量
+        this.fetchNewsInfo(caseItem.model_name, (news) => {
+          const linkCount = news ? news.length : 0;
+          
+          // 更新数据
+          const newCases = [...this.data.allCases];
+          newCases[index] = {
+            ...newCases[index],
+            videoCount: videoCount,
+            linkCount: linkCount,
+            videos: videos || [],
+            links: news || []
+          };
+          
+          this.setData({
+            allCases: newCases,
+            filteredCases: newCases
+          });
+          
+          updated = true;
         });
       });
-    } catch (error) {
-      console.error('加载案例失败:', error);
-      // 如果数据库服务失败，使用默认数据
-      const defaultCases = this.getDefaultCases();
-      this.setData({
-        allCases: defaultCases,
-        filteredCases: defaultCases,
-        loading: false
-      });
-    }
-  },
-
-  // 获取默认案例数据
-  getDefaultCases: function() {
-    // 所有默认案例
-    const allDefaultCases = [
-      {
-        id: 1,
-        caseName: '智慧城市建设典型案例',
-        title: '智慧城市建设典型案例',
-        category: '基础设施建设',
-        type: '基础设施建设',
-        createDate: '2024-01-15',
-        uploadTime: '2024-01-15 10:30:00',
-        updateDate: '2024-07-20',
-        description: '通过物联网、大数据、人工智能等技术，构建智慧城市管理平台，实现城市治理现代化，提升市民生活质量。',
-        summary: '通过物联网、大数据、人工智能等技术，构建智慧城市管理平台，实现城市治理现代化，提升市民生活质量。',
-        author: '市信息化办公室',
-        contact: '张主任 - 13800138000',
-        files: [
-          { name: '智慧城市建设方案.pdf', size: '2.5MB', sizeFormatted: '2.5MB' }
-        ],
-        videos: [
-          { name: '智慧城市演示视频.mp4', duration: '5:30' }
-        ],
-        links: [
-          { title: '智慧城市官方网站', url: 'https://smartcity.example.com' }
-        ]
-      },
-      {
-        id: 2,
-        caseName: '绿色能源示范园区建设案例',
-        title: '绿色能源示范园区建设案例',
-        category: '环保治理',
-        type: '环保治理',
-        createDate: '2024-02-10',
-        uploadTime: '2024-02-10 14:20:00',
-        updateDate: '2024-07-18',
-        description: '建设集太阳能、风能、储能于一体的绿色能源示范园区，实现清洁能源的高效利用和智能管理。',
-        summary: '建设集太阳能、风能、储能于一体的绿色能源示范园区，实现清洁能源的高效利用和智能管理。',
-        author: '市发改委',
-        contact: '李处长 - 13900139000',
-        files: [
-          { name: '绿色能源规划书.docx', size: '3.1MB', sizeFormatted: '3.1MB' }
-        ],
-        videos: [
-          { name: '园区建设纪录片.mp4', duration: '8:45' }
-        ],
-        links: [
-          { title: '绿色能源政策解读', url: 'https://greenenergy.example.com' }
-        ]
-      },
-      {
-        id: 3,
-        caseName: '数字化教育改革实践案例',
-        title: '数字化教育改革实践案例',
-        category: '民生改善',
-        type: '民生改善',
-        createDate: '2024-03-05',
-        uploadTime: '2024-03-05 09:15:00',
-        updateDate: '2024-07-15',
-        description: '运用数字技术改革传统教育模式，建设智慧校园，推进教育公平和质量提升。',
-        summary: '运用数字技术改革传统教育模式，建设智慧校园，推进教育公平和质量提升。',
-        author: '市教育局',
-        contact: '王局长 - 13700137000',
-        files: [
-          { name: '数字化教育方案.pdf', size: '4.2MB', sizeFormatted: '4.2MB' }
-        ],
-        videos: [
-          { name: '智慧课堂演示.mp4', duration: '12:20' }
-        ],
-        links: [
-          { title: '数字化教育平台', url: 'https://education.example.com' },
-          { title: '在线学习资源', url: 'https://learning.example.com' }
-        ]
-      }
-    ];
-
-    // 过滤掉已删除的默认案例
-    const deletedDefaultCases = wx.getStorageSync('deletedDefaultCases') || [];
-    return allDefaultCases.filter(caseItem => !deletedDefaultCases.includes(caseItem.id));
-  },
-
-  generateMockCases: function() {
-    // 保持向后兼容，调用新的方法
-    return this.getDefaultCases();
+    });
   },
 
   onSearchInput: function(e) {
@@ -224,18 +230,97 @@ Page({
     const caseData = e.currentTarget.dataset.case;
     // 跳转到文档展示页面，显示完整的案例内容
     wx.navigateTo({
-      url: `/pages/case_document/case_document?id=${caseData.id}`
+      url: `/pages/case_document/case_document?id=${caseData.id}&model_name=${encodeURIComponent(caseData.model_name)}&file_url=${encodeURIComponent(caseData.file_url)}`
+    });
+  },
+
+  // 播放视频
+  playVideo: function(e) {
+    if (e && e.stopPropagation) {
+      e.stopPropagation(); // 阻止事件冒泡
+    }
+    const caseData = e.currentTarget.dataset.case;
+    
+    // 获取视频信息
+    this.fetchVideoInfo(caseData.model_name, (videos) => {
+      if (videos && videos.length > 0) {
+        // 跳转到视频播放页面
+        const videoUrl = videos[0].video_url;
+        wx.navigateTo({
+          url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(caseData.title)}`
+        });
+      } else {
+        wx.showToast({
+          title: '暂无视频',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 查看新闻链接
+  viewNews: function(e) {
+    if (e && e.stopPropagation) {
+      e.stopPropagation(); // 阻止事件冒泡
+    }
+    const caseData = e.currentTarget.dataset.case;
+    
+    // 获取新闻链接信息
+    this.fetchNewsInfo(caseData.model_name, (news) => {
+      if (news && news.length > 0) {
+        // 跳转到webview页面显示新闻
+        const newsUrl = news[0].news_url;
+        wx.navigateTo({
+          url: `/pages/webview/webview?url=${encodeURIComponent(newsUrl)}&title=${encodeURIComponent(news[0].news_title || '新闻详情')}`
+        });
+      } else {
+        wx.showToast({
+          title: '暂无新闻链接',
+          icon: 'none'
+        });
+      }
     });
   },
 
   downloadCase: function(e) {
-    wx.showToast({
-      title: '下载功能开发中',
-      icon: 'none'
-    });
+    if (e && e.stopPropagation) {
+      e.stopPropagation(); // 阻止事件冒泡
+    }
+    const caseData = e.currentTarget.dataset.case;
+    
+    if (caseData.files && caseData.files.length > 0) {
+      const fileUrl = caseData.files[0].url;
+      // 下载文件
+      wx.downloadFile({
+        url: fileUrl,
+        success: (res) => {
+          if (res.statusCode === 200) {
+            wx.showToast({
+              title: '下载成功',
+              icon: 'success'
+            });
+          }
+        },
+        fail: (error) => {
+          console.error('下载失败:', error);
+          wx.showToast({
+            title: '下载失败',
+            icon: 'none'
+          });
+        }
+      });
+    } else {
+      wx.showToast({
+        title: '暂无文件可下载',
+        icon: 'none'
+      });
+    }
   },
 
   shareCase: function(e) {
+    if (e && e.stopPropagation) {
+      e.stopPropagation(); // 阻止事件冒泡
+    }
     wx.showToast({
       title: '分享功能开发中',
       icon: 'none'
