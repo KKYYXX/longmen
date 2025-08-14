@@ -27,7 +27,9 @@ Page({
       name: '',
       phone: ''
     },
-    editingContactIndex: -1
+    editingContactIndex: -1,
+    // 加载状态
+    isSaving: false
   },
 
   onLoad() {
@@ -43,6 +45,36 @@ Page({
       }
     });
     this.setData({ projectData });
+
+    // 测试后端接口连接
+    this.testBackendConnection();
+  },
+
+  // 测试后端接口连接
+  testBackendConnection() {
+    console.log('测试后端接口连接...');
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/15projects/names',
+      method: 'GET',
+      success: (res) => {
+        console.log('后端接口连接测试成功:', res);
+        if (res.statusCode === 200) {
+          wx.showToast({
+            title: '成功进入',
+            icon: 'success',
+            duration: 1500
+          });
+        }
+      },
+      fail: (err) => {
+        console.warn('后端接口连接测试失败:', err);
+        wx.showToast({
+          title: '后端接口连接失败，请检查服务器状态',
+          icon: 'none',
+          duration: 3000
+        });
+      }
+    });
   },
 
   // 通用输入处理
@@ -99,90 +131,182 @@ Page({
       }
     }
 
-    // 构建提交数据
+    // 验证日期格式
+    if (projectData.startDate) {
+      const startDate = new Date(projectData.startDate);
+      if (isNaN(startDate.getTime())) {
+        wx.showToast({
+          title: '项目开始时间格式不正确',
+          icon: 'none'
+        });
+        return;
+      }
+    }
+
+    if (projectData.endDate) {
+      const endDate = new Date(projectData.endDate);
+      if (isNaN(endDate.getTime())) {
+        wx.showToast({
+          title: '项目结束时间格式不正确',
+          icon: 'none'
+        });
+        return;
+      }
+
+      // 验证结束时间不能早于开始时间
+      if (projectData.startDate && endDate < new Date(projectData.startDate)) {
+        wx.showToast({
+          title: '项目结束时间不能早于开始时间',
+          icon: 'none'
+        });
+        return;
+      }
+    }
+
+    // 验证联系人数据
+    if (this.data.contacts && this.data.contacts.length > 0) {
+      for (let i = 0; i < this.data.contacts.length; i++) {
+        const contact = this.data.contacts[i];
+        if (!contact.name || !contact.name.trim()) {
+          wx.showToast({
+            title: `第${i + 1}个联系人姓名不能为空`,
+            icon: 'none'
+          });
+          return;
+        }
+        if (!contact.phone || !contact.phone.trim()) {
+          wx.showToast({
+            title: `第${i + 1}个联系人联系方式不能为空`,
+            icon: 'none'
+          });
+          return;
+        }
+      }
+    }
+
+    // 构建提交数据，按照后端数据库字段进行映射
     const submitData = {
-      ...projectData,
-      createDate: new Date().toISOString().split('T')[0],
-      // 确保联系人数据被包含
-      contacts: this.data.contacts || []
+      serial_number: projectData.serialNumber,
+      city: projectData.cityLevel,
+      county: projectData.pairedCounty,
+      universities: projectData.pairedInstitution,
+      project_name: projectData.projectName,
+      implementing_institutions: projectData.implementationUnit,
+      is_key_project: projectData.isKeyProject, // 直接发送字符串："是" 或 "否"
+      involved_areas: projectData.involvedAreas,
+      project_type: projectData.projectType,
+      start_date: projectData.startDate,
+      end_date: projectData.endDate,
+      background: projectData.background,
+      content_and_measures: projectData.content,
+      objectives: projectData.objectives,
+      contacts: this.formatContactsForDatabase(this.data.contacts),
+      remarks: projectData.remarks,
+      progress: projectData.progress || 0
     };
 
-    // 为了兼容性，如果有联系人，设置第一个联系人为主要联系人
-    if (this.data.contacts && this.data.contacts.length > 0) {
-      const primaryContact = this.data.contacts[0];
-      submitData.contactName = primaryContact.name;
-      submitData.contactPhone = primaryContact.phone;
-      submitData.contactPosition = ''; // 职务字段已移除，设为空
-    }
+    console.log('准备提交的项目数据:', submitData);
+    console.log('联系人数据格式化结果:', submitData.contacts);
+    console.log('联系人数据类型:', typeof submitData.contacts);
+    console.log('原始联系人数据:', this.data.contacts);
+
+    // 设置保存状态
+    this.setData({
+      isSaving: true
+    });
 
     wx.showLoading({
       title: '保存中...'
     });
 
-    // TODO: 调用后端API保存项目
-    // wx.request({
-    //   url: 'your-api-endpoint/fifteen-projects',
-    //   method: 'POST',
-    //   data: submitData,
-    //   success: (res) => {
-    //     wx.hideLoading();
-    //     wx.showModal({
-    //       title: '操作结果',
-    //       content: '项目保存成功！',
-    //       showCancel: false,
-    //       success: () => {
-    //         wx.navigateBack();
-    //       }
-    //     });
-    //   },
-    //   fail: (err) => {
-    //     wx.hideLoading();
-    //     console.error('保存项目失败:', err);
-    //     wx.showModal({
-    //       title: '操作结果',
-    //       content: '项目保存失败，请重试！',
-    //       showCancel: false
-    //     });
-    //   }
-    // });
-
-    // 临时：模拟随机成功/失败
-    const isSuccess = Math.random() > 0.2; // 80%成功率
-
-    setTimeout(() => {
-      wx.hideLoading();
-
-      if (isSuccess) {
-        // 生成新项目的完整数据
-        const newProject = {
-          id: Date.now(), // 临时使用时间戳作为ID，实际应该由后端生成
-          ...submitData,
-          name: submitData.projectName, // 兼容性字段
-          description: submitData.objectives || submitData.content || '暂无描述'
-        };
-
-        // 将新项目数据存储到全局，供查询页面使用
-        const app = getApp();
-        if (app && app.globalData) {
-          app.globalData.newProject = newProject;
-        }
-
-        wx.showModal({
-          title: '操作结果',
-          content: `项目"${projectData.projectName}"保存成功！\n已保存${Object.keys(projectData).length}个字段的数据。`,
-          showCancel: false,
-          success: () => {
-            wx.navigateBack();
-          }
+    // 调用后端API保存项目
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/15projects',
+      method: 'POST',
+      header: {
+        'Content-Type': 'application/json'
+      },
+      data: submitData,
+      success: (res) => {
+        wx.hideLoading();
+        // 清除保存状态
+        this.setData({
+          isSaving: false
         });
-      } else {
+        console.log('保存项目API响应:', res);
+        
+        if (res.statusCode === 200 || res.statusCode === 201) {
+          // 保存成功
+          if (res.data && res.data.success) {
+            // 生成新项目的完整数据，用于传递给查询页面
+            const newProject = {
+              id: res.data.data ? res.data.data.id : Date.now(), // 优先使用后端返回的ID
+              serialNumber: projectData.serialNumber,
+              cityLevel: projectData.cityLevel,
+              pairedCounty: projectData.pairedCounty,
+              pairedInstitution: projectData.pairedInstitution,
+              projectName: projectData.projectName,
+              implementationUnit: projectData.implementationUnit,
+              isKeyProject: projectData.isKeyProject,
+              involvedAreas: projectData.involvedAreas,
+              projectType: projectData.projectType,
+              startDate: projectData.startDate,
+              endDate: projectData.endDate,
+              background: projectData.background,
+              content: projectData.content,
+              objectives: projectData.objectives,
+              contacts: this.data.contacts || [],
+              remarks: projectData.remarks,
+              progress: projectData.progress || 0,
+              status: '进行中',
+              createDate: new Date().toISOString().split('T')[0]
+            };
+
+            // 将新项目数据存储到全局，供查询页面使用
+            const app = getApp();
+            if (app && app.globalData) {
+              app.globalData.newProject = newProject;
+            }
+
+            wx.showModal({
+              title: '保存成功',
+              content: `项目"${projectData.projectName}"已成功添加到数据库！`,
+              showCancel: false,
+              success: () => {
+                wx.navigateBack();
+              }
+            });
+          } else {
+            // 后端返回失败
+            wx.showModal({
+              title: '保存失败',
+              content: res.data.message || '项目保存失败，请重试！',
+              showCancel: false
+            });
+          }
+        } else {
+          // HTTP状态码错误
+          wx.showModal({
+            title: '保存失败',
+            content: `服务器错误 (${res.statusCode})，请重试！`,
+            showCancel: false
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        // 清除保存状态
+        this.setData({
+          isSaving: false
+        });
+        console.error('保存项目失败:', err);
         wx.showModal({
-          title: '操作结果',
-          content: '项目保存失败，请检查网络连接后重试！',
+          title: '网络错误',
+          content: '网络连接失败，请检查网络后重试！',
           showCancel: false
         });
       }
-    }, 1500);
+    });
   },
 
   // 联系人管理相关方法
@@ -322,5 +446,21 @@ Page({
         }
       }
     });
+  },
+
+  // 格式化联系人数据，使其符合后端数据库contacts列的期望格式
+  formatContactsForDatabase(contacts) {
+    if (!contacts || contacts.length === 0) {
+      return '';
+    }
+
+    // 根据数据库实际存储格式：直接拼接姓名和电话，无分隔符
+    // 例如：桂拉旦13423689892黄世仿13392616563何旭恒1
+    const concatenatedContacts = contacts.map(contact => 
+      `${contact.name}${contact.phone}`
+    ).join('');
+    
+    console.log('联系人直接拼接格式:', concatenatedContacts);
+    return concatenatedContacts;
   }
 });

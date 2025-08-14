@@ -122,8 +122,15 @@
 
 
     <view class="button-group">
-      <button class="save-btn" bindtap="saveProject">保存项目</button>
-      <button class="cancel-btn" bindtap="cancel">取消</button>
+      <button 
+        class="save-btn" 
+        bindtap="saveProject" 
+        disabled="{{isSaving}}"
+        loading="{{isSaving}}"
+      >
+        {{isSaving ? '保存中...' : '保存项目'}}
+      </button>
+      <button class="cancel-btn" bindtap="cancel" disabled="{{isSaving}}">取消</button>
     </view>
   </view>
 </view>
