@@ -116,6 +116,33 @@ Page({
     this.filterProjects();
   },
 
+  // 清除时间筛选
+  clearTimeFilter: function() {
+    this.setData({
+      startDate: '',
+      endDate: ''
+    });
+    this.filterProjects();
+    wx.showToast({
+      title: '已清除时间筛选',
+      icon: 'success'
+    });
+  },
+
+  // 清除搜索关键词
+  clearSearch: function() {
+    this.setData({
+      searchKeyword: ''
+    });
+    this.filterProjects();
+    wx.showToast({
+      title: '已清除搜索',
+      icon: 'success'
+    });
+  },
+
+
+
   // 加载项目列表
   loadProjectList: function(isRefresh) {
     console.log('开始加载项目列表', isRefresh);
@@ -257,6 +284,7 @@ Page({
   // 获取项目详细数据（不显示弹窗）
   getProjectDetailData(projectId, originalProject, callback) {
     console.log('获取项目详细数据，项目ID:', projectId);
+    console.log('原始项目数据:', originalProject);
     
     wx.request({
       url: `http://127.0.0.1:5000/app/api/15projects/detail/${projectId}`,
@@ -271,6 +299,8 @@ Page({
           // 获取到详细信息，合并原有数据和详细信息
           const detailData = res.data.data;
           console.log('获取到的详细数据:', detailData);
+          console.log('start_date 字段值:', detailData.start_date);
+          console.log('end_date 字段值:', detailData.end_date);
           
           // 检查每个字段，如果后端返回空值或undefined，则使用"未设置"
           const enhancedProject = {
@@ -295,6 +325,8 @@ Page({
           };
 
           console.log('增强后的项目数据:', enhancedProject);
+          console.log('最终 startDate:', enhancedProject.startDate);
+          console.log('最终 endDate:', enhancedProject.endDate);
           callback(enhancedProject);
         } else {
           console.warn('获取项目详情失败，使用原有数据:', res);
@@ -561,25 +593,66 @@ Page({
     // 按项目开始时间筛选
     if (this.data.startDate || this.data.endDate) {
       filtered = filtered.filter(project => {
-        if (!project.startDate) {
+        if (!project.startDate || project.startDate === '待设置') {
+          console.log('项目没有开始时间:', project.projectName, project.startDate);
           return false; // 没有开始时间的项目不显示
         }
 
-        const projectStartDate = new Date(project.startDate);
+        // 智能解析项目开始时间
+        const projectStartDate = this.parseProjectDate(project.startDate);
+        if (!projectStartDate) {
+          console.log('无法解析项目开始时间:', project.projectName, project.startDate);
+          return false; // 无法解析的日期不显示
+        }
+
         let matchStart = true;
         let matchEnd = true;
 
         if (this.data.startDate) {
           const filterStartDate = new Date(this.data.startDate);
           matchStart = projectStartDate >= filterStartDate;
+          console.log(`项目 ${project.projectName} 开始时间比较:`, {
+            projectStart: project.startDate,
+            parsedProjectStart: projectStartDate,
+            filterStart: this.data.startDate,
+            parsedFilterStart: filterStartDate,
+            matchStart: matchStart
+          });
         }
 
         if (this.data.endDate) {
           const filterEndDate = new Date(this.data.endDate);
-          matchEnd = projectStartDate <= filterEndDate;
+          // 如果项目只有年月，则使用月末作为比较基准
+          if (this.isYearMonthOnly(project.startDate)) {
+            const monthEndDate = this.getMonthEndDate(projectStartDate);
+            matchEnd = monthEndDate <= filterEndDate;
+            console.log(`项目 ${project.projectName} 结束时间比较(年月格式):`, {
+              projectStart: project.startDate,
+              monthEnd: monthEndDate,
+              filterEnd: this.data.endDate,
+              parsedFilterEnd: filterEndDate,
+              matchEnd: matchEnd
+            });
+          } else {
+            matchEnd = projectStartDate <= filterEndDate;
+            console.log(`项目 ${project.projectName} 结束时间比较(年月日格式):`, {
+              projectStart: project.startDate,
+              parsedProjectStart: projectStartDate,
+              filterEnd: this.data.endDate,
+              parsedFilterEnd: filterEndDate,
+              matchEnd: matchEnd
+            });
+          }
         }
 
-        return matchStart && matchEnd;
+        const finalMatch = matchStart && matchEnd;
+        console.log(`项目 ${project.projectName} 最终匹配结果:`, {
+          startMatch: matchStart,
+          endMatch: matchEnd,
+          finalMatch: finalMatch
+        });
+
+        return finalMatch;
       });
       console.log('按项目开始时间筛选后数量:', filtered.length);
     }
@@ -588,6 +661,49 @@ Page({
     this.setData({
       projectList: filtered
     });
+  },
+
+  // 智能解析项目日期
+  parseProjectDate: function(dateString) {
+    if (!dateString || dateString === '待设置') {
+      return null;
+    }
+
+    // 处理 "2025.1" 格式（年月）
+    if (/^\d{4}\.\d{1,2}$/.test(dateString)) {
+      const [year, month] = dateString.split('.');
+      return new Date(parseInt(year), parseInt(month) - 1, 1);
+    }
+
+    // 处理 "2025.1.15" 格式（年月日）
+    if (/^\d{4}\.\d{1,2}\.\d{1,2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('.');
+      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    }
+
+    // 处理标准日期格式 "2025-01-15"
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return new Date(dateString);
+    }
+
+    // 处理其他可能的日期格式
+    const parsedDate = new Date(dateString);
+    if (!isNaN(parsedDate.getTime())) {
+      return parsedDate;
+    }
+
+    console.warn('无法解析的日期格式:', dateString);
+    return null;
+  },
+
+  // 判断是否为年月格式（不包含日）
+  isYearMonthOnly: function(dateString) {
+    return /^\d{4}\.\d{1,2}$/.test(dateString);
+  },
+
+  // 获取月末日期
+  getMonthEndDate: function(date) {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
   },
 
   // 刷新数据
@@ -1048,16 +1164,31 @@ Page({
   // 更新列表中的项目信息
   updateProjectInList(updatedProject) {
     console.log('开始更新列表项目:', updatedProject);
-    const index = this.data.projectList.findIndex(p => p.id === updatedProject.id);
-    if (index !== -1) {
+    
+    // 同时更新 projectList 和 allProjects
+    const projectIndex = this.data.projectList.findIndex(p => p.id === updatedProject.id);
+    const allProjectIndex = this.data.allProjects.findIndex(p => p.id === updatedProject.id);
+    
+    if (projectIndex !== -1) {
       const newProjectList = [...this.data.projectList];
-      newProjectList[index] = updatedProject;
+      newProjectList[projectIndex] = updatedProject;
       this.setData({
         projectList: newProjectList
       });
-      console.log('列表项目已更新，ID:', updatedProject.id, '开始时间:', updatedProject.startDate, '主要目标:', updatedProject.objectives);
+      console.log('projectList 已更新，ID:', updatedProject.id, '开始时间:', updatedProject.startDate, '主要目标:', updatedProject.objectives);
     } else {
-      console.warn('未找到项目ID，无法更新列表:', updatedProject.id);
+      console.warn('未找到项目ID，无法更新 projectList:', updatedProject.id);
+    }
+    
+    if (allProjectIndex !== -1) {
+      const newAllProjects = [...this.data.allProjects];
+      newAllProjects[allProjectIndex] = updatedProject;
+      this.setData({
+        allProjects: newAllProjects
+      });
+      console.log('allProjects 已更新，ID:', updatedProject.id, '开始时间:', updatedProject.startDate, '主要目标:', updatedProject.objectives);
+    } else {
+      console.warn('未找到项目ID，无法更新 allProjects:', updatedProject.id);
     }
   },
 

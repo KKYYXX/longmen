@@ -31,7 +31,6 @@
           <view class="project-name">{{item.projectName}}</view>
           <view class="project-meta">
             <text class="project-date">{{item.createDate}}</text>
-            <text class="project-progress">进度: {{item.progress}}%</text>
           </view>
         </view>
       </view>

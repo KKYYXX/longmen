@@ -16,7 +16,16 @@
           <text>{{endDate || '结束时间'}}</text>
         </view>
       </picker>
+      <view class="clear-filter-btn" bindtap="clearTimeFilter" wx:if="{{startDate || endDate}}">
+        <text class="clear-text">清除筛选</text>
+      </view>
+      
     </view>
+    
+         <!-- 筛选状态提示 -->
+     <view class="filter-status" wx:if="{{startDate || endDate || searchKeyword}}">
+       <text class="result-count">显示 {{projectList.length}} 条记录，共 {{allProjects.length}} 条</text>
+     </view>
     
     <!-- 名称搜索 -->
     <view class="search-box">
@@ -26,7 +35,10 @@
              value="{{searchKeyword}}"
              bindinput="onSearchInput"
              bindconfirm="onSearch"/>
-      <text class="search-btn" bindtap="onSearch">搜索</text>
+      <view class="search-actions">
+        <text class="clear-search-btn" bindtap="clearSearch" wx:if="{{searchKeyword}}">✕</text>
+        <text class="search-btn" bindtap="onSearch">搜索</text>
+      </view>
     </view>
   </view>
 
@@ -89,6 +101,8 @@
     <text class="empty-icon">🏗️</text>
     <text class="empty-text">暂无十五项项目数据</text>
   </view>
+
+  
 </view>
 
 <!-- 项目详情弹窗 -->
