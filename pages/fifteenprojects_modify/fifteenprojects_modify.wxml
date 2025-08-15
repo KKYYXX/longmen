@@ -8,22 +8,84 @@
   <view class="step-section" wx:if="{{currentStep === 1}}">
     <view class="step-header">
       <text class="step-title">步骤1：选择第几个项目</text>
+      <view class="refresh-btn" bindtap="loadProjectList">
+        <text class="refresh-icon">🔄</text>
+        <text class="refresh-text">刷新</text>
+      </view>
+    </view>
+    
+    <!-- 项目数量信息 -->
+    <view class="project-count-info" wx:if="{{!loading && projectList.length > 0}}">
+      <text class="count-text">共找到 {{projectList.length}} 个项目</text>
+    </view>
+    
+    <!-- 搜索框 -->
+    <view class="search-section" wx:if="{{!loading && projectList.length > 0}}">
+      <view class="search-box">
+        <text class="search-icon">🔍</text>
+        <input class="search-input"
+               placeholder="搜索项目名称..."
+               value="{{searchKeyword}}"
+               bindinput="onSearchInput"
+               bindconfirm="onSearch"/>
+        <view class="search-actions">
+          <text class="clear-search-btn" bindtap="clearSearch" wx:if="{{searchKeyword}}">✕</text>
+          <text class="search-btn" bindtap="onSearch">搜索</text>
+        </view>
+      </view>
+      
+      <!-- 搜索结果信息 -->
+      <view class="search-result-info" wx:if="{{searchKeyword && filteredProjectList.length > 0}}">
+        <text class="result-text">找到 {{filteredProjectList.length}} 个匹配项目</text>
+      </view>
     </view>
 
     <view class="project-list">
+      <!-- 加载状态显示 -->
+      <view class="loading-state" wx:if="{{loading}}">
+        <text class="loading-icon">⏳</text>
+        <text class="loading-text">正在加载项目列表...</text>
+      </view>
+      
+      <!-- 项目列表 - 支持搜索过滤 -->
       <view
         class="project-item {{selectedProject && selectedProject.id === item.id ? 'selected' : ''}}"
-        wx:for="{{projectList}}"
+        wx:for="{{searchKeyword ? filteredProjectList : projectList}}"
         wx:key="id"
         bindtap="selectProject"
         data-project="{{item}}"
+        wx:if="{{!loading}}"
       >
         <view class="project-number">第{{index + 1}}个</view>
         <view class="project-info">
           <view class="project-name">{{item.name}}</view>
           <view class="project-desc">{{item.description}}</view>
+          <view class="project-meta">
+            <text class="meta-item">ID: {{item.id}}</text>
+          </view>
         </view>
         <view class="select-icon">{{selectedProject && selectedProject.id === item.id ? '✓' : '○'}}</view>
+      </view>
+      
+      <!-- 空状态显示 -->
+      <view class="empty-state" wx:if="{{projectList.length === 0 && !loading}}">
+        <text class="empty-icon">🏗️</text>
+        <text class="empty-text">暂无项目数据</text>
+        <text class="empty-desc">请检查网络连接或联系管理员</text>
+        <view class="retry-btn" bindtap="loadProjectList">
+          <text class="retry-icon">🔄</text>
+          <text class="retry-text">重新加载</text>
+        </view>
+      </view>
+      
+      <!-- 搜索无结果提示 -->
+      <view class="search-no-result" wx:if="{{searchKeyword && filteredProjectList.length === 0 && !loading}}">
+        <text class="no-result-icon">🔍</text>
+        <text class="no-result-text">未找到匹配的项目</text>
+        <text class="no-result-desc">请尝试其他关键词</text>
+        <view class="clear-search-btn-large" bindtap="clearSearch">
+          <text class="clear-text">清除搜索</text>
+        </view>
       </view>
     </view>
 
@@ -70,72 +132,81 @@
       <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
     </view>
 
-    <view class="action-list">
-      <!-- 修改内容选项 - 所有列都有 -->
-      <view
-        class="action-item {{selectedAction === 'modify' ? 'selected' : ''}}"
-        bindtap="selectAction"
-        data-action="modify"
-      >
-        <view class="action-icon">✏️</view>
-        <view class="action-info">
-          <view class="action-name">修改内容</view>
-          <view class="action-desc" wx:if="{{selectedColumn.key === 'progress'}}">修改项目进度信息</view>
-          <view class="action-desc" wx:elif="{{selectedColumn.type === 'textarea'}}">修改详细内容</view>
-          <view class="action-desc" wx:else>修改{{selectedColumn.name}}</view>
+    <!-- 项目进度列显示操作类型选择 -->
+    <view wx:if="{{selectedColumn.key === 'progress'}}">
+      <view class="action-list">
+        <!-- 修改内容选项 -->
+        <view
+          class="action-item {{selectedAction === 'modify' ? 'selected' : ''}}"
+          bindtap="selectAction"
+          data-action="modify"
+        >
+          <view class="action-icon">✏️</view>
+          <view class="action-info">
+            <view class="action-name">修改内容</view>
+            <view class="action-desc">修改项目进度信息</view>
+          </view>
+          <view class="select-icon">{{selectedAction === 'modify' ? '✓' : '○'}}</view>
         </view>
-        <view class="select-icon">{{selectedAction === 'modify' ? '✓' : '○'}}</view>
+
+        <!-- 添加内容选项 -->
+        <view
+          class="action-item {{selectedAction === 'add' ? 'selected' : ''}}"
+          bindtap="selectAction"
+          data-action="add"
+        >
+          <view class="action-icon">📎</view>
+          <view class="action-info">
+            <view class="action-name">添加内容</view>
+            <view class="action-desc">添加图片、视频、时间、地点、人员等</view>
+          </view>
+          <view class="select-icon">{{selectedAction === 'add' ? '✓' : '○'}}</view>
+        </view>
+
+        <!-- 删除内容选项 -->
+        <view
+          class="action-item {{selectedAction === 'delete' ? 'selected' : ''}}"
+          bindtap="selectAction"
+          data-action="delete"
+        >
+          <view class="action-icon">🗑️</view>
+          <view class="action-info">
+            <view class="action-name">删除内容</view>
+            <view class="action-desc">删除项目进度记录</view>
+          </view>
+          <view class="select-icon">{{selectedAction === 'delete' ? '✓' : '○'}}</view>
+        </view>
       </view>
 
-      <!-- 添加内容选项 - 所有列都有，但内容不同 -->
-      <view
-        class="action-item {{selectedAction === 'add' ? 'selected' : ''}}"
-        bindtap="selectAction"
-        data-action="add"
-      >
-        <view class="action-icon">📎</view>
-        <view class="action-info">
-          <view class="action-name">添加内容</view>
-          <view class="action-desc" wx:if="{{selectedColumn.key === 'progress'}}">添加图片、视频、时间、地点、人员等</view>
-          <view class="action-desc" wx:elif="{{selectedColumn.key === 'contacts'}}">添加联系人信息</view>
-          <view class="action-desc" wx:elif="{{selectedColumn.key === 'involvedAreas'}}">添加涉及区域</view>
-          <view class="action-desc" wx:elif="{{selectedColumn.type === 'textarea'}}">添加补充说明</view>
-          <view class="action-desc" wx:else>添加{{selectedColumn.name}}信息</view>
-        </view>
-        <view class="select-icon">{{selectedAction === 'add' ? '✓' : '○'}}</view>
-      </view>
-
-      <!-- 删除内容选项 - 仅项目进度列显示 -->
-      <view
-        wx:if="{{selectedColumn.key === 'progress'}}"
-        class="action-item {{selectedAction === 'delete' ? 'selected' : ''}}"
-        bindtap="selectAction"
-        data-action="delete"
-      >
-        <view class="action-icon">🗑️</view>
-        <view class="action-info">
-          <view class="action-name">删除内容</view>
-          <view class="action-desc">删除项目进度记录</view>
-        </view>
-        <view class="select-icon">{{selectedAction === 'delete' ? '✓' : '○'}}</view>
+      <view class="button-group">
+        <button class="next-btn" bindtap="nextStep" disabled="{{!selectedAction}}">下一步</button>
+        <button class="back-btn" bindtap="prevStep">上一步</button>
       </view>
     </view>
 
-    <view class="button-group">
-      <button class="next-btn" bindtap="nextStep" disabled="{{!selectedAction}}">下一步</button>
-      <button class="back-btn" bindtap="prevStep">上一步</button>
+    <!-- 其他列直接显示修改界面 -->
+    <view wx:else>
+      <view class="direct-modify-notice">
+        <view class="notice-icon">✏️</view>
+        <text class="notice-text">您选择了{{selectedColumn.name}}列，将直接进入修改界面</text>
+      </view>
+      
+      <view class="button-group">
+        <button class="next-btn" bindtap="nextStep">进入修改界面</button>
+        <button class="back-btn" bindtap="prevStep">上一步</button>
+      </view>
     </view>
   </view>
 
   <!-- 步骤4：修改内容 -->
-  <view class="step-section" wx:if="{{currentStep === 4 && selectedAction === 'modify'}}">
+  <view class="step-section" wx:if="{{currentStep === 4 && (selectedAction === 'modify' || selectedColumn.key !== 'progress')}}">
     <view class="step-header">
       <text class="step-title">修改内容</text>
       <text class="step-subtitle">{{selectedProject.name}} - {{selectedColumn.name}}</text>
     </view>
 
     <!-- 项目进度列的修改界面 -->
-    <view wx:if="{{selectedColumn.key === 'progress'}}">
+    <view wx:if="{{selectedColumn.key === 'progress' && selectedAction === 'modify'}}">
       <!-- 时间筛选区域 -->
       <view class="modify-filter-section">
         <view class="filter-title-area">
@@ -203,40 +274,40 @@
             wx:for="{{filteredModifyProgressList}}"
             wx:key="id"
             bindtap="selectModifyRecord"
-          data-record="{{item}}"
-        >
-          <view class="progress-checkbox">
-            <view class="checkbox-icon">{{selectedModifyRecord && selectedModifyRecord.id === item.id ? '✓' : '○'}}</view>
-          </view>
+            data-record="{{item}}"
+          >
+            <view class="progress-checkbox">
+              <view class="checkbox-icon">{{selectedModifyRecord && selectedModifyRecord.id === item.id ? '✓' : '○'}}</view>
+            </view>
 
-          <view class="progress-content">
-            <view class="item-title">{{item.title || '进度记录'}}</view>
-            <view class="item-details">
-              <view class="detail-row">
-                <text class="detail-label">📅</text>
-                <text class="detail-value">{{item.date}}</text>
-              </view>
-              <view class="detail-row">
-                <text class="detail-label">👤</text>
-                <text class="detail-value">{{item.person || '未设置'}}</text>
-              </view>
-              <view class="detail-row">
-                <text class="detail-label">📍</text>
-                <text class="detail-value">{{item.location || '未设置'}}</text>
+            <view class="progress-content">
+              <view class="item-title">{{item.title || '进度记录'}}</view>
+              <view class="item-details">
+                <view class="detail-row">
+                  <text class="detail-label">📅</text>
+                  <text class="detail-value">{{item.date}}</text>
+                </view>
+                <view class="detail-row">
+                  <text class="detail-label">👤</text>
+                  <text class="detail-value">{{item.person || '未设置'}}</text>
+                </view>
+                <view class="detail-row">
+                  <text class="detail-label">📍</text>
+                  <text class="detail-value">{{item.location || '未设置'}}</text>
+                </view>
               </view>
             </view>
-          </view>
 
-          <view class="progress-status-area">
-            <view class="status-time-info">
-              <text class="status-date">{{item.date}}</text>
-              <text class="status-time">{{item.time}}</text>
+            <view class="progress-status-area">
+              <view class="status-time-info">
+                <text class="status-date">{{item.date}}</text>
+                <text class="status-time">{{item.time}}</text>
+              </view>
+              <view class="status-badge {{item.status}}">{{item.statusText}}</view>
             </view>
-            <view class="status-badge {{item.status}}">{{item.statusText}}</view>
           </view>
         </view>
       </view>
-    </view>
 
       <view class="button-group">
         <button class="next-btn" bindtap="nextStepToModifyDetail" disabled="{{!selectedModifyRecord}}">修改详情</button>
@@ -245,7 +316,7 @@
     </view>
 
     <!-- 其他列的修改界面 -->
-    <view wx:else>
+    <view wx:if="{{selectedColumn.key !== 'progress'}}">
       <view class="simple-modify-content">
         <view class="current-value-section">
           <view class="section-title">
@@ -502,6 +573,7 @@
           >
             <view class="picker-text">{{selectedTime || '请选择时间'}}</view>
           </picker>
+          
           <button class="add-btn" bindtap="confirmAddTime">添加时间</button>
         </view>
 

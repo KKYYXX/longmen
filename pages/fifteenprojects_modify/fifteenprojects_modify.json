@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "修改项目",
   "navigationBarBackgroundColor": "#F5E6A3",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
 }

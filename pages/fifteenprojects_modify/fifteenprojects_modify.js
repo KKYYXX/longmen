@@ -1,3 +1,42 @@
+/**
+ * 项目修改页面
+ * 
+ * 功能说明：
+ * 1. 步骤1：选择要修改的项目
+ * 2. 步骤2：选择要修改的列（项目进度列有特殊功能）
+ * 3. 步骤3：选择操作类型（修改、添加、删除）
+ * 4. 步骤4：执行具体操作
+ * 
+ * 项目进度列特殊功能：
+ * 当选择"项目进度"列并选择"添加内容"时，可以添加以下6种类型的内容：
+ * - 图片：上传图片文件
+ * - 视频：上传视频文件  
+ * - 时间：选择日期和时间
+ * - 地点：输入地点名称
+ * - 人员：输入人员姓名和职务
+ * - 新闻稿：上传文档文件
+ * 
+ * 数据流程：
+ * 1. 用户点击6个按钮中的任意一个
+ * 2. 系统调用相应的函数（uploadImage, uploadVideo, addTime等）
+ * 3. 用户输入或选择相应内容
+ * 4. 内容被添加到 addedItems 数组中
+ * 5. 用户点击"保存添加"按钮
+ * 6. 系统调用 saveProgressAddition() 函数
+ * 7. 数据被发送到后端接口 POST /api/progress/add
+ * 8. 后端将数据存储到 Progress 表中
+ * 
+ * 后端接口字段映射：
+ * - project_id: 项目ID
+ * - project_name: 项目名称
+ * - images: 图片文件数组
+ * - videos: 视频文件数组
+ * - time_info: 时间信息
+ * - location_info: 地点信息
+ * - person_info: 人员信息
+ * - news_documents: 新闻稿文档数组
+ */
+
 Page({
   data: {
     currentStep: 1,
@@ -14,6 +53,9 @@ Page({
     personName: '',
     personTitle: '',
     addedItems: [],
+    loading: false, // 添加加载状态
+    searchKeyword: '', // 搜索关键词
+    filteredProjectList: [], // 过滤后的项目列表
 
     // 删除内容相关
     timeFilter: 'all',
@@ -34,52 +76,7 @@ Page({
 
     editMode: false, // 是否为编辑模式
     editingProjectId: null, // 正在编辑的项目ID
-    projectList: [
-      {
-        id: 1,
-        name: '智慧城市建设项目',
-        description: '利用物联网技术建设智慧城市管理平台',
-        serialNumber: '001',
-        cityLevel: '杭州市',
-        pairedCounty: '临安区',
-        pairedInstitution: '浙江大学',
-        projectName: '智慧城市建设项目',
-        implementationUnit: '浙江大学计算机学院',
-        isKeyProject: '是',
-        involvedAreas: '临安区青山湖街道',
-        projectType: '基础设施建设',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        background: '随着城市化进程加快，传统城市管理模式面临挑战...',
-        content: '建设智慧城市管理平台，整合各类城市数据...',
-        objectives: '提升城市治理效率，改善市民生活质量...',
-        contacts: '张三:13800138000',
-        remarks: '重点项目，优先推进',
-        progress: 75
-      },
-      {
-        id: 2,
-        name: '绿色能源发展项目',
-        description: '推广太阳能和风能等清洁能源技术',
-        serialNumber: '002',
-        cityLevel: '宁波市',
-        pairedCounty: '象山县',
-        pairedInstitution: '浙江工业大学',
-        projectName: '绿色能源发展项目',
-        implementationUnit: '浙江工业大学环境学院',
-        isKeyProject: '是',
-        involvedAreas: '象山县丹西街道',
-        projectType: '环保治理',
-        startDate: '2024-02-01',
-        endDate: '2024-11-30',
-        background: '为响应国家碳中和目标，推进清洁能源发展...',
-        content: '建设太阳能发电站，推广风能利用技术...',
-        objectives: '减少碳排放，提高清洁能源使用比例...',
-        contacts: '王五:13900139000',
-        remarks: '环保重点项目',
-        progress: 60
-      }
-    ],
+    projectList: [], // 项目列表，将从后端获取
     projectColumns: [
       { name: '序号', key: 'serialNumber', type: 'text' },
       { name: '地级市', key: 'cityLevel', type: 'text' },
@@ -127,6 +124,288 @@ Page({
       projectColumns: newColumns
     });
     console.log('修改页面加载完成，新列配置：', newColumns);
+    
+    // 加载项目列表
+    this.loadProjectList();
+  },
+
+  // 下拉刷新
+  onPullDownRefresh() {
+    console.log('触发下拉刷新');
+    this.loadProjectList();
+    // 停止下拉刷新动画
+    setTimeout(() => {
+      wx.stopPullDownRefresh();
+    }, 1000);
+  },
+
+  // 加载项目列表
+  loadProjectList() {
+    this.setData({
+      loading: true
+    });
+    
+    wx.showLoading({
+      title: '加载中...',
+    });
+
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/15projects/names',
+      method: 'GET',
+      success: (res) => {
+        wx.hideLoading();
+        this.setData({
+          loading: false
+        });
+        
+        if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
+          const projectNames = res.data.data;
+          console.log('获取到项目名称列表:', projectNames);
+          
+          // 获取所有项目的详细信息
+          this.loadAllProjectDetailsForModify(projectNames);
+        } else {
+          console.error('获取项目列表失败:', res);
+          this.setData({
+            projectList: []
+          });
+          wx.showToast({
+            title: '获取项目列表失败',
+            icon: 'error'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        this.setData({
+          loading: false
+        });
+        console.error('请求项目列表失败:', err);
+        this.setData({
+          projectList: []
+        });
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'error'
+        });
+      }
+    });
+  },
+
+  // 获取所有项目的详细信息（用于修改页面）
+  loadAllProjectDetailsForModify(projectNames) {
+    console.log('开始加载所有项目详细信息，项目数量:', projectNames.length);
+    
+    if (projectNames.length === 0) {
+      this.setData({
+        projectList: []
+      });
+      return;
+    }
+
+    let completedCount = 0;
+    const allProjects = [];
+
+    projectNames.forEach((projectName, index) => {
+      // 为每个项目创建基础对象
+      const baseProject = {
+        id: index + 1, // 临时ID，稍后会被真实ID替换
+        name: projectName,
+        description: '项目详情请查看具体信息',
+        projectName: projectName,
+        // 其他字段设置为默认值
+        serialNumber: '待设置',
+        cityLevel: '待设置',
+        pairedCounty: '待设置',
+        pairedInstitution: '待设置',
+        implementationUnit: '待设置',
+        isKeyProject: '待设置',
+        involvedAreas: '待设置',
+        projectType: '待设置',
+        startDate: '待设置',
+        endDate: '待设置',
+        background: '待设置',
+        content: '待设置',
+        objectives: '待设置',
+        contacts: '待设置',
+        remarks: '待设置',
+        progress: 0
+      };
+
+      // 获取单个项目的详细信息
+      this.getProjectDetailDataForModify(projectName, baseProject, (enhancedProject) => {
+        allProjects.push(enhancedProject);
+        completedCount++;
+
+        // 当所有项目都加载完成时，更新页面数据
+        if (completedCount === projectNames.length) {
+          console.log('所有项目详细信息加载完成:', allProjects);
+          
+          this.setData({
+            projectList: allProjects
+          });
+
+          // 显示成功提示
+          if (allProjects.length > 0) {
+            wx.showToast({
+              title: `成功加载 ${allProjects.length} 个项目`,
+              icon: 'success',
+              duration: 2000
+            });
+          }
+        }
+      });
+    });
+  },
+
+  // 获取单个项目的详细数据（用于修改页面）
+  getProjectDetailDataForModify(projectName, originalProject, callback) {
+    console.log('获取项目详细数据，项目名称:', projectName);
+    
+    // 先通过项目名称查找项目ID
+    this.findProjectIdByNameForModify(projectName, (projectId) => {
+      if (projectId) {
+        console.log('找到项目ID:', projectId, '开始获取详细信息');
+        // 找到项目ID后，获取详细信息
+        this.getProjectDetailDataByIdForModify(projectId, originalProject, callback);
+      } else {
+        console.warn('未找到项目ID，项目名称:', projectName);
+        // 如果找不到ID，直接返回原项目数据
+        callback(originalProject);
+      }
+    });
+  },
+
+  // 通过项目名称查找项目ID（用于修改页面）
+  findProjectIdByNameForModify(projectName, callback) {
+    console.log('开始查找项目ID，项目名称:', projectName);
+    
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/15projects/search',
+      method: 'GET',
+      data: {
+        project_name: projectName
+      },
+      success: (res) => {
+        console.log('搜索接口响应:', res);
+        
+        if (res.statusCode === 200 && res.data && res.data.success && res.data.data) {
+          // 找到项目，返回数据库中的真实ID
+          const projectId = res.data.data.id;
+          console.log('在数据库中找到项目:', projectName, '真实ID:', projectId);
+          callback(projectId);
+        } else if (res.statusCode === 404) {
+          // 数据库中没有找到该项目名称
+          console.error('数据库中没有找到项目名称:', projectName);
+          callback(null);
+        } else {
+          // 其他错误
+          console.error('查询项目信息失败:', res);
+          callback(null);
+        }
+      },
+      fail: (err) => {
+        console.error('请求项目信息失败:', err);
+        callback(null);
+      }
+    });
+  },
+
+  // 通过项目ID获取详细信息（用于修改页面）
+  getProjectDetailDataByIdForModify(projectId, originalProject, callback) {
+    console.log('获取项目详细数据，项目ID:', projectId);
+    
+    wx.request({
+      url: `http://127.0.0.1:5000/app/api/15projects/detail/${projectId}`,
+      method: 'GET',
+      data: {
+        project_id: projectId
+      },
+      success: (res) => {
+        console.log('详情接口响应:', res);
+        
+        if (res.statusCode === 200 && res.data && res.data.success && res.data.data) {
+          // 获取到详细信息，合并原有数据和详细信息
+          const detailData = res.data.data;
+          console.log('获取到的详细数据:', detailData);
+          
+          // 检查每个字段，如果后端返回空值或undefined，则使用"未设置"
+          const enhancedProject = {
+            ...originalProject,
+            id: projectId, // 使用真实的数据库ID
+            // 确保关键字段存在，优先使用后端返回的数据，空值时显示"未设置"
+            projectName: detailData.project_name || originalProject.projectName || '未设置',
+            serialNumber: detailData.serial_number || originalProject.serialNumber || '未设置',
+            cityLevel: detailData.city || originalProject.cityLevel || '未设置',
+            pairedCounty: detailData.county || originalProject.pairedCounty || '未设置',
+            pairedInstitution: detailData.universities || originalProject.pairedInstitution || '未设置',
+            implementationUnit: detailData.implementing_institutions || originalProject.implementationUnit || '未设置',
+            isKeyProject: detailData.is_key_project ? '是' : '否',
+            involvedAreas: detailData.involved_areas || originalProject.involvedAreas || '未设置',
+            projectType: detailData.project_type || originalProject.projectType || '未设置',
+            startDate: detailData.start_date || originalProject.startDate || '未设置',
+            endDate: detailData.end_date || originalProject.endDate || '未设置',
+            background: detailData.background || originalProject.background || '未设置',
+            content: detailData.content_and_measures || originalProject.content || '待补充',
+            objectives: detailData.objectives || originalProject.objectives || '待补充',
+            contacts: detailData.contacts || originalProject.contacts || '待设置',
+            remarks: detailData.remarks || originalProject.remarks || '待补充'
+          };
+
+          console.log('增强后的项目数据:', enhancedProject);
+          callback(enhancedProject);
+        } else {
+          console.warn('获取项目详情失败，使用原有数据:', res);
+          callback(originalProject);
+        }
+      },
+      fail: (err) => {
+        console.error('获取项目详情失败:', err);
+        callback(originalProject);
+      }
+    });
+  },
+
+  // 搜索输入处理
+  onSearchInput(e) {
+    const searchKeyword = e.detail.value;
+    this.setData({
+      searchKeyword: searchKeyword
+    });
+    this.filterProjects();
+  },
+
+  // 执行搜索
+  onSearch() {
+    this.filterProjects();
+  },
+
+  // 清除搜索
+  clearSearch() {
+    this.setData({
+      searchKeyword: '',
+      filteredProjectList: []
+    });
+  },
+
+  // 过滤项目
+  filterProjects() {
+    const { projectList, searchKeyword } = this.data;
+    if (!searchKeyword.trim()) {
+      this.setData({
+        filteredProjectList: []
+      });
+      return;
+    }
+
+    const filtered = projectList.filter(project => 
+      project.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      project.projectName.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
+
+    this.setData({
+      filteredProjectList: filtered
+    });
   },
 
   // 选择项目
@@ -169,6 +448,22 @@ Page({
   // 下一步
   nextStep() {
     const currentStep = this.data.currentStep;
+    
+    // 如果是从步骤2到步骤3，且不是项目进度列，自动设置为修改操作并跳转到步骤4
+    if (currentStep === 2 && this.data.selectedColumn.key !== 'progress') {
+      this.setData({
+        selectedAction: 'modify',
+        currentStep: 4  // 直接跳转到步骤4
+      });
+      
+      // 预填充当前值
+      const currentValue = this.getCurrentColumnValue(this.data.selectedProject, this.data.selectedColumn.key);
+      this.setData({
+        newContent: currentValue || ''
+      });
+      return;
+    }
+    
     this.setData({
       currentStep: currentStep + 1
     });
@@ -537,10 +832,22 @@ Page({
 
   // 添加项目到列表
   addItem(item) {
+    console.log('添加新项目到列表:', item);
+    
     const addedItems = [...this.data.addedItems, item];
     this.setData({
       addedItems: addedItems
     });
+
+    // 显示添加成功的提示
+    wx.showToast({
+      title: `已添加${item.type}`,
+      icon: 'success',
+      duration: 1500
+    });
+
+    // 在控制台显示当前已添加的所有项目
+    console.log('当前已添加的所有项目:', addedItems);
   },
 
   // 移除项目
@@ -567,6 +874,12 @@ Page({
         title: '请先添加内容',
         icon: 'none'
       });
+      return;
+    }
+
+    // 如果是项目进度列，调用专门的进度保存函数
+    if (selectedColumn.key === 'progress') {
+      this.saveProgressAddition();
       return;
     }
 
@@ -622,6 +935,163 @@ Page({
         });
       }
     }, 2000);
+  },
+
+  // 保存项目进度内容到后端
+  saveProgressAddition() {
+    const { selectedProject, addedItems } = this.data;
+
+    if (addedItems.length === 0) {
+      wx.showToast({
+        title: '请先添加内容',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 验证项目信息
+    if (!selectedProject || !selectedProject.id) {
+      wx.showToast({
+        title: '项目信息不完整',
+        icon: 'error'
+      });
+      return;
+    }
+
+    wx.showLoading({
+      title: '保存进度信息中...'
+    });
+
+    // 构建要发送到后端的数据
+    const progressData = {
+      project_id: selectedProject.id,
+      project_name: selectedProject.projectName || selectedProject.name,
+      images: [],
+      videos: [],
+      time_info: '',
+      location_info: '',
+      person_info: '',
+      news_documents: []
+    };
+
+    // 处理已添加的内容，按类型分类
+    addedItems.forEach(item => {
+      switch (item.type) {
+        case '图片':
+          progressData.images.push({
+            name: item.name,
+            path: item.path
+          });
+          break;
+        case '视频':
+          progressData.videos.push({
+            name: item.name,
+            path: item.path
+          });
+          break;
+        case '时间':
+          progressData.time_info = item.name;
+          break;
+        case '地点':
+          progressData.location_info = item.name;
+          break;
+        case '人员':
+          progressData.person_info = item.name;
+          break;
+        case '新闻稿':
+          progressData.news_documents.push({
+            name: item.name,
+            path: item.path,
+            size: item.size
+          });
+          break;
+      }
+    });
+
+    console.log('准备发送到后端的进度数据:', progressData);
+
+    // 调用后端接口
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/add',
+      method: 'POST',
+      data: progressData,
+      success: (res) => {
+        wx.hideLoading();
+        console.log('后端接口响应:', res);
+
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          // 保存成功
+          wx.showModal({
+            title: '保存成功',
+            content: `项目进度信息已成功保存！\n项目：${selectedProject.name}\n已添加${addedItems.length}项内容。`,
+            showCancel: false,
+            success: () => {
+              // 保存成功后，重置状态
+              this.setData({
+                currentStep: 1,
+                selectedProject: null,
+                selectedColumn: null,
+                selectedAction: '',
+                addedItems: [],
+                showTimeInput: false,
+                showLocationInput: false,
+                showPersonInput: false
+              });
+
+              // 显示成功提示
+              wx.showToast({
+                title: '进度信息保存成功',
+                icon: 'success',
+                duration: 2000
+              });
+            }
+          });
+        } else if (res.statusCode === 400) {
+          // 请求参数错误
+          wx.showModal({
+            title: '保存失败',
+            content: `参数错误：${res.data?.message || '请检查输入数据'}`,
+            showCancel: false
+          });
+        } else if (res.statusCode === 500) {
+          // 服务器内部错误
+          wx.showModal({
+            title: '保存失败',
+            content: `服务器错误：${res.data?.message || '请稍后重试'}`,
+            showCancel: false
+          });
+        } else {
+          // 其他错误
+          console.error('后端接口返回错误:', res);
+          wx.showModal({
+            title: '保存失败',
+            content: `保存失败：${res.data?.message || '未知错误，请重试'}`,
+            showCancel: false
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('请求后端接口失败:', err);
+        
+        // 根据错误类型给出不同的提示
+        let errorMessage = '网络请求失败，请检查网络连接后重试！';
+        
+        if (err.errMsg) {
+          if (err.errMsg.includes('timeout')) {
+            errorMessage = '请求超时，请检查网络连接后重试！';
+          } else if (err.errMsg.includes('fail')) {
+            errorMessage = '网络连接失败，请检查网络设置！';
+          }
+        }
+        
+        wx.showModal({
+          title: '保存失败',
+          content: errorMessage,
+          showCancel: false
+        });
+      }
+    });
   },
 
   // 取消操作
@@ -1436,25 +1906,102 @@ Page({
       return;
     }
 
-    // 更新项目数据
-    const updatedProject = { ...selectedProject };
-    updatedProject[selectedColumn.key] = newContent;
-
-    // 这里应该调用API保存到后端
-    console.log('修改项目字段：', {
-      projectId: selectedProject.id,
-      field: selectedColumn.key,
-      oldValue: selectedProject[selectedColumn.key],
-      newValue: newContent
+    wx.showLoading({
+      title: '修改中...'
     });
 
-    wx.showModal({
-      title: '修改成功',
-      content: `${selectedColumn.name}已成功修改！`,
-      showCancel: false,
-      success: () => {
-        // 返回项目列表
-        wx.navigateBack();
+    // 构建要发送到后端的数据
+    const modifyData = {
+      project_id: selectedProject.id,
+      field_name: selectedColumn.key,
+      new_value: newContent.trim(),
+      old_value: selectedProject[selectedColumn.key] || ''
+    };
+
+    console.log('准备发送到后端的修改数据:', modifyData);
+
+    // 调用后端PUT接口
+    wx.request({
+      url: `http://127.0.0.1:5000/app/api/15projects/${selectedProject.id}`,
+      method: 'PUT',
+      data: modifyData,
+      success: (res) => {
+        wx.hideLoading();
+        console.log('后端接口响应:', res);
+
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          // 修改成功
+          wx.showModal({
+            title: '修改成功',
+            content: `${selectedColumn.name}已成功修改！\n原值：${modifyData.old_value || '无'}\n新值：${modifyData.new_value}`,
+            showCancel: false,
+            success: () => {
+              // 更新本地项目数据
+              const projectList = [...this.data.projectList];
+              const projectIndex = projectList.findIndex(p => p.id === selectedProject.id);
+              if (projectIndex > -1) {
+                projectList[projectIndex][selectedColumn.key] = modifyData.new_value;
+              }
+
+              this.setData({
+                projectList: projectList
+              });
+
+              // 返回项目列表
+              wx.navigateBack();
+            }
+          });
+        } else if (res.statusCode === 400) {
+          // 请求参数错误
+          wx.showModal({
+            title: '修改失败',
+            content: `参数错误：${res.data?.message || '请检查输入数据'}`,
+            showCancel: false
+          });
+        } else if (res.statusCode === 404) {
+          // 项目不存在
+          wx.showModal({
+            title: '修改失败',
+            content: '项目不存在或已被删除',
+            showCancel: false
+          });
+        } else if (res.statusCode === 500) {
+          // 服务器内部错误
+          wx.showModal({
+            title: '修改失败',
+            content: `服务器错误：${res.data?.message || '请稍后重试'}`,
+            showCancel: false
+          });
+        } else {
+          // 其他错误
+          console.error('后端接口返回错误:', res);
+          wx.showModal({
+            title: '修改失败',
+            content: `修改失败：${res.data?.message || '未知错误，请重试'}`,
+            showCancel: false
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('请求后端接口失败:', err);
+        
+        // 根据错误类型给出不同的提示
+        let errorMessage = '网络请求失败，请检查网络连接后重试！';
+        
+        if (err.errMsg) {
+          if (err.errMsg.includes('timeout')) {
+            errorMessage = '请求超时，请检查网络连接后重试！';
+          } else if (err.errMsg.includes('fail')) {
+            errorMessage = '网络连接失败，请检查网络设置！';
+          }
+        }
+        
+        wx.showModal({
+          title: '修改失败',
+          content: errorMessage,
+          showCancel: false
+        });
       }
     });
   },
