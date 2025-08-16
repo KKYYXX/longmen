@@ -102,7 +102,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f1a464;
+  background: #ffffff;
   border-radius: 8rpx;
   margin-left: 20rpx;
 }

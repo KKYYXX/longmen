@@ -1,7 +1,6 @@
 {
-  "navigationBarTitleText": "修改项目",
-  "navigationBarBackgroundColor": "#F5E6A3",
-  "navigationBarTextStyle": "black",
-  "enablePullDownRefresh": true,
-  "backgroundTextStyle": "dark"
+  "usingComponents": {},
+  "navigationBarTitleText": "项目修改",
+  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTextStyle": "black"
 }

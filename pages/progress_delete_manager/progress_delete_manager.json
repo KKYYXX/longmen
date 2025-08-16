@@ -1,9 +1,6 @@
 {
-  "navigationBarTitleText": "删除内容",
-  "navigationBarBackgroundColor": "#FFF8C0",
-  "navigationBarTextStyle": "black",
-  "backgroundColor": "#FFF8C0",
-  "enablePullDownRefresh": true,
-  "onReachBottomDistance": 50,
-  "usingComponents": {}
+  "usingComponents": {},
+  "navigationBarTitleText": "进度删除管理",
+  "navigationBarBackgroundColor": "#f9e286",
+  "navigationBarTextStyle": "black"
 }

@@ -45,6 +45,6 @@
 
   <view class="video-info">
     <text class="info-title">{{videoTitle}}</text>
-    <text class="info-desc">点击视频区域开始播放</text>
+    <text class="info-desc">点击视频区域开始播放，支持全屏观看</text>
   </view>
 </view> 

@@ -1,6 +1,6 @@
 {
-  "navigationBarTitleText": "项目进度详情",
-  "navigationBarBackgroundColor": "#FFF8C0",
+  "navigationBarTitleText": "项目进度",
+  "navigationBarBackgroundColor": "#f9e286",
   "navigationBarTextStyle": "black",
   "backgroundColor": "#FFF8C0",
   "enablePullDownRefresh": true,
