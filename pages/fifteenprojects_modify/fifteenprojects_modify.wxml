@@ -565,14 +565,6 @@
           >
             <view class="picker-text">{{selectedDate || '请选择日期'}}</view>
           </picker>
-          <picker
-            mode="time"
-            value="{{selectedTime}}"
-            bindchange="onTimeChange"
-            class="form-input"
-          >
-            <view class="picker-text">{{selectedTime || '请选择时间'}}</view>
-          </picker>
           
           <button class="add-btn" bindtap="confirmAddTime">添加时间</button>
         </view>
@@ -597,12 +589,6 @@
             placeholder="请输入人员姓名"
             value="{{personName}}"
             bindinput="onPersonNameInput"
-          />
-          <input
-            class="form-input"
-            placeholder="请输入人员职务"
-            value="{{personTitle}}"
-            bindinput="onPersonTitleInput"
           />
           <button class="add-btn" bindtap="confirmAddPerson">添加人员</button>
         </view>

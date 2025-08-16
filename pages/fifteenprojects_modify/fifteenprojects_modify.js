@@ -27,14 +27,13 @@
  * 8. 后端将数据存储到 Progress 表中
  * 
  * 后端接口字段映射：
- * - project_id: 项目ID
- * - project_name: 项目名称
- * - images: 图片文件数组
- * - videos: 视频文件数组
- * - time_info: 时间信息
- * - location_info: 地点信息
- * - person_info: 人员信息
- * - news_documents: 新闻稿文档数组
+ * - project_name: 项目名称（从选择的项目中获取）
+ * - practice_time: 实践时间（从添加时间获取，格式：YYYY-MM-DD）
+ * - practice_location: 实践地点（从添加地点获取）
+ * - practice_members: 实践人员（从添加人员获取）
+ * - practice_image_url: 实践图片URL（从添加图片获取）
+ * - practice_video_url: 实践视频URL（从添加视频获取）
+ * - news: 新闻链接（从添加新闻链接获取，存储文件路径）
  */
 
 Page({
@@ -48,10 +47,8 @@ Page({
     showLocationInput: false,
     showPersonInput: false,
     selectedDate: '',
-    selectedTime: '',
     locationName: '',
     personName: '',
-    personTitle: '',
     addedItems: [],
     loading: false, // 添加加载状态
     searchKeyword: '', // 搜索关键词
@@ -657,8 +654,7 @@ Page({
       showTimeInput: true,
       showLocationInput: false,
       showPersonInput: false,
-      selectedDate: '',
-      selectedTime: ''
+      selectedDate: ''
     });
   },
 
@@ -678,8 +674,7 @@ Page({
       showTimeInput: false,
       showLocationInput: false,
       showPersonInput: true,
-      personName: '',
-      personTitle: ''
+      personName: ''
     });
   },
 
@@ -690,12 +685,8 @@ Page({
     });
   },
 
-  // 时间选择
-  onTimeChange(e) {
-    this.setData({
-      selectedTime: e.detail.value
-    });
-  },
+  
+
 
   // 地点输入
   onLocationInput(e) {
@@ -711,20 +702,15 @@ Page({
     });
   },
 
-  // 人员职务输入
-  onPersonTitleInput(e) {
-    this.setData({
-      personTitle: e.detail.value
-    });
-  },
+
 
   // 确认添加时间
   confirmAddTime() {
-    const { selectedDate, selectedTime } = this.data;
+    const { selectedDate } = this.data;
 
-    if (!selectedDate || !selectedTime) {
+    if (!selectedDate) {
       wx.showToast({
-        title: '请选择完整的日期和时间',
+        title: '请选择日期',
         icon: 'none'
       });
       return;
@@ -732,15 +718,13 @@ Page({
 
     this.addItem({
       type: '时间',
-      name: `${selectedDate} ${selectedTime}`,
-      date: selectedDate,
-      time: selectedTime
+      name: selectedDate,
+      date: selectedDate
     });
 
     this.setData({
       showTimeInput: false,
-      selectedDate: '',
-      selectedTime: ''
+      selectedDate: ''
     });
 
     wx.showToast({
@@ -779,7 +763,7 @@ Page({
 
   // 确认添加人员
   confirmAddPerson() {
-    const { personName, personTitle } = this.data;
+    const { personName } = this.data;
 
     if (!personName.trim()) {
       wx.showToast({
@@ -791,14 +775,12 @@ Page({
 
     this.addItem({
       type: '人员',
-      name: personName.trim(),
-      title: personTitle.trim() || '工作人员'
+      name: personName.trim()
     });
 
     this.setData({
       showPersonInput: false,
-      personName: '',
-      personTitle: ''
+      personName: ''
     });
 
     wx.showToast({
@@ -962,53 +944,61 @@ Page({
       title: '保存进度信息中...'
     });
 
-    // 构建要发送到后端的数据
+    // 构建要发送到后端的数据，按照后端接口要求调整字段
     const progressData = {
-      project_id: selectedProject.id,
       project_name: selectedProject.projectName || selectedProject.name,
-      images: [],
-      videos: [],
-      time_info: '',
-      location_info: '',
-      person_info: '',
-      news_documents: []
+      practice_time: '',
+      practice_location: '',
+      practice_members: '',
+      practice_image_url: '',
+      video_url: '',
+      news: ''
     };
 
-    // 处理已添加的内容，按类型分类
+    // 处理已添加的内容，按类型分类并映射到后端字段
     addedItems.forEach(item => {
       switch (item.type) {
         case '图片':
-          progressData.images.push({
-            name: item.name,
-            path: item.path
-          });
+          progressData.practice_image_url = item.path || item.name;
           break;
         case '视频':
-          progressData.videos.push({
-            name: item.name,
-            path: item.path
-          });
+          progressData.video_url = item.path || item.name;
           break;
         case '时间':
-          progressData.time_info = item.name;
+          progressData.practice_time = item.name; // 这里存储的是日期（YYYY-MM-DD格式）
           break;
         case '地点':
-          progressData.location_info = item.name;
+          progressData.practice_location = item.name;
           break;
         case '人员':
-          progressData.person_info = item.name;
+          progressData.practice_members = item.name;
           break;
         case '新闻稿':
-          progressData.news_documents.push({
-            name: item.name,
-            path: item.path,
-            size: item.size
-          });
+          progressData.news = item.path || item.name; // 存储文件路径
           break;
       }
     });
 
     console.log('准备发送到后端的进度数据:', progressData);
+    console.log('验证各字段值:');
+    console.log('- project_name:', progressData.project_name);
+    console.log('- practice_time:', progressData.practice_time);
+    console.log('- practice_location:', progressData.practice_location);
+    console.log('- practice_members:', progressData.practice_members);
+    console.log('- news:', progressData.news);
+    console.log('- practice_image_url:', progressData.practice_image_url);
+    console.log('- video_url:', progressData.video_url);
+
+    // 验证必要参数
+    if (!progressData.project_name || !progressData.practice_time || !progressData.practice_location || !progressData.practice_members || !progressData.news) {
+      wx.hideLoading();
+      wx.showModal({
+        title: '参数不完整',
+        content: '请确保添加了：时间、地点、人员、新闻稿等必要内容',
+        showCancel: false
+      });
+      return;
+    }
 
     // 调用后端接口
     wx.request({
@@ -1019,11 +1009,11 @@ Page({
         wx.hideLoading();
         console.log('后端接口响应:', res);
 
-        if (res.statusCode === 200 && res.data && res.data.success) {
+        if ((res.statusCode === 200 || res.statusCode === 201) && res.data && res.data.success) {
           // 保存成功
           wx.showModal({
             title: '保存成功',
-            content: `项目进度信息已成功保存！\n项目：${selectedProject.name}\n已添加${addedItems.length}项内容。`,
+            content: `项目进度信息已成功保存！\n项目：${progressData.project_name}\n已添加${addedItems.length}项内容。`,
             showCancel: false,
             success: () => {
               // 保存成功后，重置状态
@@ -1063,9 +1053,11 @@ Page({
         } else {
           // 其他错误
           console.error('后端接口返回错误:', res);
+          console.error('状态码:', res.statusCode);
+          console.error('响应数据:', res.data);
           wx.showModal({
             title: '保存失败',
-            content: `保存失败：${res.data?.message || '未知错误，请重试'}`,
+            content: `保存失败：状态码 ${res.statusCode}\n${res.data?.message || '未知错误，请重试'}`,
             showCancel: false
           });
         }
@@ -1929,7 +1921,7 @@ Page({
         wx.hideLoading();
         console.log('后端接口响应:', res);
 
-        if (res.statusCode === 200 && res.data && res.data.success) {
+        if ((res.statusCode === 200 || res.statusCode === 201) && res.data && res.data.success) {
           // 修改成功
           wx.showModal({
             title: '修改成功',
