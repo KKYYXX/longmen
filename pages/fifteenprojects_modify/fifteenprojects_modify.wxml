@@ -299,10 +299,9 @@
             </view>
 
             <view class="progress-status-area">
-              <view class="status-time-info">
-                <text class="status-date">{{item.date}}</text>
-                <text class="status-time">{{item.time}}</text>
-              </view>
+                        <view class="status-time-info">
+            <text class="status-date">{{item.date}}</text>
+          </view>
               <view class="status-badge {{item.status}}">{{item.statusText}}</view>
             </view>
           </view>
@@ -808,7 +807,6 @@
           <view class="delete-status-area">
             <view class="status-time-info">
               <text class="status-date">{{item.date}}</text>
-              <text class="status-time">{{item.time}}</text>
             </view>
             <view class="status-badge {{item.status}}">{{item.statusText}}</view>
           </view>

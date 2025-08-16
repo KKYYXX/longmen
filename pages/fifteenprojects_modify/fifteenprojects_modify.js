@@ -1163,20 +1163,75 @@ Page({
 
   // 加载进度数据
   loadProgressData: function() {
+    const { selectedProject } = this.data;
+    
+    if (!selectedProject || !selectedProject.projectName) {
+      wx.showToast({
+        title: '项目信息不完整',
+        icon: 'none'
+      });
+      return;
+    }
+
     wx.showLoading({
       title: '加载中...'
     });
 
-    // 模拟加载数据
-    setTimeout(() => {
-      const progressData = this.generateProgressData();
-      this.setData({
-        progressList: progressData,
-        filteredProgressList: progressData,
-        timeFilter: 'all'
-      });
-      wx.hideLoading();
-    }, 500);
+    // 调用后端接口获取指定项目的进度记录
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      method: 'GET',
+      data: {
+        project_name: selectedProject.projectName
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('获取进度记录响应:', res);
+
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          const progressData = res.data.data || [];
+          
+          // 转换数据格式，适配前端显示
+          const formattedProgressList = progressData.map((item, index) => ({
+            id: index + 1,
+            practice_time: this.formatDateToYYYYMMDD(item.practice_time), // 确保只包含年月日
+            date: this.formatDateToYYYYMMDD(item.practice_time) || '', // 确保只包含年月日
+            time: '', // 没有具体时间，设为空
+            title: `进度记录 ${index + 1}`,
+            status: 'completed',
+            statusText: '已完成',
+            selected: false
+          }));
+
+          this.setData({
+            progressList: formattedProgressList,
+            filteredProgressList: formattedProgressList,
+            timeFilter: 'all'
+          });
+
+          if (formattedProgressList.length === 0) {
+            wx.showToast({
+              title: '该项目暂无进度记录',
+              icon: 'none'
+            });
+          }
+        } else {
+          console.error('获取进度记录失败:', res);
+          wx.showToast({
+            title: '获取进度记录失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('请求进度记录失败:', err);
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
+        });
+      }
+    });
   },
 
   // 按时间段筛选
@@ -1336,165 +1391,187 @@ Page({
 
   // 执行删除
   performDeleteProgress: function(ids) {
+    const { selectedProject } = this.data;
+    
+    if (!selectedProject || !selectedProject.projectName) {
+      wx.showToast({
+        title: '项目信息不完整',
+        icon: 'none'
+      });
+      return;
+    }
+
     wx.showLoading({
       title: '删除中...'
     });
 
-    // 模拟删除操作
-    setTimeout(() => {
-      // 从原始列表中删除
-      const updatedProgressList = this.data.progressList.filter(item => !ids.includes(item.id));
+    // 获取要删除的记录信息
+    const recordsToDelete = this.data.progressList.filter(item => ids.includes(item.id));
+    
+    // 调用后端接口删除记录
+    let deletedCount = 0;
+    let totalCount = recordsToDelete.length;
+    
+          recordsToDelete.forEach((record, index) => {
+        const deleteData = {
+          project_name: selectedProject.projectName,
+          practice_time: this.formatDateToYYYYMMDD(record.practice_time) // 确保只传递年月日
+        };
 
-      // 从筛选列表中删除
-      const updatedFilteredList = this.data.filteredProgressList.filter(item => !ids.includes(item.id));
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/api/progress/delete',
+        method: 'DELETE',
+        data: deleteData,
+        success: (res) => {
+          deletedCount++;
+          
+          if (res.statusCode === 200 && res.data && res.data.success) {
+            console.log(`删除记录成功: ${record.practice_time}`);
+          } else {
+            console.error(`删除记录失败: ${record.practice_time}`, res);
+          }
 
-      this.setData({
-        progressList: updatedProgressList,
-        filteredProgressList: updatedFilteredList,
-        selectedDeleteCount: 0,
-        isAllProgressSelected: false
+          // 当所有删除请求完成时
+          if (deletedCount === totalCount) {
+            wx.hideLoading();
+            
+            if (deletedCount > 0) {
+              // 重新加载进度数据
+              this.loadProgressData();
+              
+              wx.showToast({
+                title: `删除操作完成`,
+                icon: 'success'
+              });
+            } else {
+              wx.showToast({
+                title: '删除失败',
+                icon: 'none'
+              });
+            }
+          }
+        },
+        fail: (err) => {
+          deletedCount++;
+          console.error(`删除记录请求失败: ${record.practice_time}`, err);
+          
+          // 当所有删除请求完成时
+          if (deletedCount === totalCount) {
+            wx.hideLoading();
+            wx.showToast({
+              title: '删除操作完成',
+              icon: 'none'
+            });
+          }
+        }
       });
-
-      wx.hideLoading();
-      wx.showToast({
-        title: `已删除${ids.length}条记录`,
-        icon: 'success'
-      });
-
-      // TODO: 调用后端API删除数据
-      console.log('删除进度记录:', ids);
-    }, 1000);
-  },
-
-  // 生成进度数据
-  generateProgressData: function() {
-    // 动态生成接近当前时间的测试数据
-    const now = new Date();
-    const progressTemplates = [
-      {
-        id: 1,
-        date: this.formatDate(new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)), // 2天前
-        time: "09:00",
-        title: "项目启动会议",
-        location: "市政府会议室",
-        person: "项目经理张三",
-        description: "召开项目启动会议，确定项目目标和时间节点",
-        status: "completed",
-        statusText: "已完成",
-        selected: false
-      },
-      {
-        id: 2,
-        date: this.formatDate(new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000)), // 5天前
-        time: "14:30",
-        title: "设备采购招标",
-        location: "市采购中心",
-        person: "采购专员李四",
-        description: "完成物联网设备和服务器设备的招标采购工作",
-        status: "completed",
-        statusText: "已完成",
-        selected: false
-      },
-      {
-        id: 3,
-        date: this.formatDate(new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000)), // 10天前
-        time: "10:15",
-        title: "数据中心建设开工",
-        location: "高新区数据中心基地",
-        person: "工程师王五",
-        description: "数据中心基础设施建设正式开工",
-        status: "completed",
-        statusText: "已完成",
-        selected: false
-      },
-      {
-        id: 4,
-        date: this.formatDate(new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000)), // 15天前
-        time: "16:20",
-        title: "传感器网络部署",
-        location: "市区各主要路口",
-        person: "技术员赵六",
-        description: "在全市主要路口部署物联网传感器设备",
-        status: "ongoing",
-        statusText: "进行中",
-        selected: false
-      },
-      {
-        id: 5,
-        date: this.formatDate(new Date(now.getTime() - 25 * 24 * 60 * 60 * 1000)), // 25天前
-        time: "11:30",
-        title: "系统集成测试",
-        location: "数据中心机房",
-        person: "系统工程师孙七",
-        description: "进行智慧城市系统的集成测试和调试",
-        status: "ongoing",
-        statusText: "进行中",
-        selected: false
-      },
-      {
-        id: 6,
-        date: this.formatDate(new Date(now.getTime() - 40 * 24 * 60 * 60 * 1000)), // 40天前
-        time: "14:00",
-        title: "用户培训计划",
-        location: "市民服务中心",
-        person: "培训师周八",
-        description: "为市民和工作人员提供系统使用培训",
-        status: "pending",
-        statusText: "待开始",
-        selected: false
-      },
-      {
-        id: 7,
-        date: this.formatDate(new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)), // 60天前
-        time: "16:30",
-        title: "需求调研",
-        location: "各区县政府",
-        person: "调研员钱九",
-        description: "深入各区县了解智慧城市建设需求",
-        status: "completed",
-        statusText: "已完成",
-        selected: false
-      },
-      {
-        id: 8,
-        date: this.formatDate(new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)), // 90天前
-        time: "10:00",
-        title: "方案设计",
-        location: "设计院",
-        person: "设计师孙十",
-        description: "完成智慧城市总体方案设计",
-        status: "completed",
-        statusText: "已完成",
-        selected: false
-      }
-    ];
-
-    // 按时间倒序排列
-    return progressTemplates.sort((a, b) => {
-      // 将日期格式转换为iOS兼容格式
-      const dateTimeA = a.date.replace(/-/g, '/') + ' ' + a.time + ':00';
-      const dateTimeB = b.date.replace(/-/g, '/') + ' ' + b.time + ':00';
-      return new Date(dateTimeB) - new Date(dateTimeA);
     });
   },
 
-  // 格式化日期为YYYY-MM-DD格式
-  formatDate: function(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  // 生成进度数据 - 已删除测试案例，改为从后端获取真实数据
+
+  // 格式化日期为YYYY-MM-DD格式 - 确保只包含年月日
+  formatDateToYYYYMMDD(dateString) {
+    if (!dateString) return '';
+    
+    // 如果已经是YYYY-MM-DD格式，直接返回
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+    
+    // 如果包含时间，只取日期部分
+    if (dateString.includes(' ')) {
+      return dateString.split(' ')[0];
+    }
+    
+    // 如果是其他格式，尝试转换
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString; // 如果转换失败，返回原值
+      }
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (e) {
+      console.warn('时间格式转换失败:', dateString, e);
+      return dateString; // 转换失败时返回原值
+    }
   },
 
   // ========== 修改内容相关方法 ==========
 
   // 加载修改进度数据
   loadModifyProgressData() {
-    const progressData = this.generateProgressData();
-    this.setData({
-      modifyProgressList: progressData,
-      filteredModifyProgressList: progressData,
-      modifyTimeFilter: 'all'
+    const { selectedProject } = this.data;
+    
+    if (!selectedProject || !selectedProject.projectName) {
+      wx.showToast({
+        title: '项目信息不完整',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.showLoading({
+      title: '加载进度数据...'
+    });
+
+    // 调用后端接口获取指定项目的进度记录
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      method: 'GET',
+      data: {
+        project_name: selectedProject.projectName
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('获取进度记录响应:', res);
+
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          const progressData = res.data.data || [];
+          
+          // 转换数据格式，适配前端显示
+          const formattedProgressList = progressData.map((item, index) => ({
+            id: index + 1,
+            practice_time: this.formatDateToYYYYMMDD(item.practice_time), // 确保只包含年月日
+            date: this.formatDateToYYYYMMDD(item.practice_time) || '', // 确保只包含年月日
+            time: '', // 没有具体时间，设为空
+            title: `进度记录 ${index + 1}`,
+            status: 'completed',
+            statusText: '已完成',
+            selected: false
+          }));
+
+          this.setData({
+            modifyProgressList: formattedProgressList,
+            filteredModifyProgressList: formattedProgressList,
+            modifyTimeFilter: 'all'
+          });
+
+          if (formattedProgressList.length === 0) {
+            wx.showToast({
+              title: '该项目暂无进度记录',
+              icon: 'none'
+            });
+          }
+        } else {
+          console.error('获取进度记录失败:', res);
+          wx.showToast({
+            title: '获取进度记录失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('请求进度记录失败:', err);
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
+        });
+      }
     });
   },
 
@@ -1557,14 +1634,72 @@ Page({
   // 选择要修改的记录
   selectModifyRecord(e) {
     const record = e.currentTarget.dataset.record;
-    this.setData({
-      selectedModifyRecord: record,
-      modifyRecord: {
-        ...record,
-        images: record.images || [],
-        videos: record.videos || [],
-        news: record.news || '',
-        newsFiles: record.newsFiles || []
+    
+    // 获取选中记录的详细信息
+    this.loadProgressDetail(record);
+  },
+
+  // 加载进度记录详细信息
+  loadProgressDetail(record) {
+    const { selectedProject } = this.data;
+    
+    wx.showLoading({
+      title: '加载详情...'
+    });
+
+    // 调用后端接口获取详细信息
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/detail',
+      method: 'GET',
+      data: {
+        project_name: selectedProject.projectName,
+        practice_time: record.practice_time
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('获取进度详情响应:', res);
+
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          const detailData = res.data.data;
+          
+          // 转换数据格式，适配前端显示
+          const modifyRecord = {
+            ...record,
+            practice_time: this.formatDateToYYYYMMDD(detailData.practice_time), // 确保只包含年月日
+            date: this.formatDateToYYYYMMDD(detailData.practice_time) || '', // 确保只包含年月日
+            location: detailData.practice_location || '',
+            person: detailData.practice_members || '',
+            practice_image_url: detailData.practice_image_url || '',
+            video_url: detailData.video_url || '',
+            news: detailData.news || '',
+            images: detailData.practice_image_url ? [detailData.practice_image_url] : [],
+            videos: detailData.video_url ? [detailData.video_url] : [],
+            newsFiles: detailData.news ? [{
+              name: '新闻稿文件',
+              path: detailData.news,
+              type: 'file'
+            }] : []
+          };
+
+          this.setData({
+            selectedModifyRecord: record,
+            modifyRecord: modifyRecord
+          });
+        } else {
+          console.error('获取进度详情失败:', res);
+          wx.showToast({
+            title: '获取详情失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('请求进度详情失败:', err);
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
+        });
       }
     });
   },
@@ -1823,39 +1958,107 @@ Page({
 
   // 保存修改详情
   saveModifyDetail() {
-    const { selectedModifyRecord, modifyRecord } = this.data;
+    const { selectedProject, selectedModifyRecord, modifyRecord } = this.data;
+
+    if (!selectedModifyRecord) {
+      wx.showToast({
+        title: '请选择要修改的记录',
+        icon: 'none'
+      });
+      return;
+    }
 
     wx.showLoading({
       title: '保存中...'
     });
 
-    // TODO: 调用后端API保存修改
-    setTimeout(() => {
-      wx.hideLoading();
+    // 构建要发送到后端的数据
+    const updateData = {
+      project_name: selectedProject.projectName,
+      practice_time: this.formatDateToYYYYMMDD(selectedModifyRecord.practice_time), // 确保只传递年月日
+      practice_location: modifyRecord.location || '',
+      practice_members: modifyRecord.person || '',
+      practice_image_url: modifyRecord.images && modifyRecord.images.length > 0 ? modifyRecord.images[0] : '',
+      video_url: modifyRecord.videos && modifyRecord.videos.length > 0 ? modifyRecord.videos[0] : '',
+      news: modifyRecord.newsFiles && modifyRecord.newsFiles.length > 0 ? modifyRecord.newsFiles[0].path : ''
+    };
 
-      // 更新本地数据
-      const progressList = [...this.data.modifyProgressList];
-      const recordIndex = progressList.findIndex(item => item.id === selectedModifyRecord.id);
-      if (recordIndex !== -1) {
-        progressList[recordIndex] = { ...progressList[recordIndex], ...modifyRecord };
-      }
+    console.log('准备发送到后端的更新数据:', updateData);
 
-      this.setData({
-        modifyProgressList: progressList
-      });
+    // 调用后端PUT接口
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/update',
+      method: 'PUT',
+      data: updateData,
+      success: (res) => {
+        wx.hideLoading();
+        console.log('后端接口响应:', res);
 
-      // 重新应用筛选
-      this.applyModifyTimeFilter(this.data.modifyTimeFilter, this.data.selectedModifyDate);
-
-      wx.showModal({
-        title: '修改成功',
-        content: '进度记录已成功修改！',
-        showCancel: false,
-        success: () => {
-          this.backToModifyList();
+        if ((res.statusCode === 200 || res.statusCode === 201) && res.data && res.data.success) {
+          // 修改成功
+          wx.showModal({
+            title: '修改成功',
+            content: '进度记录已成功修改！',
+            showCancel: false,
+            success: () => {
+              // 重新加载进度数据
+              this.loadModifyProgressData();
+              this.backToModifyList();
+            }
+          });
+        } else if (res.statusCode === 400) {
+          // 请求参数错误
+          wx.showModal({
+            title: '修改失败',
+            content: `参数错误：${res.data?.message || '请检查输入数据'}`,
+            showCancel: false
+          });
+        } else if (res.statusCode === 404) {
+          // 记录不存在
+          wx.showModal({
+            title: '修改失败',
+            content: '进度记录不存在或已被删除',
+            showCancel: false
+          });
+        } else if (res.statusCode === 500) {
+          // 服务器内部错误
+          wx.showModal({
+            title: '修改失败',
+            content: `服务器错误：${res.data?.message || '请稍后重试'}`,
+            showCancel: false
+          });
+        } else {
+          // 其他错误
+          console.error('后端接口返回错误:', res);
+          wx.showModal({
+            title: '修改失败',
+            content: `修改失败：${res.data?.message || '未知错误，请重试'}`,
+            showCancel: false
+          });
         }
-      });
-    }, 1500);
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('请求后端接口失败:', err);
+        
+        // 根据错误类型给出不同的提示
+        let errorMessage = '网络请求失败，请检查网络连接后重试！';
+        
+        if (err.errMsg) {
+          if (err.errMsg.includes('timeout')) {
+            errorMessage = '请求超时，请检查网络连接后重试！';
+          } else if (err.errMsg.includes('fail')) {
+            errorMessage = '网络连接失败，请检查网络设置！';
+          }
+        }
+        
+        wx.showModal({
+          title: '修改失败',
+          content: errorMessage,
+          showCancel: false
+        });
+      }
+    });
   },
 
   // 获取当前列的值
