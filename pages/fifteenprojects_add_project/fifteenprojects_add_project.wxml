@@ -67,21 +67,7 @@
           </view>
         </picker>
 
-        <!-- 滑块 -->
-        <view wx:if="{{item.type === 'slider'}}" class="slider-container">
-          <slider
-            class="form-slider"
-            value="{{projectData[item.key]}}"
-            min="{{item.min || 0}}"
-            max="{{item.max || 100}}"
-            step="1"
-            show-value
-            bindchange="onSliderChange"
-            data-field="{{item.key}}"
-          />
-          <text class="slider-unit">{{item.unit || ''}}</text>
-        </view>
-
+       
         <!-- 联系人管理 -->
         <view wx:if="{{item.type === 'contacts'}}" class="contacts-container">
           <!-- 联系人列表 -->

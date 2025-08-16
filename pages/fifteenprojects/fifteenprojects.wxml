@@ -40,14 +40,6 @@
         <text class="card-icon edit-icon">✏️</text>
       </view>
     </view>
-    <view class="function-card" bindtap="goToFifteenProjectsAlter">
-      <view class="card-content">
-        <text class="card-title">测试</text>
-        <text class="card-desc">快速检索所需项目信息</text>
-      </view>
-      <view class="icon-circle query-icon-circle">
-        <text class="card-icon query-icon">🔍</text>
-      </view>
-    </view>
+
   </view>
 </view>
