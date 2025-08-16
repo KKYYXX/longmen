@@ -1,0 +1,518 @@
+/* pages/项目进度内容/项目进度内容.wxss */
+/* 基础样式 */
+page {
+  background: linear-gradient(180deg, #fffbf0 0%, #ffffff 30%, #fff8e1 100%);
+  font-family: Arial, sans-serif;
+  width: 100%;
+  min-height: 100%;
+}
+
+.container {
+  width: 92%;
+  margin: 20rpx auto;
+  padding: 30rpx;
+  background-color: white;
+  border-radius: 16rpx;
+  box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 页面头部 */
+.page-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+  padding: 20rpx 0;
+  background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(249, 226, 134, 0.2);
+}
+
+.page-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333333;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 项目信息区域 */
+.project-info-section {
+  margin-bottom: 30rpx;
+  padding: 25rpx;
+  background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(249, 226, 134, 0.2);
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+  padding: 15rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12rpx;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #555555;
+  font-weight: 500;
+  min-width: 120rpx;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* 时间查询区域 */
+.time-query-section {
+  margin-bottom: 30rpx;
+  padding: 25rpx;
+  background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(249, 226, 134, 0.2);
+}
+
+.time-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+  margin-bottom: 25rpx;
+}
+
+.time-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1rpx solid rgba(255, 255, 255, 0.6);
+  border-radius: 12rpx;
+  padding: 18rpx 24rpx;
+  font-size: 24rpx;
+  color: #333333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.time-btn:active {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(0.98);
+}
+
+.time-btn.active {
+  background: #f0e68c;
+  border-color: #d6c90c;
+  color: #333333;
+}
+
+/* 自定义时间选择 */
+.custom-time-section {
+  margin-top: 20rpx;
+}
+
+.custom-time-row {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  flex-wrap: wrap;
+}
+
+.custom-date-picker {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1rpx solid rgba(255, 255, 255, 0.6);
+  border-radius: 12rpx;
+  padding: 18rpx 24rpx;
+  font-size: 24rpx;
+  color: #333333;
+  min-width: 180rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.date-separator {
+  font-size: 24rpx;
+  color: #666666;
+  font-weight: 500;
+}
+
+.query-btn {
+  background: linear-gradient(135deg, #d6c90c 0%, #f3b509 100%);
+  border-radius: 12rpx;
+  padding: 18rpx 30rpx;
+  font-size: 24rpx;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 15rpx rgba(225, 228, 86, 0.3);
+}
+
+.query-btn:active {
+  transform: scale(0.98);
+}
+
+.reset-btn {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  border-radius: 12rpx;
+  padding: 18rpx 30rpx;
+  font-size: 24rpx;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 15rpx rgba(149, 165, 166, 0.3);
+  margin-left: 15rpx;
+}
+
+.reset-btn:active {
+  transform: scale(0.98);
+}
+
+/* 进度记录加载中 */
+.progress-loading {
+  text-align: center;
+  padding: 40rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16rpx;
+  margin: 20rpx 0;
+}
+
+.loading-icon {
+  font-size: 48rpx;
+  margin-right: 15rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+/* 进度记录列表 */
+.progress-records {
+  margin-top: 30rpx;
+}
+
+.records-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 20rpx;
+  text-align: center;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
+  border-radius: 16rpx;
+}
+
+.record-item {
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 25rpx;
+  box-shadow: 0 6rpx 25rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid rgba(249, 226, 134, 0.3);
+  transition: all 0.3s ease;
+}
+
+.record-item:hover {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.12);
+}
+
+.record-header {
+  margin-bottom: 25rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid rgba(249, 226, 134, 0.3);
+}
+
+.record-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.time-icon {
+  font-size: 32rpx;
+}
+
+.time-text {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 600;
+}
+
+/* 人物信息区域 */
+.record-person-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 18rpx 20rpx;
+  background: rgba(249, 226, 134, 0.1);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #f9e286;
+}
+
+.person-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+}
+
+.person-label {
+  font-size: 26rpx;
+  color: #666666;
+  font-weight: 500;
+  margin-right: 15rpx;
+}
+
+.person-name {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 600;
+  flex: 1;
+}
+
+.record-location {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 15rpx;
+  padding: 10rpx 15rpx;
+  background: rgba(249, 226, 134, 0.2);
+  border-radius: 8rpx;
+}
+
+.location-icon {
+  font-size: 24rpx;
+}
+
+.location-label {
+  font-size: 24rpx;
+  color: #666666;
+  font-weight: 500;
+  margin-right: 10rpx;
+}
+
+.location-text {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.record-content {
+  margin-bottom: 20rpx;
+}
+
+.content-label {
+  font-size: 26rpx;
+  color: #555555;
+  font-weight: 500;
+  margin-right: 10rpx;
+}
+
+.content-text {
+  font-size: 26rpx;
+  color: #333333;
+  line-height: 1.5;
+}
+
+/* 多媒体资源区域 */
+.media-section {
+  margin-bottom: 25rpx;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12rpx;
+  border: 1rpx solid rgba(249, 226, 134, 0.3);
+}
+
+.media-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid rgba(249, 226, 134, 0.3);
+}
+
+.media-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+}
+
+.media-label {
+  font-size: 26rpx;
+  color: #555555;
+  font-weight: 600;
+}
+
+.media-content {
+  min-height: 80rpx;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.url-links {
+  width: 100%;
+}
+
+.url-link {
+  display: block;
+  color: #0066cc;
+  text-decoration: underline;
+  font-size: 24rpx;
+  line-height: 1.6;
+  word-break: break-all;
+  word-wrap: break-word;
+  padding: 8rpx 0;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.url-link:active {
+  color: #004499;
+}
+
+.no-content {
+  width: 100%;
+  text-align: center;
+  padding: 30rpx 20rpx;
+  background: rgba(249, 226, 134, 0.05);
+  border-radius: 8rpx;
+  border: 1rpx dashed rgba(249, 226, 134, 0.3);
+}
+
+.no-content-text {
+  font-size: 24rpx;
+  color: #999999;
+  font-style: italic;
+}
+
+
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  padding: 15rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8rpx;
+  margin-top: 10rpx;
+}
+
+.file-icon {
+  font-size: 32rpx;
+}
+
+.file-name {
+  font-size: 24rpx;
+  color: #333333;
+  flex: 1;
+}
+
+.file-actions {
+  display: flex;
+  gap: 10rpx;
+}
+
+.view-btn, .download-btn {
+  background: linear-gradient(135deg, #d6c90c 0%, #f3b509 100%);
+  border-radius: 8rpx;
+  padding: 10rpx 20rpx;
+  font-size: 22rpx;
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* 记录操作按钮 */
+.record-actions {
+  display: flex;
+  gap: 15rpx;
+  margin-top: 20rpx;
+  padding-top: 15rpx;
+  border-top: 1rpx solid rgba(249, 226, 134, 0.3);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(249, 226, 134, 0.3);
+  border-radius: 8rpx;
+  padding: 12rpx 20rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-btn:active {
+  background: rgba(249, 226, 134, 0.5);
+  transform: scale(0.98);
+}
+
+.action-icon {
+  font-size: 24rpx;
+}
+
+.action-text {
+  font-size: 24rpx;
+  color: #333333;
+}
+
+/* 无进度记录提示 */
+.no-progress {
+  text-align: center;
+  padding: 40rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16rpx;
+  margin: 20rpx 0;
+}
+
+.no-progress-icon {
+  font-size: 48rpx;
+  margin-bottom: 15rpx;
+  display: block;
+}
+
+.no-progress-text {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 60rpx 40rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16rpx;
+  margin: 40rpx 0;
+}
+
+.empty-icon {
+  font-size: 64rpx;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 800rpx;
+    margin: 40rpx auto;
+    padding: 40rpx;
+  }
+  
+  .page-title {
+    font-size: 40rpx;
+  }
+}
+  

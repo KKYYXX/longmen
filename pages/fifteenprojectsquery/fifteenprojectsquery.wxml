@@ -223,37 +223,12 @@
       </view>
     </view>
 
-    <!-- 时间查询按键区域 -->
-    <view class="time-query-section">
+    <!-- 进度查询按钮区域 -->
+    <view class="progress-query-section">
       <view class="section-title">进度查询</view>
-      <view class="time-buttons">
-        <view
-          class="time-btn {{selectedTimeRange === item.value ? 'active' : ''}}"
-          wx:for="{{timeRangeOptions}}"
-          wx:key="value"
-          bindtap="onTimeRangeSelect"
-          data-value="{{item.value}}"
-        >
-          {{item.label}}
-        </view>
-      </view>
-
-      <!-- 自定义时间选择 -->
-      <view class="custom-time-section">
-        <view class="custom-time-row">
-          <picker mode="date" value="{{customStartDate}}" bindchange="onCustomStartDateChange">
-            <view class="custom-date-picker">
-              <text>{{customStartDate || '开始日期'}}</text>
-            </view>
-          </picker>
-          <text class="date-separator">至</text>
-          <picker mode="date" value="{{customEndDate}}" bindchange="onCustomEndDateChange">
-            <view class="custom-date-picker">
-              <text>{{customEndDate || '结束日期'}}</text>
-            </view>
-          </picker>
-          <view class="query-btn" bindtap="onCustomTimeQuery">查询</view>
-        </view>
+      <view class="progress-query-btn" bindtap="onProgressQueryClick">
+        <text class="btn-icon">📊</text>
+        <text class="btn-text">进度查询</text>
       </view>
     </view>
 
@@ -271,15 +246,97 @@
         wx:for="{{progressList}}"
         wx:key="id"
       >
-        <view class="record-summary">
-          <text class="summary-person">{{item.person}}</text>
-          <text class="summary-connector">于</text>
-          <text class="summary-datetime">{{item.date}} {{item.time}}</text>
-          <text class="summary-connector">在</text>
-          <text class="summary-location">{{item.location}}</text>
-          <text class="summary-connector">进行了以下工作：</text>
+        <!-- 记录头部：人物和时间 -->
+        <view class="record-header">
+          <view class="record-person">
+            <text class="person-icon">👤</text>
+            <text class="person-name">{{item.person}}</text>
+          </view>
+          <view class="record-time">
+            <text class="time-icon">🕒</text>
+            <text class="time-text">{{item.date}} {{item.time}}</text>
+          </view>
         </view>
-        <view class="record-content">{{item.content}}</view>
+        
+        <!-- 地点信息 -->
+        <view class="record-location" wx:if="{{item.location && item.location !== '未知地点'}}">
+          <text class="location-icon">📍</text>
+          <text class="location-text">{{item.location}}</text>
+        </view>
+        
+        <!-- 工作内容 -->
+        <view class="record-content">
+          <text class="content-label">工作内容：</text>
+          <text class="content-text">{{item.content}}</text>
+        </view>
+        
+        <!-- 多媒体资源区域 -->
+        <view class="record-media" wx:if="{{item.originalData.practice_image_url || item.originalData.practice_video_url || item.originalData.news}}">
+          <view class="media-title">相关资源</view>
+          
+          <!-- 图片展示 -->
+          <view class="record-images" wx:if="{{item.originalData.practice_image_url}}">
+            <view class="media-section">
+              <text class="media-label">📷 现场图片</text>
+              <view class="image-grid">
+                <view class="image-item" wx:for="{{item.originalData.practice_image_url.split(',')}}" wx:key="index" wx:for-item="imageUrl">
+                  <image 
+                    src="{{imageUrl.trim()}}" 
+                    mode="aspectFill" 
+                    class="progress-image"
+                    bindtap="previewImage"
+                    data-urls="{{item.originalData.practice_image_url.split(',')}}"
+                    data-current="{{imageUrl.trim()}}"
+                  />
+                </view>
+              </view>
+            </view>
+          </view>
+          
+          <!-- 视频展示 -->
+          <view class="record-video" wx:if="{{item.originalData.practice_video_url}}">
+            <view class="media-section">
+              <text class="media-label">🎥 现场视频</text>
+              <view class="video-item">
+                <video 
+                  src="{{item.originalData.practice_video_url}}" 
+                  class="progress-video"
+                  controls
+                  show-center-play-btn
+                  show-play-btn
+                  show-fullscreen-btn
+                />
+              </view>
+            </view>
+          </view>
+          
+          <!-- 文件/新闻链接 -->
+          <view class="record-files" wx:if="{{item.originalData.news}}">
+            <view class="media-section">
+              <text class="media-label">📄 相关文件</text>
+              <view class="file-item">
+                <text class="file-icon">📋</text>
+                <text class="file-name">{{item.originalData.news}}</text>
+                <view class="file-actions">
+                  <view class="view-btn" bindtap="viewFile" data-url="{{item.originalData.news}}">查看</view>
+                  <view class="download-btn" bindtap="downloadFile" data-url="{{item.originalData.news}}">下载</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 记录底部：操作按钮 -->
+        <view class="record-actions">
+          <view class="action-btn" bindtap="shareRecord" data-record="{{item}}">
+            <text class="action-icon">📤</text>
+            <text class="action-text">分享</text>
+          </view>
+          <view class="action-btn" bindtap="exportRecord" data-record="{{item}}">
+            <text class="action-icon">📥</text>
+            <text class="action-text">导出</text>
+          </view>
+        </view>
       </view>
     </view>
 
@@ -290,3 +347,4 @@
     </view>
   </view>
 </view>
+

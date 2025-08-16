@@ -1,0 +1,159 @@
+<view class="container">
+
+
+
+    <!-- 项目信息区域 -->
+    <view class="project-info-section" wx:if="{{projectInfo}}">
+        <view class="section-title">项目信息</view>
+        <view class="info-item">
+            <text class="info-label">项目名称：</text>
+            <text class="info-value">{{projectInfo.projectName}}</text>
+        </view>
+        <view class="info-item" wx:if="{{projectInfo.startDate && projectInfo.endDate}}">
+            <text class="info-label">查询时间：</text>
+            <text class="info-value">{{projectInfo.startDate}} 至 {{projectInfo.endDate}}</text>
+        </view>
+    </view>
+
+    <!-- 时间查询区域 -->
+    <view class="time-query-section">
+        <view class="section-title">进度查询</view>
+        <view class="time-buttons">
+            <view
+                class="time-btn {{selectedTimeRange === item.value ? 'active' : ''}}"
+                wx:for="{{timeRangeOptions}}"
+                wx:key="value"
+                bindtap="onTimeRangeSelect"
+                data-value="{{item.value}}"
+            >
+                {{item.label}}
+            </view>
+        </view>
+
+        <!-- 自定义时间选择 -->
+        <view class="custom-time-section">
+            <view class="custom-time-row">
+                <picker mode="date" value="{{customStartDate}}" bindchange="onCustomStartDateChange">
+                    <view class="custom-date-picker">
+                        <text>{{customStartDate || '开始日期'}}</text>
+                    </view>
+                </picker>
+                <text class="date-separator">至</text>
+                <picker mode="date" value="{{customEndDate}}" bindchange="onCustomEndDateChange">
+                    <view class="custom-date-picker">
+                        <text>{{customEndDate || '结束日期'}}</text>
+                    </view>
+                </picker>
+                                 <view class="query-btn" bindtap="onCustomTimeQuery">查询</view>
+                 <view class="reset-btn" bindtap="resetFilter">重置</view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 进度记录加载中 -->
+    <view class="progress-loading" wx:if="{{progressLoading}}">
+        <text class="loading-icon">⏳</text>
+        <text class="loading-text">正在查询进度记录...</text>
+    </view>
+
+    <!-- 进度记录列表 -->
+    <view class="progress-records" wx:if="{{progressList.length > 0 && !progressLoading}}">
+        <view class="records-title">进度记录</view>
+        <view
+            class="record-item"
+            wx:for="{{progressList}}"
+            wx:key="id"
+        >
+            <!-- 记录头部：时间 -->
+            <view class="record-header">
+                <view class="record-time">
+                    <text class="time-icon">📅</text>
+                    <text class="time-text">{{item.date}}</text>
+                </view>
+            </view>
+            
+            <!-- 人物信息 -->
+            <view class="record-person-section">
+                <text class="person-icon">👥</text>
+                <text class="person-label">参与人员：</text>
+                <text class="person-name">{{item.person}}</text>
+            </view>
+            
+            <!-- 地点信息 -->
+            <view class="record-location" wx:if="{{item.location && item.location !== '未知地点'}}">
+                <text class="location-icon">📍</text>
+                <text class="location-label">工作地点：</text>
+                <text class="location-text">{{item.location}}</text>
+            </view>
+            
+                           <!-- 图片区域 -->
+              <view class="media-section">
+                  <view class="media-header">
+                      <text class="media-icon">📷</text>
+                      <text class="media-label">现场图片</text>
+                  </view>
+                  <view class="media-content">
+                      <view wx:if="{{item.originalData.practice_image_url}}" class="url-links">
+                          <view wx:for="{{item.originalData.practice_image_url.split(',')}}" wx:key="index" wx:for-item="imageUrl">
+                              <text wx:if="{{imageUrl.trim()}}" class="url-link" bindtap="openUrl" data-url="{{imageUrl.trim()}}">
+                                  {{imageUrl.trim()}}
+                              </text>
+                          </view>
+                      </view>
+                      <view wx:else class="no-content">
+                          <text class="no-content-text">无内容</text>
+                      </view>
+                  </view>
+              </view>
+              
+              <!-- 视频区域 -->
+              <view class="media-section">
+                  <view class="media-header">
+                      <text class="media-icon">🎥</text>
+                      <text class="media-label">现场视频</text>
+                  </view>
+                  <view class="media-content">
+                      <view wx:if="{{item.originalData.video_url}}" class="url-links">
+                          <text class="url-link" bindtap="openUrl" data-url="{{item.originalData.video_url}}">
+                              {{item.originalData.video_url}}
+                          </text>
+                      </view>
+                      <view wx:else class="no-content">
+                          <text class="no-content-text">无内容</text>
+                      </view>
+                  </view>
+              </view>
+             
+             <!-- 新闻稿区域 -->
+             <view class="media-section">
+                 <view class="media-header">
+                     <text class="media-icon">📰</text>
+                     <text class="media-label">新闻稿</text>
+                 </view>
+                 <view class="media-content">
+                     <view wx:if="{{item.originalData.news}}" class="url-links">
+                         <text class="url-link" bindtap="openUrl" data-url="{{item.originalData.news}}">
+                             {{item.originalData.news}}
+                         </text>
+                     </view>
+                     <view wx:else class="no-content">
+                         <text class="no-content-text">无内容</text>
+                     </view>
+                 </view>
+             </view>
+        </view>
+    </view>
+
+    <!-- 无进度记录提示 -->
+    <view class="no-progress" wx:if="{{showNoProgress && !progressLoading}}">
+        <text class="no-progress-icon">📋</text>
+        <text class="no-progress-text">该时间段暂无进度记录</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!projectInfo}}">
+        <text class="empty-icon">🏗️</text>
+        <text class="empty-text">请从项目查询页面进入</text>
+    </view>
+</view>
+    

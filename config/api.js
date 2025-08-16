@@ -54,7 +54,15 @@ const apiConfig = {
       detail: '/api/15projects/:id',
       create: '/api/15projects',
       update: '/api/15projects/:id',
-      delete: '/api/15projects/:id'
+      delete: '/api/15projects/:id',
+      search: '/api/15projects/search',
+      names: '/api/15projects/names'
+    },
+    
+    // 项目进度相关接口
+    progress: {
+      times: '/api/progress/times',      // 获取项目进度时间列表
+      detail: '/api/progress/detail'     // 根据项目名称和时间段获取项目进度详细信息
     },
     
     // 用户相关接口

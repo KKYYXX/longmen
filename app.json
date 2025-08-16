@@ -21,10 +21,8 @@
     "pages/fifteenprojectsquery/fifteenprojectsquery",
     "pages/project_progress/project_progress",
     "pages/progress_delete_manager/progress_delete_manager",
-
     "pages/fifteenprojectsalter/fifteenprojectsalter",
     "pages/fifteenprojects_add/fifteenprojects_add",
-
     "pages/fifteenprojects_add_project/fifteenprojects_add_project",
     "pages/fifteenprojects_modify/fifteenprojects_modify",
     "pages/fifteenprojects_delete/fifteenprojects_delete",
@@ -35,7 +33,8 @@
     "pages/被转让人信息/被转让人信息",
     "pages/政策文件修改权限人员/政策文件修改权限人员",
     "pages/典型案例修改权限人员/典型案例修改权限人员",
-    "pages/项目进度修改权限人员/项目进度修改权限人员"
+    "pages/项目进度修改权限人员/项目进度修改权限人员",
+    "pages/项目进度内容/项目进度内容"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -67,6 +66,4 @@
     ]
   },
   "sitemapLocation": "sitemap.json"
-
 }
-

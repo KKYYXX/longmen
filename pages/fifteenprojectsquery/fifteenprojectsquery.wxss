@@ -439,13 +439,13 @@
   font-size: 32rpx;
 }
 
-/* 时间查询区域 */
-.time-query-section {
+/* 进度查询区域 */
+.progress-query-section {
   margin-top: 40rpx;
   padding: 30rpx;
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #f9e286 0%, #f0e68c 100%);
   border-radius: 16rpx;
-  border: 1rpx solid #e9ecef;
+  box-shadow: 0 4rpx 20rpx rgba(249, 226, 134, 0.2);
 }
 
 .section-title {
@@ -456,76 +456,35 @@
   text-align: center;
 }
 
-/* 时间按键 */
-.time-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15rpx;
-  margin-bottom: 30rpx;
-  justify-content: center;
-}
-
-.time-btn {
-  padding: 15rpx 25rpx;
-  background: #ffffff;
-  border: 2rpx solid #e9ecef;
-  border-radius: 25rpx;
-  font-size: 26rpx;
-  color: #666666;
-  text-align: center;
-  transition: all 0.3s ease;
-  min-width: 120rpx;
-}
-
-.time-btn.active {
-  background: linear-gradient(135deg, #fff9c4 0%, #fff3a0 100%);
-  border-color: #fff3a0;
-  color: #4a4a4a;
-  box-shadow: 0 4rpx 15rpx rgba(255, 249, 196, 0.4);
-}
-
-.time-btn:active {
-  transform: scale(0.95);
-}
-
-/* 自定义时间选择 */
-.custom-time-section {
-  border-top: 1rpx solid #e9ecef;
-  padding-top: 25rpx;
-}
-
-.custom-time-row {
+/* 进度查询按钮 */
+.progress-query-btn {
   display: flex;
   align-items: center;
-  gap: 15rpx;
-  flex-wrap: wrap;
   justify-content: center;
-}
-
-.custom-date-picker {
-  padding: 15rpx 20rpx;
-  background: #ffffff;
-  border: 2rpx solid #e9ecef;
-  border-radius: 8rpx;
-  font-size: 26rpx;
-  color: #333333;
-  min-width: 140rpx;
-  text-align: center;
-}
-
-.query-btn {
-  padding: 15rpx 30rpx;
-  background: linear-gradient(135deg, #fff9c4 0%, #fff3a0 100%);
-  border-radius: 25rpx;
-  font-size: 26rpx;
-  color: #4a4a4a;
-  font-weight: 600;
-  box-shadow: 0 4rpx 15rpx rgba(255, 249, 196, 0.4);
+  gap: 15rpx;
+  background: linear-gradient(135deg, #d6c90c 0%, #f3b509 100%);
+  border-radius: 16rpx;
+  padding: 25rpx 40rpx;
+  cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4rpx 15rpx rgba(225, 228, 86, 0.3);
+  margin-top: 20rpx;
 }
 
-.query-btn:active {
-  transform: scale(0.95);
+.progress-query-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(225, 228, 86, 0.4);
+}
+
+.btn-icon {
+  font-size: 32rpx;
+}
+
+.btn-text {
+  font-size: 28rpx;
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
 }
 
 /* 进度记录加载状态 */
@@ -555,87 +514,131 @@
   to { transform: rotate(360deg); }
 }
 
-/* 进度记录列表 */
+/* 进度记录样式 */
 .progress-records {
-  margin-top: 30rpx;
-  padding: 30rpx;
-  background: #ffffff;
-  border-radius: 16rpx;
-  border: 1rpx solid #e9ecef;
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
 }
 
 .records-title {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: #333333;
-  margin-bottom: 25rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
   text-align: center;
-  padding-bottom: 15rpx;
-  border-bottom: 2rpx solid #fff3a0;
 }
 
 .record-item {
-  background: #f8f9fa;
+  background: white;
   border-radius: 12rpx;
-  padding: 25rpx;
+  padding: 24rpx;
   margin-bottom: 20rpx;
-  border-left: 4rpx solid #fff3a0;
-  transition: all 0.3s ease;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
-.record-item:last-child {
-  margin-bottom: 0;
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #eee;
 }
 
-.record-item:active {
-  transform: translateY(-2rpx);
-  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
+.record-person {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2c5aa0;
 }
 
-.record-summary {
-  margin-bottom: 15rpx;
-  line-height: 1.6;
+.record-time {
   font-size: 26rpx;
+  color: #666;
 }
 
-.summary-person {
-  font-weight: bold;
-  color: #4a4a4a;
-  background: #fff3a0;
-  padding: 3rpx 8rpx;
+.record-location {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 12rpx 16rpx;
+  background: #f0f8ff;
   border-radius: 8rpx;
 }
 
-.summary-datetime {
-  font-weight: 600;
-  color: #666666;
-  background: #e8f4fd;
-  padding: 3rpx 8rpx;
-  border-radius: 8rpx;
+.location-icon {
+  margin-right: 8rpx;
+  font-size: 24rpx;
 }
 
-.summary-location {
-  font-weight: 600;
-  color: #666666;
-  background: #f0f8e8;
-  padding: 3rpx 8rpx;
-  border-radius: 8rpx;
-}
-
-.summary-connector {
-  color: #888888;
-  margin: 0 5rpx;
+.location-text {
+  font-size: 26rpx;
+  color: #555;
 }
 
 .record-content {
   font-size: 28rpx;
-  color: #333333;
+  color: #333;
   line-height: 1.6;
-  background: #ffffff;
-  padding: 15rpx;
+  margin-bottom: 20rpx;
+  text-align: justify;
+}
+
+/* 图片展示样式 */
+.record-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.image-item {
+  width: 160rpx;
+  height: 160rpx;
   border-radius: 8rpx;
-  border-left: 3rpx solid #fff3a0;
-  margin-top: 10rpx;
+  overflow: hidden;
+  border: 2rpx solid #e0e0e0;
+}
+
+.progress-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 视频展示样式 */
+.record-video {
+  margin-bottom: 20rpx;
+}
+
+.video-item {
+  border-radius: 8rpx;
+  overflow: hidden;
+  border: 2rpx solid #e0e0e0;
+}
+
+.progress-video {
+  width: 100%;
+  height: 400rpx;
+}
+
+/* 响应式布局 */
+@media (max-width: 750rpx) {
+  .record-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8rpx;
+  }
+  
+  .image-item {
+    width: 120rpx;
+    height: 120rpx;
+  }
+  
+  .progress-video {
+    height: 300rpx;
+  }
 }
 
 /* 无进度记录提示 */
@@ -936,3 +939,9 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+
+
+
+
+

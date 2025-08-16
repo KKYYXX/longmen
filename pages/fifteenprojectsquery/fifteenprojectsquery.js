@@ -12,17 +12,7 @@ Page({
     showProjectDetail: false,
     selectedProject: null,
 
-    // 时间查询相关
-    selectedTimeRange: '',
-    customStartDate: '',
-    customEndDate: '',
-    timeRangeOptions: [
-      { label: '最近一周', value: 'week' },
-      { label: '最近一月', value: 'month' },
-      { label: '最近三月', value: 'quarter' },
-      { label: '最近半年', value: 'halfYear' },
-      { label: '最近一年', value: 'year' }
-    ],
+
 
     // 进度记录相关
     progressList: [],
@@ -957,60 +947,59 @@ Page({
     this.setData({
       showProjectDetail: false,
       selectedProject: null,
-      selectedTimeRange: '',
-      customStartDate: '',
-      customEndDate: '',
       progressList: [],
       showNoProgress: false
     });
   },
 
-  // 时间范围选择
-  onTimeRangeSelect: function(e) {
-    const value = e.currentTarget.dataset.value;
-    this.setData({
-      selectedTimeRange: value,
-      customStartDate: '',
-      customEndDate: ''
-    });
-    this.queryProgressByTimeRange(value);
-  },
-
-  // 自定义开始时间选择
-  onCustomStartDateChange: function(e) {
-    this.setData({
-      customStartDate: e.detail.value,
-      selectedTimeRange: ''
-    });
-  },
-
-  // 自定义结束时间选择
-  onCustomEndDateChange: function(e) {
-    this.setData({
-      customEndDate: e.detail.value,
-      selectedTimeRange: ''
-    });
-  },
-
-  // 自定义时间查询
-  onCustomTimeQuery: function() {
-    if (!this.data.customStartDate || !this.data.customEndDate) {
+  // 进度查询按钮点击事件
+  onProgressQueryClick: function() {
+    if (!this.data.selectedProject) {
       wx.showToast({
-        title: '请选择完整的时间范围',
+        title: '请先选择项目',
         icon: 'none'
       });
       return;
     }
 
-    if (this.data.customStartDate > this.data.customEndDate) {
+    // 跳转到项目进度内容页面
+    this.navigateToProgressContent();
+  },
+
+  // 跳转到项目进度内容页面
+  navigateToProgressContent: function() {
+    if (!this.data.selectedProject) {
       wx.showToast({
-        title: '开始时间不能晚于结束时间',
+        title: '请先选择项目',
         icon: 'none'
       });
       return;
     }
 
-    this.queryProgressByCustomTime(this.data.customStartDate, this.data.customEndDate);
+    // 准备传递给项目进度内容页面的参数
+    const params = {
+      projectId: this.data.selectedProject.id,
+      projectName: this.data.selectedProject.projectName
+    };
+
+    // 跳转到项目进度内容页面
+    wx.navigateTo({
+      url: '/pages/项目进度内容/项目进度内容',
+      success: (res) => {
+        console.log('跳转成功，传递参数:', params);
+        // 将参数传递给目标页面
+        if (res.eventChannel) {
+          res.eventChannel.emit('acceptDataFromOpenerPage', params);
+        }
+      },
+      fail: (err) => {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
   },
 
   // 根据时间范围查询进度
@@ -1059,84 +1048,217 @@ Page({
       showNoProgress: false
     });
 
-    // TODO: 替换为真实的后端API调用
-    // 这里使用模拟数据
-    setTimeout(() => {
-      const mockProgressData = this.generateMockProgressData(startDate, endDate);
-
-      this.setData({
-        progressList: mockProgressData,
-        showNoProgress: mockProgressData.length === 0,
-        progressLoading: false
-      });
-    }, 1000);
+    // 调用后端进度查询接口
+    this.queryProgressFromBackend(startDate, endDate);
   },
 
-  // 生成模拟进度数据
-  generateMockProgressData: function(startDate, endDate) {
-    const progressData = [
-      {
-        id: 1,
-        person: '张三（项目经理）',
-        time: '09:30',
-        location: '智慧城市建设现场A区',
-        content: '组织召开项目启动会议，确定了各部门分工和时间节点，完成了基础设施建设的前期准备工作，包括场地清理、设备调试和人员安排',
-        date: '2024-01-15'
-      },
-      {
-        id: 2,
-        person: '李四（技术负责人）',
-        time: '14:20',
-        location: '市政府会议室B',
-        content: '与规划局、建设局等相关部门协调项目推进事宜，汇报了当前进展情况，确定了下一阶段的工作计划和资源配置方案',
-        date: '2024-01-16'
-      },
-      {
-        id: 3,
-        person: '王五（质量监督员）',
-        time: '16:45',
-        location: '项目技术中心',
-        content: '完成智慧城市管理平台技术方案的专家评审工作，通过了关键技术节点的验收，确认了系统架构和数据接口标准',
-        date: '2024-01-17'
-      },
-      {
-        id: 4,
-        person: '赵六（安全员）',
-        time: '11:10',
-        location: '建设现场C区域',
-        content: '进行了全面的安全检查和质量监督工作，发现并及时解决了3个潜在安全隐患，确保了施工现场的安全规范',
-        date: '2024-01-18'
-      },
-      {
-        id: 5,
-        person: '钱七（文档管理员）',
-        time: '08:00',
-        location: '项目办公楼D座',
-        content: '整理完善项目相关文档资料，更新了最新的进度报告和财务报表，准备向市领导汇报项目整体推进情况',
-        date: '2024-01-19'
-      },
-      {
-        id: 6,
-        person: '孙八（设备工程师）',
-        time: '13:15',
-        location: '设备安装现场',
-        content: '完成了智能监控设备的安装调试工作，测试了数据传输功能，确保设备正常运行并与中央控制系统连接',
-        date: '2024-01-20'
-      },
-      {
-        id: 7,
-        person: '周九（协调专员）',
-        time: '10:30',
-        location: '社区服务中心',
-        content: '深入社区开展项目宣传工作，收集居民意见和建议，协调解决了施工过程中影响居民生活的相关问题',
-        date: '2024-01-21'
-      }
-    ];
+  // 从后端查询项目进度
+  queryProgressFromBackend: function(startDate, endDate) {
+    const projectName = this.data.selectedProject.projectName;
+    console.log('开始查询项目进度，项目名称:', projectName, '时间范围:', startDate, '至', endDate);
 
-    // 根据时间范围过滤数据
-    return progressData.filter(item => {
-      return item.date >= startDate && item.date <= endDate;
+    // 第一步：调用 /api/progress/times 接口获取项目进度时间列表
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      method: 'GET',
+      data: {
+        project_name: projectName
+      },
+      success: (res) => {
+        console.log('进度时间接口响应:', res);
+        
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          // 获取到进度时间列表，继续调用详情接口
+          const progressTimes = res.data.data || [];
+          console.log('获取到进度时间列表:', progressTimes);
+          
+          // 第二步：调用 /api/progress/detail 接口获取详细进度信息
+          this.getProgressDetails(projectName, startDate, endDate, progressTimes);
+        } else {
+          console.warn('获取进度时间列表失败:', res);
+          this.handleProgressQueryError('获取进度时间列表失败');
+        }
+      },
+      fail: (err) => {
+        console.error('请求进度时间接口失败:', err);
+        this.handleProgressQueryError('网络请求失败');
+      }
     });
+  },
+
+  // 获取项目进度详细信息
+  getProgressDetails: function(projectName, startDate, endDate, progressTimes) {
+    console.log('开始获取项目进度详细信息');
+    
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/detail',
+      method: 'GET',
+      data: {
+        project_name: projectName,
+        start_date: startDate,    // 修改参数名，与后端接口匹配
+        end_date: endDate         // 修改参数名，与后端接口匹配
+      },
+      success: (res) => {
+        console.log('进度详情接口响应:', res);
+        
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          // 获取到进度详细信息（现在是数组）
+          const progressDetails = res.data.data || [];
+          console.log('获取到进度详细信息:', progressDetails);
+          
+          // 处理进度数据并显示
+          this.processAndDisplayProgress(progressDetails, startDate, endDate);
+        } else {
+          console.warn('获取进度详情失败:', res);
+          this.handleProgressQueryError('获取进度详情失败');
+        }
+      },
+      fail: (err) => {
+        console.error('请求进度详情接口失败:', err);
+        this.handleProgressQueryError('网络请求失败');
+      }
+    });
+  },
+
+  // 处理和显示进度数据
+  processAndDisplayProgress: function(progressDetails, startDate, endDate) {
+    console.log('开始处理进度数据');
+    
+    if (!progressDetails || progressDetails.length === 0) {
+      // 没有进度数据
+      this.setData({
+        progressList: [],
+        showNoProgress: true,
+        progressLoading: false
+      });
+      
+      wx.showToast({
+        title: '该时间段暂无进度记录',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    // 处理进度数据格式，适配后端返回的字段
+    const processedProgress = progressDetails.map((item, index) => {
+      // 解析实践成员信息
+      let person = '未知人员';
+      if (item.practice_members) {
+        try {
+          // 尝试解析JSON格式的成员信息
+          if (typeof item.practice_members === 'string') {
+            const members = JSON.parse(item.practice_members);
+            if (Array.isArray(members) && members.length > 0) {
+              person = members[0].name || members[0] || '未知人员';
+            } else {
+              person = item.practice_members;
+            }
+          } else if (Array.isArray(item.practice_members)) {
+            person = item.practice_members[0]?.name || item.practice_members[0] || '未知人员';
+          } else {
+            person = item.practice_members.name || item.practice_members || '未知人员';
+          }
+        } catch (e) {
+          // 如果解析失败，直接使用原始值
+          person = item.practice_members || '未知人员';
+        }
+      }
+
+      // 处理时间信息
+      let time = '00:00';
+      let date = this.formatDate(new Date());
+      
+      if (item.practice_time) {
+        try {
+          const practiceTime = new Date(item.practice_time);
+          if (!isNaN(practiceTime.getTime())) {
+            date = this.formatDate(practiceTime);
+            time = `${String(practiceTime.getHours()).padStart(2, '0')}:${String(practiceTime.getMinutes()).padStart(2, '0')}`;
+          }
+        } catch (e) {
+          console.warn('时间解析失败:', item.practice_time);
+        }
+      }
+
+      return {
+        id: item.id || index + 1,
+        person: person,
+        time: time,
+        location: item.practice_location || '未知地点',
+        content: item.news || '无详细描述',
+        date: date,
+        // 保留原始数据，用于后续扩展
+        originalData: item
+      };
+    });
+
+    console.log('处理后的进度数据:', processedProgress);
+
+    // 根据时间范围过滤数据（后端已经过滤，这里作为二次确认）
+    const filteredProgress = processedProgress.filter(item => {
+      const itemDate = item.date;
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+
+    console.log('时间过滤后的进度数据:', filteredProgress);
+
+    // 更新页面数据
+    this.setData({
+      progressList: filteredProgress,
+      showNoProgress: filteredProgress.length === 0,
+      progressLoading: false
+    });
+
+    // 显示查询结果提示
+    if (filteredProgress.length > 0) {
+      wx.showToast({
+        title: `查询到${filteredProgress.length}条进度记录`,
+        icon: 'success',
+        duration: 2000
+      });
+    } else {
+      wx.showToast({
+        title: '该时间段暂无进度记录',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  // 处理进度查询错误
+  handleProgressQueryError: function(errorMessage) {
+    console.error('进度查询错误:', errorMessage);
+    
+    this.setData({
+      progressList: [],
+      showNoProgress: false,
+      progressLoading: false
+    });
+
+    wx.showToast({
+      title: errorMessage,
+      icon: 'none',
+      duration: 3000
+    });
+  },
+
+  // 图片预览功能
+  previewImage: function(e) {
+    const urls = e.currentTarget.dataset.urls;
+    const current = e.currentTarget.dataset.current;
+    
+    if (urls && urls.length > 0) {
+      // 过滤掉空字符串和undefined
+      const validUrls = urls.filter(url => url && url.trim());
+      
+      if (validUrls.length > 0) {
+        wx.previewImage({
+          current: current,
+          urls: validUrls
+        });
+      }
+    }
   },
 
   // 格式化日期
