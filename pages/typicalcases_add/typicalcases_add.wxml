@@ -67,8 +67,8 @@
 
   <!-- 预览按钮 -->
   <view class="preview-btn-container" wx:if="{{uploadedFiles.length > 0 || newsLinks.length > 0 || uploadedVideos.length > 0}}">
-    <view class="preview-btn" bindtap="previewAllContent">
-      <text class="preview-btn-text">👁️ 预览上传效果</text>
+    <view class="preview-upload-btn" bindtap="previewAllContent">
+      <text class="preview-btn-text">预览上传效果</text>
     </view>
   </view>
 
