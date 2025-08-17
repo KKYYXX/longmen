@@ -57,7 +57,7 @@
     <!-- 装饰性背景元素 -->
     <view class="decoration decoration-3"></view>
     <view class="decoration decoration-4"></view>
-  </view>
+    </view>
   
 </view>
     

@@ -2,7 +2,7 @@
 .personal-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #fff9f0 0%, #fff5e6 100%);
-  padding: 0;
+  padding: 0 0 140rpx 0; /* 底部留出tabBar空间 */
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -588,4 +588,6 @@
     padding-right: 30rpx;
   }
 }
+
+
 

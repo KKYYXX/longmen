@@ -47,6 +47,28 @@ Page({
   },
 
   /**
+   * 处理页面返回事件
+   */
+  onBackPress() {
+    // 当用户点击左上角返回按钮时，返回到上一个页面（登录后的页面）
+    wx.navigateBack({
+      delta: 1
+    });
+    return true; // 阻止默认的返回行为
+  },
+
+  /**
+   * 页面加载完成后的处理
+   */
+  onReady() {
+    // 设置导航栏返回按钮的点击事件
+    wx.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor: '#f9e286'
+    });
+  },
+
+  /**
    * 加载用户信息
    */
   loadUserInfo() {

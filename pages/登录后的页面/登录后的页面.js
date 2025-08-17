@@ -47,6 +47,17 @@ Page({
   },
 
   /**
+   * 处理页面返回事件
+   */
+  onBackPress() {
+    // 当用户点击左上角返回按钮时，跳转到首页而不是回到登录页面
+    wx.switchTab({
+      url: '/pages/index/index'
+    });
+    return true; // 阻止默认的返回行为
+  },
+
+  /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh() {
@@ -94,7 +105,17 @@ Page({
   onBackToAdmin() {
     if (this.data.loginType === 'admin') {
       wx.navigateTo({
-        url: '/pages/admin/admin'
+        url: '/pages/admin/admin',
+        success: () => {
+          console.log('跳转权限管理中心成功');
+        },
+        fail: (err) => {
+          console.error('跳转权限管理中心失败:', err);
+          wx.showToast({
+            title: '跳转失败',
+            icon: 'none'
+          });
+        }
       });
     }
   },

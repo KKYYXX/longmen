@@ -124,18 +124,3 @@
   </view>
 </view>
 
-<!-- 自定义tabBar -->
-<view class="custom-tabbar">
-  <view class="tab-item" bindtap="onHomeTab">
-    <view class="tab-icon">
-      <text class="icon">🏠</text>
-    </view>
-    <text class="tab-text">首页</text>
-  </view>
-  <view class="tab-item active">
-    <view class="tab-icon">
-      <text class="icon">👤</text>
-    </view>
-    <text class="tab-text">个人</text>
-  </view>
-</view>

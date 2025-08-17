@@ -66,5 +66,29 @@ Page({
         console.error('页面跳转失败:', err);
       }
     });
+  },
+
+  // 首页tab点击事件
+  onHomeTab() {
+    console.log('点击首页tab');
+    // 首页tab不需要跳转
+  },
+
+  // 个人tab点击事件
+  onPersonalTab() {
+    console.log('点击个人tab');
+    wx.navigateTo({
+      url: '/pages/personal/personal',
+      success: () => {
+        console.log('跳转个人页面成功');
+      },
+      fail: (err) => {
+        console.error('跳转个人页面失败:', err);
+        wx.showToast({
+          title: '跳转失败',
+          icon: 'none'
+        });
+      }
+    });
   }
 })
