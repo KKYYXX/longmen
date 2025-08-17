@@ -169,48 +169,44 @@ Page({
           // 转让成功
           console.log('转让成功:', res.data);
 
-          // 更新全局用户信息为新的负责人信息
+          // 转让成功后，清除当前登录状态，跳转到personal页面
           const app = getApp();
-          const newUserInfo = {
+          
+          // 先保存新负责人信息
+          const newManagerInfo = {
             name: name,
             phone: phone,
-            password: app.getUserInfo().password // 保持原密码
+            password: '' // 新负责人需要重新设置密码
           };
           
-          console.log('更新全局用户信息为新负责人:', newUserInfo);
-          app.updateUserInfo(newUserInfo);
-
-          // 同时更新微信小程序的登录状态缓存
-          wx.setStorageSync('userInfo', newUserInfo);
-          wx.setStorageSync('isLoggedIn', true);
+          // 清除登录状态
+          app.clearLoginStatus();
+          
+          // 清除本地存储的用户信息
+          wx.removeStorageSync('userInfo');
+          wx.removeStorageSync('isLoggedIn');
+          wx.removeStorageSync('loginType');
+          wx.removeStorageSync('currentUser');
+          
+          console.log('转让成功，已清除登录状态');
 
           wx.showToast({
             title: '转让成功！',
             icon: 'success',
             duration: 1500,
             success: () => {
-              // 转让成功后返回上一页
+              // 转让成功后跳转到personal页面（未登录状态）
               setTimeout(() => {
-                wx.navigateBack({
-                  delta: 1,
+                wx.reLaunch({
+                  url: '/pages/personal/personal',
                   success: () => {
-                    console.log('成功返回上一页');
-                    
-                    // 发送页面刷新事件给当前负责人页面
-                    const pages = getCurrentPages();
-                    if (pages.length > 1) {
-                      const prevPage = pages[pages.length - 2];
-                      if (prevPage && prevPage.refreshUserInfo) {
-                        console.log('调用上一页的刷新方法');
-                        prevPage.refreshUserInfo();
-                      }
-                    }
+                    console.log('成功跳转到personal页面');
                   },
                   fail: (err) => {
-                    console.error('返回上一页失败:', err);
-                    // 如果返回失败，尝试返回多级
-                    wx.navigateBack({
-                      delta: 2
+                    console.error('跳转到personal页面失败:', err);
+                    // 如果跳转失败，尝试使用switchTab
+                    wx.switchTab({
+                      url: '/pages/personal/personal'
                     });
                   }
                 });

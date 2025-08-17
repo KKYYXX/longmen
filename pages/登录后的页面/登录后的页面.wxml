@@ -1,48 +1,141 @@
 <!--pages/登录后的页面/登录后的页面.wxml-->
 <view class="logged-in-container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <text class="page-title">用户中心</text>
-    <text class="welcome-text">欢迎回来，{{userInfo.name}}</text>
+  <!-- 顶部装饰区域 -->
+  <view class="top-decoration">
+    <view class="decoration-circle circle-1"></view>
+    <view class="decoration-circle circle-2"></view>
+    <view class="decoration-circle circle-3"></view>
   </view>
 
-  <!-- 用户信息卡片 -->
-  <view class="user-info-card">
-    <view class="user-avatar">
-      <text class="avatar-icon">👤</text>
+  <!-- 页面头部 -->
+  <view class="header">
+    <view class="header-icon">
     </view>
-    <view class="user-details">
-      <text class="user-name">{{userInfo.name}}</text>
-      <text class="user-phone">{{userInfo.phone}}</text>
+    <text class="title">用户中心</text>
+    <text class="subtitle">User Center</text>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="logged-in-content">
+    <!-- 欢迎信息 -->
+    <view class="welcome-section">
+      <view class="welcome-card">
+        <view class="welcome-icon">
+          <text class="icon">👋</text>
+        </view>
+        <text class="welcome-text">欢迎回来，{{userInfo.name}}</text>
+        <text class="welcome-subtext">Welcome back, {{userInfo.name}}</text>
+      </view>
+    </view>
+
+    <!-- 用户信息卡片 -->
+    <view class="user-info-section">
+      <view class="section-header">
+        <text class="section-title">个人信息</text>
+        <text class="section-subtitle">Personal Information</text>
+      </view>
+      
+      <view class="user-info-card">
+        <view class="user-avatar">
+        </view>
+        <view class="user-details">
+          <view class="detail-item">
+            <view class="detail-icon">
+              <text class="icon">👤</text>
+            </view>
+            <view class="detail-content">
+              <text class="detail-label">姓名</text>
+              <text class="detail-value">{{userInfo.name}}</text>
+            </view>
+          </view>
+          <view class="detail-item">
+            <view class="detail-icon">
+              <text class="icon">📱</text>
+            </view>
+            <view class="detail-content">
+              <text class="detail-label">手机号</text>
+              <text class="detail-value">{{userInfo.phone}}</text>
+            </view>
+          </view>
+          <view class="detail-item">
+            <view class="detail-icon">
+              <text class="icon">🔑</text>
+            </view>
+            <view class="detail-content">
+              <text class="detail-label">用户类型</text>
+              <text class="detail-value">{{loginType === 'admin' ? '权限管理员' : '普通用户'}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 功能按钮区域 -->
+    <view class="function-section">
+    
+      
+      <view class="function-buttons">
+        <!-- 权限管理中心按钮（仅权限管理员显示） -->
+        <button wx:if="{{loginType === 'admin'}}" class="function-btn admin-btn" bindtap="onBackToAdmin">
+          <view class="btn-icon">
+            <text class="icon">⚙️</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">权限管理中心</text>
+            <text class="btn-desc">Permission Management Center</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
+    </view>
+
+    <!-- 退出登录按钮 -->
+    <view class="logout-section">
+      
+      
+      <view class="logout-btn-container">
+        <button class="logout-btn" bindtap="onLogout">
+          <view class="btn-icon">
+            <text class="icon">🚪</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">退出登录</text>
+            <text class="btn-desc">Logout</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
     </view>
   </view>
 
-  <!-- 功能按钮区域 -->
-  <view class="function-buttons">
-    <!-- 权限管理中心按钮（仅权限管理员显示） -->
-    <button wx:if="{{loginType === 'admin'}}" class="function-btn admin-btn" bindtap="onBackToAdmin">
-      <text class="btn-icon">⚙️</text>
-      <text class="btn-text">权限管理中心</text>
-    </button>
-  </view>
 
-  <!-- 退出登录按钮 -->
-  <view class="logout-section">
-    <button class="logout-btn" bindtap="onLogout">
-      <text class="logout-icon">🚪</text>
-      <text class="logout-text">退出登录</text>
-    </button>
+  <!-- 底部装饰 -->
+  <view class="bottom-decoration">
+    <view class="decoration-line"></view>
+    <view class="decoration-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
   </view>
 </view>
 
 <!-- 自定义tabBar -->
 <view class="custom-tabbar">
   <view class="tab-item" bindtap="onHomeTab">
-    <text class="tab-icon">🏠</text>
+    <view class="tab-icon">
+      <text class="icon">🏠</text>
+    </view>
     <text class="tab-text">首页</text>
   </view>
   <view class="tab-item active">
-    <text class="tab-icon">👤</text>
+    <view class="tab-icon">
+      <text class="icon">👤</text>
+    </view>
     <text class="tab-text">个人</text>
   </view>
 </view>

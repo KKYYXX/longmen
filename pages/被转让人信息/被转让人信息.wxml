@@ -1,43 +1,101 @@
 <!--pages/被转让人信息/被转让人信息.wxml-->
 <view class="transferee-container">
+  <!-- 顶部装饰区域 -->
+  <view class="top-decoration">
+    <view class="decoration-circle circle-1"></view>
+    <view class="decoration-circle circle-2"></view>
+    <view class="decoration-circle circle-3"></view>
+  </view>
 
   <!-- 主要内容区域 -->
   <view class="transferee-content">
+    <view class="content-header">
+      <text class="content-title">填写转让信息</text>
+      <text class="content-subtitle">Fill in Transfer Information</text>
+    </view>
+    
     <!-- 头像区域 -->
     <view class="avatar-section">
-      <image class="avatar-image" src="/images/生成个人中心图标 (1).png" mode="aspectFit"></image>
+      <view class="avatar-container">
+        <view class="avatar-circle">
+          <text class="avatar-text">👤</text>
+        </view>
+        <view class="avatar-status">
+          <view class="status-dot"></view>
+          <text class="status-text">新负责人</text>
+        </view>
+      </view>
     </view>
 
     <!-- 信息区域 -->
     <view class="info-section">
-      <view class="info-item">
-        <text class="info-label">姓名：</text>
-        <input class="info-input" placeholder="请输入姓名" value="{{transfereeInfo.name}}" bindinput="onNameInput" />
-      </view>
-
-      <view class="info-item">
-        <text class="info-label">电话：</text>
-        <input class="info-input" placeholder="请输入电话" value="{{transfereeInfo.phone}}" bindinput="onPhoneInput" type="number" />
-      </view>
-
-      <view class="info-item">
-        <text class="info-label">微信号：</text>
-        <view class="wechat-container">
-          <input class="info-input wechat-input" placeholder="请输入微信号" value="{{transfereeInfo.wechat}}" bindinput="onWechatInput" />
+      <view class="info-card">
+        <!-- 姓名输入 -->
+        <view class="info-item">
+          <view class="info-icon">
+            <text class="icon">📝</text>
+          </view>
+          <view class="info-content">
+            <text class="info-label">姓名</text>
+            <input class="info-input" placeholder="请输入姓名" value="{{transfereeInfo.name}}" bindinput="onNameInput" />
+          </view>
         </view>
-      </view>
 
-      <!-- 微信号要求提示 -->
-      <view class="wechat-hint">
-        <text class="hint-text">请输入正确的信息</text>
-      </view>
+        <!-- 电话输入 -->
+        <view class="info-item">
+          <view class="info-icon">
+            <text class="icon">📞</text>
+          </view>
+          <view class="info-content">
+            <text class="info-label">电话</text>
+            <input class="info-input" placeholder="请输入电话" value="{{transfereeInfo.phone}}" bindinput="onPhoneInput" type="number" />
+          </view>
+        </view>
+
+        <!-- 微信号输入 -->
+        <view class="info-item">
+          <view class="info-icon">
+            <text class="icon">💬</text>
+          </view>
+          <view class="info-content">
+            <text class="info-label">微信号</text>
+            <input class="info-input" placeholder="请输入微信号" value="{{transfereeInfo.wechat}}" bindinput="onWechatInput" />
+          </view>
+        </view>
+      </view>  
     </view>
 
     <!-- 确认按钮 -->
     <view class="action-section">
-      <button class="confirm-btn {{isFormValid ? 'active' : 'disabled'}}" bindtap="onConfirm" disabled="{{!isFormValid}}">
-        <text class="btn-text">确认转让</text>
-      </button>
+      <view class="action-header">
+        <text class="action-title">操作确认</text>
+        <text class="action-subtitle">Operation Confirmation</text>
+      </view>
+      
+      <view class="confirm-btn-container">
+        <button class="confirm-btn {{isFormValid ? 'active' : 'disabled'}}" bindtap="onConfirm" disabled="{{!isFormValid}}">
+          <view class="btn-icon">
+            <text class="icon">✅</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">确认转让</text>
+            <text class="btn-desc">Confirm transfer operation</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部装饰 -->
+  <view class="bottom-decoration">
+    <view class="decoration-line"></view>
+    <view class="decoration-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
     </view>
   </view>
 </view>
