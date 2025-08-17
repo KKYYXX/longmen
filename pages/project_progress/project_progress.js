@@ -31,8 +31,17 @@ Page({
 
   // 跳转到删除管理页面
   goToDeletePage: function() {
+    // 获取项目名称
+    let projectName = '';
+    if (this.data.projectData && this.data.projectData.projectName) {
+      projectName = this.data.projectData.projectName;
+    } else {
+      // 如果没有项目数据，使用默认项目名称
+      projectName = "全民数字素养与技能培训基地龙门分中心建设项目";
+    }
+    
     wx.navigateTo({
-      url: `/pages/progress_delete_manager/progress_delete_manager?projectId=${this.data.projectId}`
+      url: `/pages/progress_delete_manager/progress_delete_manager?projectName=${encodeURIComponent(projectName)}`
     });
   },
 

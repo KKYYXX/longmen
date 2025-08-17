@@ -428,6 +428,16 @@ Page({
     const action = e.currentTarget.dataset.action;
     let newContent = '';
 
+    // 检查是否已选择列
+    if (!this.data.selectedColumn) {
+      wx.showToast({
+        title: '请先选择要修改的列',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
     // 如果是修改操作且不是项目进度列，预填充当前值
     if (action === 'modify' && this.data.selectedColumn.key !== 'progress') {
       const currentValue = this.getCurrentColumnValue(this.data.selectedProject, this.data.selectedColumn.key);
@@ -446,8 +456,18 @@ Page({
   nextStep() {
     const currentStep = this.data.currentStep;
     
+    // 检查是否已选择列
+    if (currentStep === 2 && !this.data.selectedColumn) {
+      wx.showToast({
+        title: '请先选择要修改的列',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+    
     // 如果是从步骤2到步骤3，且不是项目进度列，自动设置为修改操作并跳转到步骤4
-    if (currentStep === 2 && this.data.selectedColumn.key !== 'progress') {
+    if (currentStep === 2 && this.data.selectedColumn && this.data.selectedColumn.key !== 'progress') {
       this.setData({
         selectedAction: 'modify',
         currentStep: 4  // 直接跳转到步骤4
@@ -466,7 +486,7 @@ Page({
     });
 
     // 只有项目进度列才需要加载进度数据
-    if (this.data.selectedColumn.key === 'progress' && currentStep + 1 === 4) {
+    if (this.data.selectedColumn && this.data.selectedColumn.key === 'progress' && currentStep + 1 === 4) {
       // 如果选择了删除内容，加载进度数据
       if (this.data.selectedAction === 'delete') {
         this.loadProgressData();
@@ -499,6 +519,25 @@ Page({
   // 保存修改
   saveModification() {
     const { selectedProject, selectedColumn, newContent } = this.data;
+
+    // 检查必要参数
+    if (!selectedProject) {
+      wx.showToast({
+        title: '请先选择要修改的项目',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    if (!selectedColumn) {
+      wx.showToast({
+        title: '请先选择要修改的列',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
     if (!newContent.trim()) {
       wx.showToast({
@@ -1177,7 +1216,7 @@ Page({
       title: '加载中...'
     });
 
-    // 调用后端接口获取指定项目的进度记录
+    // 第一步：调用后端接口获取指定项目的所有进度时间点
     wx.request({
       url: 'http://127.0.0.1:5000/app/api/progress/times',
       method: 'GET',
@@ -1185,38 +1224,30 @@ Page({
         project_name: selectedProject.projectName
       },
       success: (res) => {
-        wx.hideLoading();
-        console.log('获取进度记录响应:', res);
+        console.log('获取进度时间点响应:', res);
 
         if (res.statusCode === 200 && res.data && res.data.success) {
-          const progressData = res.data.data || [];
+          const progressTimes = res.data.data || [];
           
-          // 转换数据格式，适配前端显示
-          const formattedProgressList = progressData.map((item, index) => ({
-            id: index + 1,
-            practice_time: this.formatDateToYYYYMMDD(item.practice_time), // 确保只包含年月日
-            date: this.formatDateToYYYYMMDD(item.practice_time) || '', // 确保只包含年月日
-            time: '', // 没有具体时间，设为空
-            title: `进度记录 ${index + 1}`,
-            status: 'completed',
-            statusText: '已完成',
-            selected: false
-          }));
-
-          this.setData({
-            progressList: formattedProgressList,
-            filteredProgressList: formattedProgressList,
-            timeFilter: 'all'
-          });
-
-          if (formattedProgressList.length === 0) {
+          if (progressTimes.length === 0) {
+            wx.hideLoading();
+            this.setData({
+              progressList: [],
+              filteredProgressList: [],
+              timeFilter: 'all'
+            });
             wx.showToast({
               title: '该项目暂无进度记录',
               icon: 'none'
             });
+            return;
           }
+
+          // 第二步：为每个时间点获取详细信息
+          this.loadAllProgressDetails(progressTimes, selectedProject.projectName);
         } else {
-          console.error('获取进度记录失败:', res);
+          wx.hideLoading();
+          console.error('获取进度时间点失败:', res);
           wx.showToast({
             title: '获取进度记录失败',
             icon: 'none'
@@ -1225,11 +1256,192 @@ Page({
       },
       fail: (err) => {
         wx.hideLoading();
-        console.error('请求进度记录失败:', err);
+        console.error('请求进度时间点失败:', err);
         wx.showToast({
           title: '网络请求失败',
           icon: 'none'
         });
+      }
+    });
+  },
+
+  // 加载所有进度记录的详细信息
+  loadAllProgressDetails: function(progressTimes, projectName) {
+    console.log('开始加载进度记录详细信息，时间点数量:', progressTimes.length);
+    
+    let completedCount = 0;
+    const allProgressDetails = [];
+    
+    progressTimes.forEach((timeObj, index) => {
+      // 获取单个时间点的项目进度详情
+      this.getProgressDetailByTime(projectName, timeObj.practice_time, (detailData) => {
+        console.log(`进度记录 ${index + 1} 的详情数据:`, detailData);
+        
+        if (detailData && detailData.length > 0) {
+          // 获取第一条详细记录
+          const detail = detailData[0];
+          console.log(`进度记录 ${index + 1} 的详细字段:`, {
+            practice_members: detail.practice_members,
+            practice_location: detail.practice_location,
+            news: detail.news,
+            practice_image_url: detail.practice_image_url,
+            video_url: detail.video_url
+          });
+          
+          // 合并时间点信息和详细信息
+          const progressRecord = {
+            id: index + 1,
+            practice_time: this.formatDateToYYYYMMDD(timeObj.practice_time),
+            date: this.formatDateToYYYYMMDD(timeObj.practice_time),
+            time: '',
+            title: `进度记录 ${index + 1}`,
+            status: 'completed',
+            statusText: '已完成',
+            selected: false,
+            // 添加详细信息 - 修复：正确获取后端字段
+            person: detail.practice_members || '未设置',
+            location: detail.practice_location || '未设置',
+            content: detail.news || '无',
+            practice_image_url: detail.practice_image_url || '',
+            video_url: detail.video_url || '',
+            news: detail.news || ''
+          };
+          
+          console.log(`进度记录 ${index + 1} 构建完成:`, progressRecord);
+          allProgressDetails.push(progressRecord);
+        } else {
+          // 如果没有详细信息，创建基础记录
+          console.warn(`进度记录 ${index + 1} 没有详细信息`);
+          const progressRecord = {
+            id: index + 1,
+            practice_time: this.formatDateToYYYYMMDD(timeObj.practice_time),
+            date: this.formatDateToYYYYMMDD(timeObj.practice_time),
+            time: '',
+            title: `进度记录 ${index + 1}`,
+            status: 'completed',
+            statusText: '已完成',
+            selected: false,
+            person: '未设置',
+            location: '未设置',
+            content: '无',
+            practice_image_url: '',
+            video_url: '',
+            news: ''
+          };
+          allProgressDetails.push(progressRecord);
+        }
+        
+        completedCount++;
+        console.log(`进度记录 ${index + 1} 加载完成，总进度: ${completedCount}/${progressTimes.length}`);
+        
+        // 当所有记录都加载完成时，更新页面数据
+        if (completedCount === progressTimes.length) {
+          console.log('所有进度记录详细信息加载完成:', allProgressDetails);
+          
+          // 按时间排序（最新的在前面）
+          allProgressDetails.sort((a, b) => new Date(b.date) - new Date(a.date));
+          
+          this.setData({
+            progressList: allProgressDetails,
+            filteredProgressList: allProgressDetails,
+            timeFilter: 'all'
+          });
+          
+          wx.hideLoading();
+          
+          wx.showToast({
+            title: `成功加载 ${allProgressDetails.length} 条进度记录`,
+            icon: 'success',
+            duration: 2000
+          });
+        }
+      });
+    });
+  },
+
+  // 获取单个时间点的项目进度详情
+  getProgressDetailByTime: function(projectName, practiceTime, callback) {
+    console.log('=== 查询时间点进度详情 ===');
+    console.log('项目名称:', projectName);
+    console.log('时间参数:', practiceTime);
+    console.log('时间类型:', typeof practiceTime);
+    console.log('==========================');
+
+    // 确保时间格式正确
+    let formattedTime = practiceTime;
+    if (typeof practiceTime === 'string') {
+      // 如果是字符串，确保格式为 YYYY-MM-DD
+      if (practiceTime.includes('T')) {
+        formattedTime = practiceTime.split('T')[0];
+        console.log('检测到T分隔符，格式化后时间:', formattedTime);
+      }
+      // 如果包含空格，只取日期部分
+      if (practiceTime.includes(' ')) {
+        formattedTime = practiceTime.split(' ')[0];
+        console.log('检测到空格分隔符，格式化后时间:', formattedTime);
+      }
+      // 检查长度是否为10（YYYY-MM-DD格式）
+      if (formattedTime.length !== 10) {
+        console.warn('⚠️ 最终格式化时间长度不为10，可能不正确:', formattedTime);
+      }
+    }
+
+    console.log('最终发送的时间参数:', formattedTime);
+
+    wx.request({
+      url: 'http://127.0.0.1:5000/app/api/progress/detail',
+      method: 'GET',
+      data: {
+        project_name: projectName,
+        practice_time: formattedTime // 确保传递的是 YYYY-MM-DD 格式
+      },
+      success: (res) => {
+        console.log('✅ /api/progress/detail 接口响应成功:', res);
+        console.log('响应状态码:', res.statusCode);
+        console.log('响应数据结构:', res.data);
+        
+        // 修复：正确解析后端响应
+        if (res.statusCode === 200) {
+          let detailData = null;
+          
+          // 检查不同的响应格式
+          if (res.data && res.data.code === 0 && res.data.data) {
+            // 格式1: {code: 0, data: {...}}
+            detailData = res.data.data;
+            console.log('✅ 解析到数据 (格式1):', detailData);
+          } else if (res.data && res.data.success && res.data.data) {
+            // 格式2: {success: true, data: {...}}
+            detailData = res.data.data;
+            console.log('✅ 解析到数据 (格式2):', detailData);
+          } else if (res.data && res.data.data) {
+            // 格式3: {data: {...}}
+            detailData = res.data.data;
+            console.log('✅ 解析到数据 (格式3):', detailData);
+          } else if (res.data) {
+            // 格式4: 直接返回数据
+            detailData = res.data;
+            console.log('✅ 解析到数据 (格式4):', detailData);
+          }
+          
+          if (detailData) {
+            // 后端可能返回单个对象或数组，统一处理为数组
+            if (!Array.isArray(detailData)) {
+              detailData = [detailData];
+            }
+            console.log('✅ 最终处理后的数据:', detailData);
+            callback(detailData);
+          } else {
+            console.warn('⚠️ 未找到有效数据');
+            callback([]);
+          }
+        } else {
+          console.error('❌ /api/progress/detail 接口返回错误状态码:', res.statusCode);
+          callback([]);
+        }
+      },
+      fail: (err) => {
+        console.error('❌ /api/progress/detail 接口请求失败:', err);
+        callback([]);
       }
     });
   },
@@ -1408,15 +1620,27 @@ Page({
     // 获取要删除的记录信息
     const recordsToDelete = this.data.progressList.filter(item => ids.includes(item.id));
     
+    // 过滤掉无效的记录
+    const validRecordsToDelete = recordsToDelete.filter(record => record && record.practice_time);
+    
+    if (validRecordsToDelete.length === 0) {
+      wx.hideLoading();
+      wx.showToast({
+        title: '没有有效的记录可删除',
+        icon: 'none'
+      });
+      return;
+    }
+    
     // 调用后端接口删除记录
     let deletedCount = 0;
-    let totalCount = recordsToDelete.length;
+    let totalCount = validRecordsToDelete.length;
     
-          recordsToDelete.forEach((record, index) => {
-        const deleteData = {
-          project_name: selectedProject.projectName,
-          practice_time: this.formatDateToYYYYMMDD(record.practice_time) // 确保只传递年月日
-        };
+    validRecordsToDelete.forEach((record, index) => {
+      const deleteData = {
+        project_name: selectedProject.projectName,
+        practice_time: this.formatDateToYYYYMMDD(record.practice_time) // 确保只传递年月日
+      };
 
       wx.request({
         url: 'http://127.0.0.1:5000/app/api/progress/delete',
@@ -1533,16 +1757,24 @@ Page({
           const progressData = res.data.data || [];
           
           // 转换数据格式，适配前端显示
-          const formattedProgressList = progressData.map((item, index) => ({
-            id: index + 1,
-            practice_time: this.formatDateToYYYYMMDD(item.practice_time), // 确保只包含年月日
-            date: this.formatDateToYYYYMMDD(item.practice_time) || '', // 确保只包含年月日
-            time: '', // 没有具体时间，设为空
-            title: `进度记录 ${index + 1}`,
-            status: 'completed',
-            statusText: '已完成',
-            selected: false
-          }));
+          const formattedProgressList = progressData.map((item, index) => {
+            // 添加空值检查
+            if (!item || !item.practice_time) {
+              console.warn(`跳过无效的进度记录 ${index}:`, item);
+              return null;
+            }
+            
+            return {
+              id: index + 1,
+              practice_time: this.formatDateToYYYYMMDD(item.practice_time), // 确保只包含年月日
+              date: this.formatDateToYYYYMMDD(item.practice_time) || '', // 确保只包含年月日
+              time: '', // 没有具体时间，设为空
+              title: `进度记录 ${index + 1}`,
+              status: 'completed',
+              statusText: '已完成',
+              selected: false
+            };
+          }).filter(item => item !== null); // 过滤掉无效的记录
 
           this.setData({
             modifyProgressList: formattedProgressList,
@@ -1643,6 +1875,23 @@ Page({
   loadProgressDetail(record) {
     const { selectedProject } = this.data;
     
+    // 检查参数有效性
+    if (!record || !record.practice_time) {
+      wx.showToast({
+        title: '记录信息不完整',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (!selectedProject || !selectedProject.projectName) {
+      wx.showToast({
+        title: '项目信息不完整',
+        icon: 'none'
+      });
+      return;
+    }
+    
     wx.showLoading({
       title: '加载详情...'
     });
@@ -1661,6 +1910,15 @@ Page({
 
         if (res.statusCode === 200 && res.data && res.data.success) {
           const detailData = res.data.data;
+          
+          // 检查详情数据有效性
+          if (!detailData || !detailData.practice_time) {
+            wx.showToast({
+              title: '详情数据不完整',
+              icon: 'none'
+            });
+            return;
+          }
           
           // 转换数据格式，适配前端显示
           const modifyRecord = {
@@ -1963,6 +2221,22 @@ Page({
     if (!selectedModifyRecord) {
       wx.showToast({
         title: '请选择要修改的记录',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!selectedModifyRecord.practice_time) {
+      wx.showToast({
+        title: '记录时间信息不完整',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!selectedProject || !selectedProject.projectName) {
+      wx.showToast({
+        title: '项目信息不完整',
         icon: 'none'
       });
       return;

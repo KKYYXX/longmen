@@ -20,7 +20,11 @@ Page({
     progressList: [],
     allProgressList: [], // 存储所有进度记录，用于筛选
     showNoProgress: false,
-    progressLoading: false
+    progressLoading: false,
+    
+    // 记录选择相关
+    selectedRecord: null,
+    showRecordDetail: false
   },
 
   onLoad: function(options) {
@@ -64,6 +68,9 @@ Page({
 
     // 第一步：调用 /api/progress/times 接口获取项目所有进度时间点
     console.log('🚀 开始调用第一个接口: /api/progress/times');
+    console.log('请求URL:', 'http://127.0.0.1:5000/app/api/progress/times');
+    console.log('请求参数:', { project_name: projectName });
+    
     wx.request({
       url: 'http://127.0.0.1:5000/app/api/progress/times',
       method: 'GET',
@@ -78,6 +85,8 @@ Page({
         console.log('响应消息:', res.data?.message);
         console.log('时间点数据:', res.data?.data);
         console.log('时间点数量:', res.data?.data?.length || 0);
+        console.log('时间点类型:', typeof res.data?.data);
+        console.log('时间点示例:', res.data?.data?.[0]);
         console.log('====================');
         
         if (res.statusCode === 200 && res.data && res.data.success) {
@@ -134,6 +143,7 @@ Page({
     console.log('时间点列表:', progressTimes);
     console.log('时间点数量:', progressTimes.length);
     console.log('时间点类型:', typeof progressTimes[0]);
+    console.log('时间点示例:', progressTimes[0]);
     console.log('========================================');
     
     if (!progressTimes || progressTimes.length === 0) {
@@ -152,21 +162,32 @@ Page({
     let errorCount = 0;
     const totalCount = progressTimes.length;
 
-    progressTimes.forEach((time, index) => {
+    progressTimes.forEach((timeObj, index) => {
       console.log(`=== 处理第${index + 1}个时间点 ===`);
-      console.log('时间点值:', time);
-      console.log('时间点类型:', typeof time);
-      console.log('时间点长度:', time ? time.length : 'undefined');
+      console.log('时间点对象:', timeObj);
+      
+      // 从后端返回的时间对象中提取practice_time
+      let practiceTime = timeObj;
+      if (timeObj && typeof timeObj === 'object' && timeObj.practice_time) {
+        practiceTime = timeObj.practice_time;
+        console.log('从对象中提取的时间值:', practiceTime);
+      } else if (typeof timeObj === 'string') {
+        practiceTime = timeObj;
+        console.log('直接使用字符串时间值:', practiceTime);
+      }
+      
+      console.log('最终使用的时间值:', practiceTime);
+      console.log('时间类型:', typeof practiceTime);
       console.log('==============================');
       
       // 添加延迟，避免同时发送太多请求
       setTimeout(() => {
-        this.getProgressDetailByTime(projectName, time, (progressDetails) => {
+        this.getProgressDetailByTime(projectName, practiceTime, (progressDetails) => {
           if (progressDetails && progressDetails.length > 0) {
             allProgressDetails = allProgressDetails.concat(progressDetails);
-            console.log(`✅ 时间点 ${time} 查询成功，获取到 ${progressDetails.length} 条记录`);
+            console.log(`✅ 时间点 ${practiceTime} 查询成功，获取到 ${progressDetails.length} 条记录`);
           } else {
-            console.warn(`⚠️ 时间点 ${time} 查询无数据`);
+            console.warn(`⚠️ 时间点 ${practiceTime} 查询无数据`);
           }
           
           completedCount++;
@@ -376,7 +397,6 @@ Page({
     console.log('项目名称:', projectName);
     console.log('时间参数:', practiceTime);
     console.log('时间类型:', typeof practiceTime);
-    console.log('时间长度:', practiceTime ? practiceTime.length : 'undefined');
     console.log('==========================');
     
     // 确保时间格式正确
@@ -387,10 +407,23 @@ Page({
         formattedTime = practiceTime.split('T')[0];
         console.log('检测到T分隔符，格式化后时间:', formattedTime);
       }
-      // 检查长度是否为10（YYYY-MM-DD格式）
-      if (practiceTime.length !== 10) {
-        console.warn('⚠️ 时间格式可能不正确，长度:', practiceTime.length);
+      // 如果包含空格，只取日期部分
+      if (practiceTime.includes(' ')) {
+        formattedTime = practiceTime.split(' ')[0];
+        console.log('检测到空格分隔符，格式化后时间:', formattedTime);
       }
+      // 检查长度是否为10（YYYY-MM-DD格式）
+      if (formattedTime.length !== 10) {
+        console.warn('⚠️ 时间格式可能不正确，长度:', formattedTime.length);
+      }
+    } else if (practiceTime && typeof practiceTime === 'object' && practiceTime.practice_time) {
+      // 如果传入的是对象，提取practice_time字段
+      formattedTime = practiceTime.practice_time;
+      // 同样处理时间格式
+      if (formattedTime.includes(' ')) {
+        formattedTime = formattedTime.split(' ')[0];
+      }
+      console.log('从对象中提取并格式化的时间:', formattedTime);
     }
     
     console.log('最终发送的时间参数:', formattedTime);
@@ -398,7 +431,7 @@ Page({
     wx.request({
       url: 'http://127.0.0.1:5000/app/api/progress/detail',
       method: 'GET',
-  data: {
+      data: {
         project_name: projectName,
         practice_time: formattedTime
       },
@@ -408,11 +441,21 @@ Page({
         console.log('响应数据:', res.data);
         console.log('响应消息:', res.data?.message);
         console.log('响应成功标志:', res.data?.success);
-        console.log('响应数据条数:', res.data?.data?.length || 0);
+        console.log('响应数据结构:', typeof res.data?.data);
         console.log('================================');
         
         if (res.statusCode === 200 && res.data && res.data.success) {
-          const progressDetails = res.data.data || [];
+          // 后端返回的是单个对象，不是数组，需要包装成数组
+          let progressDetails = [];
+          if (res.data.data) {
+            if (Array.isArray(res.data.data)) {
+              progressDetails = res.data.data;
+            } else {
+              // 如果是单个对象，包装成数组
+              progressDetails = [res.data.data];
+            }
+          }
+          
           console.log('✅ 获取到时间点进度详情:', progressDetails);
           callback(progressDetails);
         } else {
@@ -585,7 +628,7 @@ Page({
               person = item.practice_members;
             }
           } else if (Array.isArray(item.practice_members)) {
-            person = members[0]?.name || members[0] || '未知人员';
+            person = item.practice_members[0]?.name || item.practice_members[0] || '未知人员';
           } else {
             person = item.practice_members.name || item.practice_members || '未知人员';
           }
@@ -616,8 +659,11 @@ Page({
         location: item.practice_location || '未知地点',
         content: item.news || '无详细描述',
         date: date,
-        // 保留原始数据，用于后续扩展
-        originalData: item
+        // 保留原始数据，用于后续扩展和记录选择
+        originalData: {
+          ...item,
+          practice_time: item.practice_time // 确保保留practice_time用于记录选择
+        }
       };
     });
 
@@ -679,22 +725,29 @@ Page({
 
     console.log('准备打开链接:', url);
     
-    // 使用微信小程序的复制功能，让用户手动在浏览器中打开
-    wx.setClipboardData({
-      data: url,
-      success: () => {
-        wx.showModal({
-          title: '链接已复制',
-          content: '链接已复制到剪贴板，请在浏览器中粘贴打开',
-          showCancel: false,
-          confirmText: '知道了'
-        });
-      },
-      fail: () => {
-        wx.showToast({
-          title: '复制失败',
-          icon: 'none',
-          duration: 2000
+    // 直接使用微信小程序的webview打开链接
+    wx.navigateTo({
+      url: `/pages/webview/webview?url=${encodeURIComponent(url)}`,
+      fail: (err) => {
+        console.error('跳转webview失败:', err);
+        // 如果跳转失败，回退到复制功能
+        wx.setClipboardData({
+          data: url,
+          success: () => {
+            wx.showModal({
+              title: '链接已复制',
+              content: '链接已复制到剪贴板，请在浏览器中粘贴打开',
+              showCancel: false,
+              confirmText: '知道了'
+            });
+          },
+          fail: () => {
+            wx.showToast({
+              title: '复制失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
         });
       }
     });
@@ -735,94 +788,6 @@ Page({
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  },
-
-  // 测试进度查询功能（调试用）
-  testProgressQuery: function() {
-    console.log('=== 开始测试进度查询功能 ===');
-    
-    const projectName = this.data.projectInfo?.projectName;
-    if (!projectName) {
-      console.error('❌ 项目信息为空，无法测试');
-      wx.showToast({
-        title: '请先选择项目',
-        icon: 'none'
-      });
-      return;
-    }
-    
-    console.log('测试项目名称:', projectName);
-    console.log('============================');
-    
-    // 测试第一个接口
-    console.log('🧪 测试第一个接口: /api/progress/times');
-    wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/times',
-      method: 'GET',
-      data: { project_name: projectName },
-      success: (res) => {
-        console.log('=== 测试接口1响应 ===');
-        console.log('响应状态码:', res.statusCode);
-        console.log('响应数据:', res.data);
-        console.log('========================');
-        
-        if (res.statusCode === 200 && res.data && res.data.success) {
-          const times = res.data.data || [];
-          console.log('✅ 第一个接口测试成功，获取到时间点:', times);
-          
-          if (times.length > 0) {
-            console.log('🧪 开始测试第二个接口: /api/progress/detail');
-            // 测试第二个接口
-            this.testDetailInterface(projectName, times[0]);
-          } else {
-            console.warn('⚠️ 没有时间点数据，无法测试第二个接口');
-          }
-        } else {
-          console.error('❌ 第一个接口测试失败');
-        }
-      },
-      fail: (err) => {
-        console.error('❌ 第一个接口测试失败:', err);
-      }
-    });
-  },
-
-  // 测试第二个接口（调试用）
-  testDetailInterface: function(projectName, testTime) {
-    console.log('=== 测试第二个接口 ===');
-    console.log('项目名称:', projectName);
-    console.log('测试时间:', testTime);
-    console.log('时间类型:', typeof testTime);
-    console.log('====================');
-    
-    wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/detail',
-      method: 'GET',
-      data: {
-        project_name: projectName,
-        practice_time: testTime
-      },
-      success: (res) => {
-        console.log('=== 测试接口2响应 ===');
-        console.log('响应状态码:', res.statusCode);
-        console.log('响应数据:', res.data);
-        console.log('响应消息:', res.data?.message);
-        console.log('========================');
-        
-        if (res.statusCode === 200 && res.data && res.data.success) {
-          console.log('✅ 第二个接口测试成功');
-          console.log('获取到记录数:', res.data.data?.length || 0);
-        } else {
-          console.error('❌ 第二个接口测试失败');
-          if (res.statusCode === 500) {
-            console.error('500错误：服务器内部错误');
-          }
-        }
-      },
-      fail: (err) => {
-        console.error('❌ 第二个接口测试失败:', err);
-      }
-    });
   },
 
   // 根据时间范围筛选进度记录
@@ -977,6 +942,95 @@ Page({
       title: '已重置筛选',
       icon: 'success',
       duration: 1500
+    });
+  },
+
+  // 选择记录查看详情
+  selectRecord: function(e) {
+    const recordIndex = e.currentTarget.dataset.index;
+    const record = this.data.progressList[recordIndex];
+    
+    console.log('=== 选择记录查看详情 ===');
+    console.log('记录索引:', recordIndex);
+    console.log('选中记录:', record);
+    console.log('原始数据:', record.originalData);
+    console.log('Practice Time:', record.originalData.practice_time);
+    console.log('========================');
+    
+    if (record && record.originalData) {
+      this.setData({
+        selectedRecord: record,
+        showRecordDetail: true
+      });
+      
+      // 显示记录详情
+      this.showRecordDetailModal(record);
+    } else {
+      wx.showToast({
+        title: '记录数据无效',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  // 显示记录详情弹窗
+  showRecordDetailModal: function(record) {
+    const originalData = record.originalData;
+    
+    wx.showModal({
+      title: '进度记录详情',
+      content: `项目名称：${this.data.projectInfo.projectName}\n时间：${record.date}\n参与人员：${record.person}\n工作地点：${record.location}\n详细内容：${record.content}\nPractice Time：${originalData.practice_time}`,
+      showCancel: true,
+      cancelText: '关闭',
+      confirmText: '查看完整信息',
+      success: (res) => {
+        if (res.confirm) {
+          // 用户点击查看完整信息，显示更多详细信息
+          this.showFullRecordDetail(record);
+        }
+      }
+    });
+  },
+
+  // 显示完整记录详情
+  showFullRecordDetail: function(record) {
+    const originalData = record.originalData;
+    
+    // 构建详细的记录信息
+    let detailContent = `📋 项目进度记录详情\n\n`;
+    detailContent += `🏗️ 项目名称：${this.data.projectInfo.projectName}\n`;
+    detailContent += `📅 记录时间：${record.date}\n`;
+    detailContent += `👥 参与人员：${record.person}\n`;
+    detailContent += `📍 工作地点：${record.location}\n`;
+    detailContent += `📝 详细内容：${record.content}\n\n`;
+    
+    // 添加媒体信息
+    if (originalData.practice_image_url) {
+      detailContent += `📷 现场图片：${originalData.practice_image_url}\n`;
+    }
+    if (originalData.video_url) {
+      detailContent += `🎥 现场视频：${originalData.video_url}\n`;
+    }
+    if (originalData.news) {
+      detailContent += `📰 新闻稿：${originalData.news}\n`;
+    }
+    
+    detailContent += `\n🔄 该记录的 practice_time: ${originalData.practice_time}`;
+    
+    wx.showModal({
+      title: '完整记录信息',
+      content: detailContent,
+      showCancel: false,
+      confirmText: '确定'
+    });
+  },
+
+  // 关闭记录详情
+  closeRecordDetail: function() {
+    this.setData({
+      selectedRecord: null,
+      showRecordDetail: false
     });
   }
 });

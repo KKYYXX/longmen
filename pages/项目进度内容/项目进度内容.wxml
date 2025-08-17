@@ -63,12 +63,19 @@
             class="record-item"
             wx:for="{{progressList}}"
             wx:key="id"
+            bindtap="selectRecord"
+            data-index="{{index}}"
         >
             <!-- 记录头部：时间 -->
             <view class="record-header">
                 <view class="record-time">
                     <text class="time-icon">📅</text>
                     <text class="time-text">{{item.date}}</text>
+                </view>
+                <!-- 添加点击提示 -->
+                <view class="click-hint">
+                    <text class="hint-text">点击查看详情</text>
+                    <text class="hint-icon">👆</text>
                 </view>
             </view>
             
