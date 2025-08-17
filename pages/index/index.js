@@ -1,15 +1,39 @@
 Page({
-  data: {},
+  data: {
+    isLoggedIn: false,
+    loginType: ''
+  },
   
   onLoad() {
     console.log('页面加载成功');
+    this.checkLoginStatus();
+  },
+
+  onShow() {
+    console.log('页面显示');
+    this.checkLoginStatus();
+  },
+
+  /**
+   * 检查登录状态
+   */
+  checkLoginStatus() {
+    const app = getApp();
+    const loginStatus = app.getLoginStatus();
+    
+    this.setData({
+      isLoggedIn: loginStatus.isLoggedIn,
+      loginType: loginStatus.loginType
+    });
+    
+    console.log('当前登录状态:', loginStatus);
   },
   
   // 图片加载成功
   imageLoad(e) {
     console.log('图片加载成功:', e);
   },
-  
+
   // 图片加载失败
   imageError(e) {
     console.log('图片加载失败:', e);
@@ -18,7 +42,7 @@ Page({
       icon: 'none'
     });
   },
-  
+
   // 跳转到典型案例页面
   goToTypicalCases() {
     wx.navigateTo({  // 已修正拼写

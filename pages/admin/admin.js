@@ -141,7 +141,23 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-
+    console.log('=== admin页面卸载 ===');
+    
+    // 检查登录状态
+    const app = getApp();
+    const loginStatus = app.getLoginStatus();
+    
+    // 如果用户已登录且是权限管理登录，跳转到登录后的页面
+    if (loginStatus.isLoggedIn && loginStatus.loginType === 'admin') {
+      console.log('权限管理用户退出，跳转到登录后的页面');
+      
+      // 使用setTimeout确保页面卸载完成后再跳转
+      setTimeout(() => {
+        wx.redirectTo({
+          url: '/pages/登录后的页面/登录后的页面'
+        });
+      }, 100);
+    }
   },
 
   /**

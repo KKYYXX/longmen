@@ -215,7 +215,7 @@
         <view class="info-value">
           <view class="progress-display">
             <view class="progress-bar">
-              <view class="progress-fill" style="width: {{selectedProject.progress || 0}}%"></view>
+              <view class="progress-fill" style="width: {{selectedProject.progress || 0}}"></view>
             </view>
             <text class="progress-text">{{selectedProject.progress || 0}}%</text>
           </view>

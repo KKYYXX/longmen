@@ -9,7 +9,12 @@ App({
     // 十五项项目相关的全局数据
     editingProject: null,    // 正在编辑的项目数据
     updatedProject: null,    // 更新后的项目数据
-    newProject: null         // 新添加的项目数据
+    newProject: null,        // 新添加的项目数据
+    
+    // 登录状态管理
+    isLoggedIn: false,       // 是否已登录
+    loginType: '',           // 登录类型：'normal' 或 'admin'
+    currentUser: null        // 当前登录用户信息
   },
 
   /**
@@ -48,6 +53,55 @@ App({
   },
 
   /**
+   * 设置登录状态
+   */
+  setLoginStatus(isLoggedIn, loginType, userInfo) {
+    this.globalData.isLoggedIn = isLoggedIn;
+    this.globalData.loginType = loginType;
+    this.globalData.currentUser = userInfo;
+    
+    // 保存到本地存储
+    try {
+      wx.setStorageSync('isLoggedIn', isLoggedIn);
+      wx.setStorageSync('loginType', loginType);
+      wx.setStorageSync('currentUser', userInfo);
+      console.log('登录状态已保存到本地存储');
+    } catch (e) {
+      console.error('保存登录状态到本地存储失败:', e);
+    }
+  },
+
+  /**
+   * 获取登录状态
+   */
+  getLoginStatus() {
+    return {
+      isLoggedIn: this.globalData.isLoggedIn,
+      loginType: this.globalData.loginType,
+      currentUser: this.globalData.currentUser
+    };
+  },
+
+  /**
+   * 清除登录状态
+   */
+  clearLoginStatus() {
+    this.globalData.isLoggedIn = false;
+    this.globalData.loginType = '';
+    this.globalData.currentUser = null;
+    
+    // 清除本地存储
+    try {
+      wx.removeStorageSync('isLoggedIn');
+      wx.removeStorageSync('loginType');
+      wx.removeStorageSync('currentUser');
+      console.log('登录状态已清除');
+    } catch (e) {
+      console.error('清除登录状态失败:', e);
+    }
+  },
+
+  /**
    * 应用启动时的初始化
    */
   onLaunch() {
@@ -60,8 +114,20 @@ App({
         this.globalData.userInfo = storedUserInfo;
         console.log('从本地存储恢复用户信息:', storedUserInfo);
       }
+      
+      // 从本地存储恢复登录状态
+      const isLoggedIn = wx.getStorageSync('isLoggedIn');
+      const loginType = wx.getStorageSync('loginType');
+      const currentUser = wx.getStorageSync('currentUser');
+      
+      if (isLoggedIn && loginType && currentUser) {
+        this.globalData.isLoggedIn = isLoggedIn;
+        this.globalData.loginType = loginType;
+        this.globalData.currentUser = currentUser;
+        console.log('从本地存储恢复登录状态:', { isLoggedIn, loginType, currentUser });
+      }
     } catch (e) {
-      console.error('从本地存储读取用户信息失败:', e);
+      console.error('从本地存储读取信息失败:', e);
     }
   },
 

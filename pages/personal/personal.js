@@ -631,7 +631,12 @@ Page({
    * 处理普通登录成功
    */
   handleNormalLoginSuccess(user) {
-    // 存储用户信息和登录状态
+    const app = getApp();
+    
+    // 使用app.js的登录状态管理
+    app.setLoginStatus(true, 'normal', user);
+    
+    // 存储用户信息和登录状态（保持兼容性）
     wx.setStorageSync('userInfo', user);
     wx.setStorageSync('isLoggedIn', true);
     wx.setStorageSync('loginType', 'normal');
@@ -658,7 +663,12 @@ Page({
    * 处理权限管理登录成功
    */
   handleAdminLoginSuccess(user) {
-    // 存储用户信息和登录状态
+    const app = getApp();
+    
+    // 使用app.js的登录状态管理
+    app.setLoginStatus(true, 'admin', user);
+    
+    // 存储用户信息和登录状态（保持兼容性）
     wx.setStorageSync('userInfo', user);
     wx.setStorageSync('isLoggedIn', true);
     wx.setStorageSync('loginType', 'admin');
@@ -692,7 +702,25 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    console.log('=== personal页面显示 ===');
+    
+    // 检查登录状态
+    const app = getApp();
+    const loginStatus = app.getLoginStatus();
+    
+    console.log('当前登录状态:', loginStatus);
+    
+    // 如果用户已登录，跳转到登录后的页面
+    if (loginStatus.isLoggedIn) {
+      console.log('用户已登录，跳转到登录后的页面');
+      wx.redirectTo({
+        url: '/pages/登录后的页面/登录后的页面'
+      });
+      return;
+    }
+    
+    // 如果用户未登录，显示登录界面
+    console.log('用户未登录，显示登录界面');
   },
 
   /**
