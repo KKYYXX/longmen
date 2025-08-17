@@ -1,11 +1,7 @@
 // app.js
 App({
   globalData: {
-    userInfo: {
-      name: '谢佳艺',
-      phone: '15816782067',
-      password: '********'
-    },
+    userInfo: null, // 移除硬编码，初始化为null
     // 十五项项目相关的全局数据
     editingProject: null,    // 正在编辑的项目数据
     updatedProject: null,    // 更新后的项目数据
@@ -27,9 +23,9 @@ App({
 
     // 直接替换用户信息
     this.globalData.userInfo = {
-      name: newUserInfo.name || this.globalData.userInfo.name,
-      phone: newUserInfo.phone || this.globalData.userInfo.phone,
-      password: newUserInfo.password || this.globalData.userInfo.password
+      name: newUserInfo.name || '未知用户',
+      phone: newUserInfo.phone || '未知电话',
+      password: newUserInfo.password || ''
     };
 
     console.log('更新后信息:', JSON.stringify(this.globalData.userInfo));
@@ -49,6 +45,14 @@ App({
    * 获取全局用户信息
    */
   getUserInfo() {
+    // 如果没有全局用户信息，尝试从当前登录用户获取
+    if (!this.globalData.userInfo && this.globalData.currentUser) {
+      this.globalData.userInfo = {
+        name: this.globalData.currentUser.name,
+        phone: this.globalData.currentUser.phone,
+        password: this.globalData.currentUser.password || ''
+      };
+    }
     return this.globalData.userInfo;
   },
 
@@ -59,6 +63,11 @@ App({
     this.globalData.isLoggedIn = isLoggedIn;
     this.globalData.loginType = loginType;
     this.globalData.currentUser = userInfo;
+    
+    // 同时更新全局用户信息
+    if (userInfo) {
+      this.updateUserInfo(userInfo);
+    }
     
     // 保存到本地存储
     try {
@@ -99,6 +108,22 @@ App({
     } catch (e) {
       console.error('清除登录状态失败:', e);
     }
+  },
+
+  /**
+   * 处理负责人转让成功
+   */
+  handleTransferSuccess(newManagerInfo) {
+    console.log('=== 处理负责人转让成功 ===');
+    console.log('新负责人信息:', newManagerInfo);
+    
+    // 更新全局用户信息为新负责人
+    this.updateUserInfo(newManagerInfo);
+    
+    // 设置新的登录状态
+    this.setLoginStatus(true, 'admin', newManagerInfo);
+    
+    console.log('=== 负责人转让处理完成 ===');
   },
 
   /**

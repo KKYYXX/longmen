@@ -54,15 +54,7 @@ Page({
       });
     } else {
       // 如果没有传递参数，从全局获取用户信息
-      const app = getApp();
-      const userInfo = app.getUserInfo();
-      this.setData({
-        managerInfo: {
-          name: userInfo.name,
-          phone: userInfo.phone
-        }
-      });
-      console.log('使用全局用户信息:', userInfo);
+      this.loadCurrentUserInfo();
     }
   },
 
@@ -80,6 +72,9 @@ Page({
     console.log('当前负责人页面显示，开始刷新负责人信息');
     // 每次显示页面时从后端获取最新的负责人信息
     this.refreshCurrentManager();
+    
+    // 监听转让成功事件
+    this.listenForTransferSuccess();
   },
 
   /**
@@ -88,25 +83,66 @@ Page({
   refreshCurrentManager() {
     console.log('开始刷新当前负责人信息');
     
-    // 检查是否有新的用户信息可用
+    // 从全局获取最新的用户信息
+    this.loadCurrentUserInfo();
+  },
+
+  /**
+   * 加载当前用户信息
+   */
+  loadCurrentUserInfo() {
     const app = getApp();
+    const loginStatus = app.getLoginStatus();
     const currentUserInfo = app.getUserInfo();
+    
+    console.log('登录状态:', loginStatus);
+    console.log('全局用户信息:', currentUserInfo);
+    
+    let userName = '未知用户';
+    let userPhone = '未知电话';
+    
+    // 优先使用当前登录用户信息
+    if (loginStatus.isLoggedIn && loginStatus.currentUser) {
+      userName = loginStatus.currentUser.name || '未知用户';
+      userPhone = loginStatus.currentUser.phone || '未知电话';
+      console.log('使用当前登录用户信息:', { name: userName, phone: userPhone });
+    }
+    // 其次使用全局用户信息
+    else if (currentUserInfo && currentUserInfo.name) {
+      userName = currentUserInfo.name;
+      userPhone = currentUserInfo.phone || '未知电话';
+      console.log('使用全局用户信息:', { name: userName, phone: userPhone });
+    }
+    // 最后尝试从本地存储获取
+    else {
+      try {
+        const storedUser = wx.getStorageSync('currentUser');
+        if (storedUser && storedUser.name) {
+          userName = storedUser.name;
+          userPhone = storedUser.phone || '未知电话';
+          console.log('使用本地存储用户信息:', { name: userName, phone: userPhone });
+        }
+      } catch (e) {
+        console.error('读取本地存储失败:', e);
+      }
+    }
+    
     const oldManagerInfo = this.data.managerInfo;
     
     // 更新页面数据
     this.setData({
       managerInfo: {
-        name: currentUserInfo.name || '未知用户',
-        phone: currentUserInfo.phone || '未知电话'
+        name: userName,
+        phone: userPhone
       }
     });
     
     console.log('当前负责人信息已更新:', this.data.managerInfo);
     
     // 如果负责人信息有变化，显示提示
-    if (oldManagerInfo.name && oldManagerInfo.name !== currentUserInfo.name) {
+    if (oldManagerInfo.name && oldManagerInfo.name !== userName && userName !== '未知用户') {
       wx.showToast({
-        title: `负责人已更新为: ${currentUserInfo.name}`,
+        title: `负责人已更新为: ${userName}`,
         icon: 'none',
         duration: 2000
       });
@@ -120,14 +156,18 @@ Page({
     const app = getApp();
     const userInfo = app.getUserInfo();
     
-    this.setData({
-      managerInfo: {
-        name: userInfo.name || '未知用户',
-        phone: userInfo.phone || '未知电话'
-      }
-    });
-    
-    console.log('使用全局用户信息:', this.data.managerInfo);
+    if (userInfo && userInfo.name) {
+      this.setData({
+        managerInfo: {
+          name: userInfo.name,
+          phone: userInfo.phone || '未知电话'
+        }
+      });
+      console.log('使用全局用户信息:', this.data.managerInfo);
+    } else {
+      console.log('全局用户信息不可用，尝试其他方式');
+      this.loadCurrentUserInfo();
+    }
   },
 
   /**
@@ -158,6 +198,21 @@ Page({
       }
     });
     console.log('当前负责人页面用户信息刷新完成:', this.data.managerInfo);
+  },
+
+  /**
+   * 监听转让成功事件
+   */
+  listenForTransferSuccess() {
+    // 检查是否有新的转让信息
+    const app = getApp();
+    const loginStatus = app.getLoginStatus();
+    
+    // 如果用户已登录，说明可能是新的负责人登录了
+    if (loginStatus.isLoggedIn && loginStatus.currentUser) {
+      console.log('检测到新用户登录，更新负责人信息');
+      this.loadCurrentUserInfo();
+    }
   },
 
   /**

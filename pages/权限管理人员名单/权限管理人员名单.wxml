@@ -1,31 +1,122 @@
 <!--pages/权限管理人员名单/权限管理人员名单.wxml-->
 <view class="container">
+  <!-- 顶部装饰区域 -->
+  <view class="top-decoration">
+    <view class="decoration-circle circle-1"></view>
+    <view class="decoration-circle circle-2"></view>
+    <view class="decoration-circle circle-3"></view>
+  </view>
+
   <!-- 页面头部 -->
   <view class="header">
+    <view class="header-icon">
+      <view class="icon-container">
+        <text class="icon-text">👥</text>
+      </view>
+    </view>
     <text class="title">权限管理人员名单</text>
+    <text class="subtitle">Permission Management Personnel List</text>
   </view>
 
   <!-- 功能按钮区域 -->
   <view class="content">
+    <view class="content-header">
+      <text class="content-title">权限管理功能</text>
+      <text class="content-subtitle">Permission Management Functions</text>
+    </view>
+    
+    <view class="button-group">
+      <!-- 项目查询按钮 -->
+      <view class="btn-container">
+        <button class="btn primary-btn" bindtap="onProjectQuery">
+          <view class="btn-icon">
+            <text class="icon">🔍</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">项目查询</text>
+            <text class="btn-desc">Query project information</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
 
-    <button class="btn" bindtap="onProjectQuery">
-      <text>项目查询</text>
-    </button>
+      <!-- 项目修改按钮 -->
+      <view class="btn-container">
+        <button class="btn secondary-btn" bindtap="onProjectModify">
+          <view class="btn-icon">
+            <text class="icon">✏️</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">项目修改</text>
+            <text class="btn-desc">Modify project details</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
 
-    <button class="btn" bindtap="onProjectModify">
-      <text>项目修改</text>
-    </button>
+      <!-- 政策文件修改按钮 -->
+      <view class="btn-container">
+        <button class="btn primary-btn" bindtap="onPolicyModify">
+          <view class="btn-icon">
+            <text class="icon">📋</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">政策文件修改</text>
+            <text class="btn-desc">Modify policy documents</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
 
-    <button class="btn" bindtap="onPolicyModify">
-      <text>政策文件修改</text>
-    </button>
+      <!-- 典型案例修改按钮 -->
+      <view class="btn-container">
+        <button class="btn secondary-btn" bindtap="onCaseModify">
+          <view class="btn-icon">
+            <text class="icon">📚</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">典型案例修改</text>
+            <text class="btn-desc">Modify typical cases</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
 
-    <button class="btn" bindtap="onCaseModify">
-      <text>典型案例修改</text>
-    </button>
+      <!-- 项目进度修改按钮 -->
+      <view class="btn-container">
+        <button class="btn primary-btn" bindtap="onProgressModify">
+          <view class="btn-icon">
+            <text class="icon">📊</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">项目进度修改</text>
+            <text class="btn-desc">Modify project progress</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
+    </view>
+  </view>
 
-    <button class="btn" bindtap="onProgressModify">
-      <text>项目进度修改</text>
-    </button>
+
+
+  <!-- 底部装饰 -->
+  <view class="bottom-decoration">
+    <view class="decoration-line"></view>
+    <view class="decoration-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
   </view>
 </view>

@@ -1,28 +1,84 @@
 <!--pages/admin/admin.wxml-->
 <view class="admin-container">
-  <!-- 页面标题 -->
-  <view class="admin-header">
-    <text class="admin-title">权限管理中心</text>
+  <!-- 顶部装饰区域 -->
+  <view class="top-decoration">
+    <view class="decoration-circle circle-1"></view>
+    <view class="decoration-circle circle-2"></view>
+    <view class="decoration-circle circle-3"></view>
   </view>
+
+  <!-- 页面头部 -->
+  <view class="admin-header">
+    <view class="header-icon">
+      <view class="icon-container">
+        <text class="icon-text">🔐</text>
+      </view>
+    </view>
+    <text class="admin-title">权限管理中心</text>
+    <text class="admin-subtitle">Permission Management Center</text>
+  </view>
+
 
   <!-- 功能按钮区域 -->
   <view class="admin-content">
+    <view class="content-header">
+      <text class="content-title">功能操作</text>
+      <text class="content-subtitle">Function Operations</text>
+    </view>
+    
     <view class="button-group">
-      <!-- 有限管理按钮 -->
-      <button class="admin-btn" bindtap="onLimitedManage">
-        <text class="btn-text">权限管理</text>
-      </button>
+      <!-- 权限管理按钮 -->
+      <view class="admin-btn-container">
+        <button class="admin-btn primary-btn" bindtap="onLimitedManage">
+          <view class="btn-icon">
+            <text class="icon">⚙️</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">权限管理</text>
+            <text class="btn-desc">管理用户权限分配</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
 
       <!-- 负责人转让按钮 -->
-      <button class="admin-btn" bindtap="onTransferOwnership">
-        <text class="btn-text">负责人转让</text>
-
-      </button>
+      <view class="admin-btn-container">
+        <button class="admin-btn secondary-btn" bindtap="onTransferOwnership">
+          <view class="btn-icon">
+            <text class="icon">🔄</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">负责人转让</text>
+            <text class="btn-desc">转让管理权限</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
     </view>
   </view>
 
-  <!-- 底部信息 -->
+  <!-- 底部信息区域 -->
   <view class="admin-footer">
-    <text class="footer-text">操作将影响账号权限分配</text>
+    <view class="footer-card">
+      <view class="footer-icon">
+        <text class="icon">ℹ️</text>
+      </view>
+      <text class="footer-text">操作将影响账号权限分配</text>
+      <text class="footer-subtext">Operations will affect account permission distribution</text>
+    </view>
+  </view>
+
+  <!-- 底部装饰 -->
+  <view class="bottom-decoration">
+    <view class="decoration-line"></view>
+    <view class="decoration-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
   </view>
 </view>

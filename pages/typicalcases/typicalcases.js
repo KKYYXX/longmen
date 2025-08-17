@@ -53,11 +53,7 @@ Page({
       return;
     }
 
-    // 已登录，直接跳转到修改页面
-    wx.navigateTo({
-      url: '/pages/typicalcasesalter/typicalcasesalter'
-    });
-/*
+
     // 检查用户权限
     this.checkUserPermission();
   },
@@ -135,6 +131,6 @@ Page({
       }
     }
     
-    return false;*/
+    return false;
   }
 });
