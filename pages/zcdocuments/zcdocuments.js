@@ -170,8 +170,8 @@ Page({
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
-          // 跳转到登录页面
-          wx.navigateTo({
+          // 跳转到登录页面（使用switchTab因为personal是tabBar页面）
+          wx.switchTab({
             url: '/pages/personal/personal'
           });
         }

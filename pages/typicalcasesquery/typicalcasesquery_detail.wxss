@@ -135,6 +135,7 @@
 }
 
 /* 自动操作提示 */
+/*
 .auto-tip {
   display: flex;
   align-items: center;
@@ -155,7 +156,7 @@
   font-size: 14px;
   color: #1976d2;
   font-weight: 500;
-}
+}*/
 
 @keyframes pulse {
   0% { opacity: 1; }

@@ -31,11 +31,7 @@
         <text class="case-time">{{caseData.uploadTime || caseData.createDate}}</text>
       </view>
 
-      <!-- 自动操作提示 -->
-      <view class="auto-tip">
-        <text class="tip-icon">📄</text>
-        <text class="tip-text">智能模式：将自动打开并显示文件内容</text>
-      </view>
+
 
 
     </view>
