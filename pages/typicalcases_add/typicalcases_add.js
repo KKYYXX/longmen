@@ -25,50 +25,8 @@ Page({
 
   // 初始化页面
   initPage() {
-    // 检查用户权限
-    //this.checkUserPermission();
-  },
-
-  /*
-  // 检查用户权限
-  checkUserPermission() {
-    // 注释掉开发环境跳过权限检查，进行前后端联调
-    // const apiConfig = require('../../config/api.js');
-    // if (apiConfig.isMockEnabled()) {
-    //   console.log('开发环境：跳过权限检查');
-    //   return;
-    // }
-
-    // TODO: 调用后端接口检查用户是否有添加典型案例的权限
-    // 接口：GET /api/user/permissions
     
-    wx.request({
-      url: 'http://127.0.0.1:5000/app/api/user/permissions',
-      method: 'GET',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      success: (res) => {
-        if (res.data.success && res.data.permissions.includes('add_typical_case')) {
-          console.log('用户有添加典型案例权限');
-        } else {
-          wx.showModal({
-            title: '权限不足',
-            content: '您没有添加典型案例的权限，请联系管理员。',
-            showCancel: false,
-            success: () => {
-              wx.navigateBack();
-            }
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('检查权限失败:', err);
-        // 前后端联调阶段允许继续操作
-        console.log('前后端联调阶段：允许继续操作');
-      }
-    });
-  },*/
+  },
 
   // 文件上传功能
   uploadFiles: function() {

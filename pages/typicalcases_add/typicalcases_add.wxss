@@ -380,8 +380,8 @@ page {
 }
 
 .preview-btn {
-  color: #2196f3;
-  background: rgba(33, 150, 243, 0.1);
+  color: #000000;
+  background: #E7F5FF;
 }
 
 .delete-btn {
@@ -400,24 +400,28 @@ page {
   z-index: 5;
 }
 
-.preview-btn {
-  background: linear-gradient(135deg, #2196f3, #1976d2);
-  padding: 24rpx 60rpx;
+.preview-upload-btn {
+  background: #E7F5FF;
+  padding: 32rpx 60rpx;
   border-radius: 32rpx;
-  box-shadow: 0 8rpx 24rpx rgba(33, 150, 243, 0.3);
+  box-shadow: 0 8rpx 24rpx rgba(33, 150, 243, 0.15);
   transition: all 0.3s ease;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.preview-btn:active {
+.preview-upload-btn:active {
   transform: translateY(-4rpx);
-  box-shadow: 0 12rpx 32rpx rgba(33, 150, 243, 0.4);
+  box-shadow: 0 12rpx 32rpx rgba(33, 150, 243, 0.25);
 }
 
 .preview-btn-text {
   font-size: 32rpx;
   font-weight: 700;
-  color: white;
+  color: #000000;
+  text-align: center;
 }
 
 /* 提交按钮 */
