@@ -1200,7 +1200,10 @@ Page({
             title: `进度记录 ${index + 1}`,
             status: 'completed',
             statusText: '已完成',
-            selected: false
+            selected: false,
+            // 初始化人员信息和地点信息为空，稍后通过detail接口获取
+            person: '',
+            location: ''
           }));
 
           this.setData({
@@ -1208,6 +1211,11 @@ Page({
             filteredProgressList: formattedProgressList,
             timeFilter: 'all'
           });
+
+          // 为每条记录获取详细信息（包括人员信息和地点信息）
+          if (formattedProgressList.length > 0) {
+            this.loadProgressDetailsForList(formattedProgressList, selectedProject.projectName);
+          }
 
           if (formattedProgressList.length === 0) {
             wx.showToast({
@@ -1231,6 +1239,82 @@ Page({
           icon: 'none'
         });
       }
+    });
+  },
+
+  // 为进度记录列表中的每条记录获取详细信息
+  loadProgressDetailsForList(progressList, projectName) {
+    console.log('开始为进度记录列表获取详细信息，记录数量:', progressList.length);
+    
+    if (progressList.length === 0) return;
+
+    let completedCount = 0;
+    const updatedProgressList = [...progressList];
+
+    progressList.forEach((item, index) => {
+      // 调用后端接口获取每条记录的详细信息
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/api/progress/detail',
+        method: 'GET',
+        data: {
+          project_name: projectName,
+          practice_time: item.practice_time
+        },
+        success: (res) => {
+          completedCount++;
+          
+          if (res.statusCode === 200 && res.data && res.data.success) {
+            const detailData = res.data.data;
+            console.log(`记录 ${index + 1} 详细信息:`, detailData);
+            
+            // 更新人员信息和地点信息，从后端接口获取真实数据
+            updatedProgressList[index] = {
+              ...updatedProgressList[index],
+              person: detailData.practice_members || '未设置',
+              location: detailData.practice_location || '未设置'
+            };
+          } else {
+            console.warn(`获取记录 ${index + 1} 详情失败:`, res);
+            // 如果获取详情失败，设置为默认值
+            updatedProgressList[index] = {
+              ...updatedProgressList[index],
+              person: '未设置',
+              location: '未设置'
+            };
+          }
+
+          // 当所有记录都处理完成时，更新页面数据
+          if (completedCount === progressList.length) {
+            console.log('所有进度记录详细信息加载完成:', updatedProgressList);
+            
+            this.setData({
+              progressList: updatedProgressList,
+              filteredProgressList: updatedProgressList
+            });
+          }
+        },
+        fail: (err) => {
+          completedCount++;
+          console.error(`请求记录 ${index + 1} 详情失败:`, err);
+          
+          // 如果请求失败，设置为默认值
+          updatedProgressList[index] = {
+            ...updatedProgressList[index],
+            person: '未设置',
+            location: '未设置'
+          };
+
+          // 当所有记录都处理完成时，更新页面数据
+          if (completedCount === progressList.length) {
+            console.log('所有进度记录详细信息加载完成（包含失败记录）:', updatedProgressList);
+            
+            this.setData({
+              progressList: updatedProgressList,
+              filteredProgressList: updatedProgressList
+            });
+          }
+        }
+      });
     });
   },
 
@@ -1541,7 +1625,10 @@ Page({
             title: `进度记录 ${index + 1}`,
             status: 'completed',
             statusText: '已完成',
-            selected: false
+            selected: false,
+            // 初始化人员信息和地点信息为空，稍后通过detail接口获取
+            person: '',
+            location: ''
           }));
 
           this.setData({
@@ -1549,6 +1636,11 @@ Page({
             filteredModifyProgressList: formattedProgressList,
             modifyTimeFilter: 'all'
           });
+
+                  // 为每条记录获取详细信息（包括人员信息和地点信息）
+          if (formattedProgressList.length > 0) {
+            this.loadModifyProgressDetailsForList(formattedProgressList, selectedProject.projectName);
+          }
 
           if (formattedProgressList.length === 0) {
             wx.showToast({
@@ -1572,6 +1664,82 @@ Page({
           icon: 'none'
         });
       }
+    });
+  },
+
+  // 为修改进度记录列表中的每条记录获取详细信息
+  loadModifyProgressDetailsForList(progressList, projectName) {
+    console.log('开始为修改进度记录列表获取详细信息，记录数量:', progressList.length);
+    
+    if (progressList.length === 0) return;
+
+    let completedCount = 0;
+    const updatedProgressList = [...progressList];
+
+    progressList.forEach((item, index) => {
+      // 调用后端接口获取每条记录的详细信息
+      wx.request({
+        url: 'http://127.0.0.1:5000/app/api/progress/detail',
+        method: 'GET',
+        data: {
+          project_name: projectName,
+          practice_time: item.practice_time
+        },
+        success: (res) => {
+          completedCount++;
+          
+          if (res.statusCode === 200 && res.data && res.data.success) {
+            const detailData = res.data.data;
+            console.log(`修改记录 ${index + 1} 详细信息:`, detailData);
+            
+            // 更新人员信息和地点信息，从后端接口获取真实数据
+            updatedProgressList[index] = {
+              ...updatedProgressList[index],
+              person: detailData.practice_members || '未设置',
+              location: detailData.practice_location || '未设置'
+            };
+          } else {
+            console.warn(`获取修改记录 ${index + 1} 详情失败:`, res);
+            // 如果获取详情失败，设置为默认值
+            updatedProgressList[index] = {
+              ...updatedProgressList[index],
+              person: '未设置',
+              location: '未设置'
+            };
+          }
+
+          // 当所有记录都处理完成时，更新页面数据
+          if (completedCount === progressList.length) {
+            console.log('所有修改进度记录详细信息加载完成:', updatedProgressList);
+            
+            this.setData({
+              modifyProgressList: updatedProgressList,
+              filteredModifyProgressList: updatedProgressList
+            });
+          }
+        },
+        fail: (err) => {
+          completedCount++;
+          console.error(`请求修改记录 ${index + 1} 详情失败:`, err);
+          
+          // 如果请求失败，设置为默认值
+          updatedProgressList[index] = {
+            ...updatedProgressList[index],
+            person: '未设置',
+            location: '未设置'
+          };
+
+          // 当所有记录都处理完成时，更新页面数据
+          if (completedCount === progressList.length) {
+            console.log('所有修改进度记录详细信息加载完成（包含失败记录）:', updatedProgressList);
+            
+            this.setData({
+              modifyProgressList: updatedProgressList,
+              filteredModifyProgressList: updatedProgressList
+            });
+          }
+        }
+      });
     });
   },
 
