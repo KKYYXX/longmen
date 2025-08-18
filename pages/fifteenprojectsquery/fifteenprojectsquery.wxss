@@ -107,13 +107,13 @@
   border: 2rpx solid rgba(255, 236, 179, 0.3);
   margin-top: 25rpx;
 }
-
+/*
 .search-icon {
   font-size: 32rpx;
   color: #7d6f4f;
   margin-right: 20rpx;
 }
-
+*/
 .search-input {
   flex: 1;
   font-size: 28rpx;
@@ -207,13 +207,13 @@
   align-items: center;
   flex: 1;
 }
-
+/*
 .project-icon {
   font-size: 52rpx;
   margin-right: 24rpx;
   color: #FFB74D;
   filter: drop-shadow(0 2rpx 4rpx rgba(255, 183, 77, 0.3));
-}
+}*/
 
 .project-details {
   flex: 1;
@@ -256,18 +256,18 @@
   align-items: center;
   gap: 8rpx;
 }
-
+/*
 .view-icon {
   font-size: 36rpx;
   color: #666666;
   opacity: 0.8;
-}
-
+}*/
+/*
 .view-text {
   font-size: 20rpx;
   color: #666666;
   opacity: 0.7;
-}
+}*/
 
 /* 项目开始时间 */
 .project-start-date {
