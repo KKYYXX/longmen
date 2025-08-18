@@ -7,18 +7,25 @@
     <view class="decoration-circle circle-3"></view>
   </view>
 
-
+  <!-- 页面头部 -->
+  <view class="header">
+    <view class="header-icon">
+      
+    </view>
+    <text class="title">用户中心</text>
+    <text class="subtitle">User Center</text>
+  </view>
 
   <!-- 主要内容区域 -->
   <view class="personal-content">
     <!-- 切换按钮 -->
     <view class="switch-container">
       <view class="switch-btn {{currentMode === 'login' ? 'active' : ''}}" bindtap="switchToLogin">
-      
+     
         <text class="switch-text">登录</text>
       </view>
       <view class="switch-btn {{currentMode === 'register' ? 'active' : ''}}" bindtap="switchToRegister">
-        
+       
         <text class="switch-text">注册</text>
       </view>
     </view>
@@ -32,9 +39,11 @@
       <!-- 登录方式切换 -->
       <view class="login-type-switch">
         <view class="type-btn {{loginType === 'phone' ? 'active' : ''}}" bindtap="switchLoginType" data-type="phone">
+       
           <text class="type-text">手机号登录</text>
         </view>
         <view class="type-btn {{loginType === 'wechat' ? 'active' : ''}}" bindtap="switchLoginType" data-type="wechat">
+        
           <text class="type-text">微信登录</text>
         </view>
       </view>
@@ -150,9 +159,7 @@
             bindtap="onNormalLogin"
             disabled="{{!isLoginFormValid}}"
           >
-            <view class="btn-icon">
-              <text class="icon">👤</text>
-            </view>
+            
             <view class="btn-content">
               <text class="btn-text">普通登录</text>
             </view>
@@ -259,7 +266,7 @@
               maxlength="20"
               password="{{!showConfirmPassword}}"
             />
-            <view class="password-toggle" bindtap="toggleRegisterPassword">
+            <view class="password-toggle" bindtap="toggleConfirmPassword">
               <text class="toggle-icon">{{showConfirmPassword ? '👁️' : '🙈'}}</text>
             </view>
           </view>
@@ -267,6 +274,9 @@
 
         <!-- 密码要求提示 -->
         <view class="password-hint">
+          <view class="hint-icon">
+            <text class="icon">ℹ️</text>
+          </view>
           <text class="hint-text">密码要求：不少于8位，包含大小写字母和数字</text>
         </view>
 
@@ -300,7 +310,6 @@
       </view>
     </view>
   </view>
-
 
   <!-- 底部装饰 -->
   <view class="bottom-decoration">

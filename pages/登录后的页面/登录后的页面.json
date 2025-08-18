@@ -1,4 +1,5 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "当前用户"
+  "navigationBarTitleText": "当前用户",
+  "navigationStyle": "custom"
 }

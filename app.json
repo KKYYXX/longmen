@@ -59,7 +59,7 @@
         "selectedIconPath": "./images/首页_选中.jpg"
       },
       {
-        "pagePath": "pages/personal/personal",
+        "pagePath": "pages/登录后的页面/登录后的页面",
         "text": "个人",
         "iconPath": "./images/个人.jpg",
         "selectedIconPath": "./images/个人_选中.jpg"
