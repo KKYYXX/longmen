@@ -9,7 +9,7 @@
     <view class="step-header">
       <text class="step-title">步骤1：选择第几个项目</text>
       <view class="refresh-btn" bindtap="loadProjectList">
-        <text class="refresh-icon">🔄</text>
+        <!--<text class="refresh-icon">🔄</text>-->
         <text class="refresh-text">刷新</text>
       </view>
     </view>
@@ -22,7 +22,7 @@
     <!-- 搜索框 -->
     <view class="search-section" wx:if="{{!loading && projectList.length > 0}}">
       <view class="search-box">
-        <text class="search-icon">🔍</text>
+        <!--<text class="search-icon">🔍</text>-->
         <input class="search-input"
                placeholder="搜索项目名称..."
                value="{{searchKeyword}}"
@@ -43,7 +43,7 @@
     <view class="project-list">
       <!-- 加载状态显示 -->
       <view class="loading-state" wx:if="{{loading}}">
-        <text class="loading-icon">⏳</text>
+        <!--<text class="loading-icon">⏳</text>-->
         <text class="loading-text">正在加载项目列表...</text>
       </view>
       
@@ -69,11 +69,11 @@
       
       <!-- 空状态显示 -->
       <view class="empty-state" wx:if="{{projectList.length === 0 && !loading}}">
-        <text class="empty-icon">🏗️</text>
+        <!--<text class="empty-icon">🏗️</text>-->
         <text class="empty-text">暂无项目数据</text>
         <text class="empty-desc">请检查网络连接或联系管理员</text>
         <view class="retry-btn" bindtap="loadProjectList">
-          <text class="retry-icon">🔄</text>
+          <!--<text class="retry-icon">🔄</text>-->
           <text class="retry-text">重新加载</text>
         </view>
       </view>
@@ -141,7 +141,7 @@
           bindtap="selectAction"
           data-action="modify"
         >
-          <view class="action-icon">✏️</view>
+          <!--<view class="action-icon">✏️</view>-->
           <view class="action-info">
             <view class="action-name">修改内容</view>
             <view class="action-desc">修改项目进度信息</view>
@@ -155,7 +155,7 @@
           bindtap="selectAction"
           data-action="add"
         >
-          <view class="action-icon">📎</view>
+          <!--<view class="action-icon">📎</view>-->
           <view class="action-info">
             <view class="action-name">添加内容</view>
             <view class="action-desc">添加图片、视频、时间、地点、人员等</view>
@@ -169,7 +169,7 @@
           bindtap="selectAction"
           data-action="delete"
         >
-          <view class="action-icon">🗑️</view>
+          <!--<view class="action-icon">🗑️</view>-->
           <view class="action-info">
             <view class="action-name">删除内容</view>
             <view class="action-desc">删除项目进度记录</view>
@@ -210,7 +210,7 @@
       <!-- 时间筛选区域 -->
       <view class="modify-filter-section">
         <view class="filter-title-area">
-          <view class="filter-icon">🕒</view>
+          <!--<view class="filter-icon">🕒</view>-->
           <text class="filter-main-title">时间筛选选择时间段查看进度记录</text>
         </view>
 
@@ -234,7 +234,7 @@
         <view class="custom-date-area">
           <picker mode="date" value="{{selectedModifyDate}}" bindchange="onModifyDateChange">
             <view class="custom-date-picker">
-              <view class="date-icon">📅</view>
+              <!--<view class="date-icon">📅</view>-->
               <text class="date-text">{{selectedModifyDate || '选择具体日期'}}</text>
               <view class="date-arrow">▼</view>
             </view>
@@ -257,13 +257,13 @@
       <!-- 进度记录区域 -->
       <view class="modify-progress-area">
         <view class="progress-area-header">
-          <view class="progress-icon">📋</view>
+          <!--<view class="progress-icon">📋</view>-->
           <text class="progress-main-text">选择要修改的进度记录</text>
         </view>
 
         <!-- 空状态 -->
         <view class="modify-empty-state" wx:if="{{filteredModifyProgressList.length === 0}}">
-          <view class="empty-icon-large">📝</view>
+          <!--<view class="empty-icon-large">📝</view>-->
           <text class="empty-message">暂无符合条件的进度记录</text>
         </view>
 
@@ -319,7 +319,7 @@
       <view class="simple-modify-content">
         <view class="current-value-section">
           <view class="section-title">
-            <view class="title-icon">📝</view>
+            <!--<view class="title-icon">📝</view>-->
             <text class="title-text">当前内容</text>
           </view>
           <view class="current-value-display">
@@ -329,7 +329,7 @@
 
         <view class="new-value-section">
           <view class="section-title">
-            <view class="title-icon">✏️</view>
+            <!--<view class="title-icon">✏️</view>-->
             <text class="title-text">新内容</text>
           </view>
 
@@ -392,7 +392,7 @@
       <!-- 时间修改 -->
       <view class="modify-item">
         <view class="modify-label">
-          <view class="label-icon">📅</view>
+          <!--<view class="label-icon">📅</view>-->
           <text class="label-text">时间</text>
         </view>
         <picker mode="date" value="{{modifyRecord.date}}" bindchange="onModifyDetailDateChange">
@@ -406,7 +406,7 @@
       <!-- 人员修改 -->
       <view class="modify-item">
         <view class="modify-label">
-          <view class="label-icon">👤</view>
+          <!--<view class="label-icon">👤</view>-->
           <text class="label-text">人员</text>
         </view>
         <input
@@ -420,7 +420,7 @@
       <!-- 地点修改 -->
       <view class="modify-item">
         <view class="modify-label">
-          <view class="label-icon">📍</view>
+          <!--<view class="label-icon">📍</view>-->
           <text class="label-text">地点</text>
         </view>
         <input
@@ -434,7 +434,7 @@
       <!-- 图片修改 -->
       <view class="modify-item">
         <view class="modify-label">
-          <view class="label-icon">🖼️</view>
+          <!--<view class="label-icon">🖼️</view>-->
           <text class="label-text">图片</text>
         </view>
         <view class="media-upload-area">
@@ -453,7 +453,7 @@
       <!-- 视频修改 -->
       <view class="modify-item">
         <view class="modify-label">
-          <view class="label-icon">🎥</view>
+          <!--<view class="label-icon">🎥</view>-->
           <text class="label-text">视频</text>
         </view>
         <view class="media-upload-area">
@@ -472,14 +472,14 @@
       <!-- 新闻稿文件上传 -->
       <view class="modify-item">
         <view class="modify-label">
-          <view class="label-icon">📰</view>
+          <!--<view class="label-icon">📰</view>-->
           <text class="label-text">新闻稿文件</text>
         </view>
 
         <!-- 文件上传区域 -->
         <view class="file-upload-area">
           <view class="upload-btn" bindtap="uploadNewsFile">
-            <view class="upload-icon">📄</view>
+            <!--<view class="upload-icon">📄</view>-->
             <text class="upload-text">{{modifyRecord.newsFiles && modifyRecord.newsFiles.length > 0 ? '添加更多文件' : '上传新闻稿文件'}}</text>
             <text class="upload-desc">支持PDF、Word、图片格式</text>
           </view>
@@ -488,7 +488,7 @@
           <view class="uploaded-files" wx:if="{{modifyRecord.newsFiles && modifyRecord.newsFiles.length > 0}}">
             <view class="file-item" wx:for="{{modifyRecord.newsFiles}}" wx:key="index">
               <view class="file-info">
-                <view class="file-icon">📄</view>
+                <!--<view class="file-icon">📄</view>-->
                 <view class="file-details">
                   <text class="file-name">{{item.name}}</text>
                   <text class="file-size">{{item.sizeText}}</text>
@@ -547,7 +547,7 @@
 
         <view class="upload-item" bindtap="uploadDocument">
           <view class="upload-icon">📄</view>
-          <text class="upload-text">添加新闻稿</text>
+          <text class="upload-text">添加新闻稿文件</text>
         </view>
       </view>
 
@@ -700,7 +700,7 @@
     <!-- 时间筛选区域 -->
     <view class="delete-filter-section">
       <view class="filter-title-area">
-        <view class="filter-icon">🕒</view>
+        <!--<view class="filter-icon">🕒</view>-->
         <text class="filter-main-title">时间筛选选择时间段查看进度记录</text>
       </view>
 
@@ -724,7 +724,7 @@
       <view class="custom-date-area">
         <picker mode="date" value="{{selectedDeleteDate}}" bindchange="onDeleteDateChange">
           <view class="custom-date-picker">
-            <view class="date-icon">📅</view>
+            <!--<view class="date-icon">📅</view>-->
             <text class="date-text">{{selectedDeleteDate || '选择具体日期'}}</text>
             <view class="date-arrow">▼</view>
           </view>
@@ -757,7 +757,7 @@
     <!-- 进度记录区域 -->
     <view class="delete-progress-area">
       <view class="progress-area-header">
-        <view class="progress-icon">📋</view>
+        <!--<view class="progress-icon">📋</view>-->
         <view class="progress-header-text">
           <text class="progress-main-text">进度记录点击选择要删除的记录</text>
         </view>
@@ -765,7 +765,7 @@
 
       <!-- 空状态 -->
       <view class="delete-empty-state" wx:if="{{filteredProgressList.length === 0}}">
-        <view class="empty-icon-large">📭</view>
+        <!--<view class="empty-icon-large">📭</view>-->
         <text class="empty-message">暂无符合条件的进度记录</text>
       </view>
 
@@ -789,15 +789,15 @@
 
             <view class="item-details">
               <view class="detail-row">
-                <text class="detail-label">📅</text>
+                <!--<text class="detail-label">📅</text>-->
                 <text class="detail-value">{{item.date}}</text>
               </view>
               <view class="detail-row">
-                <text class="detail-label">👤</text>
+                <!--<text class="detail-label">👤</text>-->
                 <text class="detail-value">{{item.person}}</text>
               </view>
               <view class="detail-row">
-                <text class="detail-label">📍</text>
+                <!--<text class="detail-label">📍</text>-->
                 <text class="detail-value">{{item.location}}</text>
               </view>
             </view>

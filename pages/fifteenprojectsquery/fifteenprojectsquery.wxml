@@ -29,7 +29,7 @@
     
     <!-- 名称搜索 -->
     <view class="search-box">
-      <text class="search-icon">🔍</text>
+      <!--<text class="search-icon">🔍</text>-->
       <input class="search-input"
              placeholder="搜索项目名称..."
              value="{{searchKeyword}}"
@@ -54,7 +54,7 @@
       <!-- 项目头部 -->
       <view class="project-header">
         <view class="project-info">
-          <view class="project-icon">🏗️</view>
+          <!--<view class="project-icon">🏗️</view>-->
           <view class="project-details">
             <view class="project-name">{{item.projectName}}</view>
             <view class="project-meta">
@@ -64,8 +64,8 @@
         </view>
         <view class="project-actions">
           <view class="view-detail-btn">
-            <view class="view-icon">👁️</view>
-            <text class="view-text">查看详情</text>
+            <!--<view class="view-icon">👁️</view>-->
+            <!--<text class="view-text">查看详情</text>-->
           </view>
         </view>
       </view>
@@ -98,7 +98,7 @@
 
   <!-- 空状态 -->
   <view class="empty-state" wx:if="{{projectList.length === 0 && !loading}}">
-    <text class="empty-icon">🏗️</text>
+    <!--<text class="empty-icon">🏗️</text>-->
     <text class="empty-text">暂无十五项项目数据</text>
   </view>
 
@@ -214,7 +214,7 @@
     <view class="progress-query-section">
       <view class="section-title">进度查询</view>
       <view class="progress-query-btn" bindtap="onProgressQueryClick">
-        <text class="btn-icon">📊</text>
+        <!--<text class="btn-icon">📊</text>-->
         <text class="btn-text">进度查询</text>
       </view>
     </view>
