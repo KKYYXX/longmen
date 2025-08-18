@@ -8,10 +8,6 @@
   <view class="step-section" wx:if="{{currentStep === 1}}">
     <view class="step-header">
       <text class="step-title">步骤1：选择第几个项目</text>
-      <view class="refresh-btn" bindtap="loadProjectList">
-        <text class="refresh-icon">🔄</text>
-        <text class="refresh-text">刷新</text>
-      </view>
     </view>
     
     <!-- 项目数量信息 -->

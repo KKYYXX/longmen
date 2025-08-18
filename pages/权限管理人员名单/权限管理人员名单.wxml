@@ -15,14 +15,12 @@
       </view>
     </view>
     <text class="title">权限管理人员名单</text>
-    <text class="subtitle">Permission Management Personnel List</text>
   </view>
 
   <!-- 功能按钮区域 -->
   <view class="content">
     <view class="content-header">
       <text class="content-title">权限管理功能</text>
-      <text class="content-subtitle">Permission Management Functions</text>
     </view>
     
     <view class="button-group">
@@ -34,7 +32,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">项目查询</text>
-            <text class="btn-desc">Query project information</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>
@@ -50,7 +47,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">项目修改</text>
-            <text class="btn-desc">Modify project details</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>
@@ -66,7 +62,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">政策文件修改</text>
-            <text class="btn-desc">Modify policy documents</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>
@@ -82,7 +77,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">典型案例修改</text>
-            <text class="btn-desc">Modify typical cases</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>
@@ -98,7 +92,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">项目进度修改</text>
-            <text class="btn-desc">Modify project progress</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>

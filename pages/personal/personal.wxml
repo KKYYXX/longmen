@@ -7,31 +7,19 @@
     <view class="decoration-circle circle-3"></view>
   </view>
 
-  <!-- 页面头部 -->
-  <view class="header">
-    <view class="header-icon">
-    </view>
-    <text class="title">用户中心</text>
-    <text class="subtitle">User Center</text>
-  </view>
+
 
   <!-- 主要内容区域 -->
   <view class="personal-content">
     <!-- 切换按钮 -->
     <view class="switch-container">
       <view class="switch-btn {{currentMode === 'login' ? 'active' : ''}}" bindtap="switchToLogin">
-        <view class="switch-icon">
-          <text class="icon">🔑</text>
-        </view>
+      
         <text class="switch-text">登录</text>
-        <text class="switch-subtext">Login</text>
       </view>
       <view class="switch-btn {{currentMode === 'register' ? 'active' : ''}}" bindtap="switchToRegister">
-        <view class="switch-icon">
-          <text class="icon">📝</text>
-        </view>
+        
         <text class="switch-text">注册</text>
-        <text class="switch-subtext">Register</text>
       </view>
     </view>
 
@@ -39,21 +27,14 @@
     <view class="form-container" wx:if="{{currentMode === 'login'}}">
       <view class="form-header">
         <text class="form-title">用户登录</text>
-        <text class="form-subtitle">User Login</text>
       </view>
 
       <!-- 登录方式切换 -->
       <view class="login-type-switch">
         <view class="type-btn {{loginType === 'phone' ? 'active' : ''}}" bindtap="switchLoginType" data-type="phone">
-          <view class="type-icon">
-            <text class="icon">📱</text>
-          </view>
           <text class="type-text">手机号登录</text>
         </view>
         <view class="type-btn {{loginType === 'wechat' ? 'active' : ''}}" bindtap="switchLoginType" data-type="wechat">
-          <view class="type-icon">
-            <text class="icon">💬</text>
-          </view>
           <text class="type-text">微信登录</text>
         </view>
       </view>
@@ -104,7 +85,6 @@
             </view>
             <view class="btn-content">
               <text class="btn-text">普通登录</text>
-              <text class="btn-desc">Normal Login</text>
             </view>
             <view class="btn-arrow">
               <text class="arrow">›</text>
@@ -121,7 +101,6 @@
             </view>
             <view class="btn-content">
               <text class="btn-text">权限管理登录</text>
-              <text class="btn-desc">Admin Login</text>
             </view>
             <view class="btn-arrow">
               <text class="arrow">›</text>
@@ -176,7 +155,6 @@
             </view>
             <view class="btn-content">
               <text class="btn-text">普通登录</text>
-              <text class="btn-desc">Normal Login</text>
             </view>
             <view class="btn-arrow">
               <text class="arrow">›</text>
@@ -193,7 +171,6 @@
             </view>
             <view class="btn-content">
               <text class="btn-text">权限管理登录</text>
-              <text class="btn-desc">Admin Login</text>
             </view>
             <view class="btn-arrow">
               <text class="arrow">›</text>
@@ -290,9 +267,6 @@
 
         <!-- 密码要求提示 -->
         <view class="password-hint">
-          <view class="hint-icon">
-            <text class="icon">ℹ️</text>
-          </view>
           <text class="hint-text">密码要求：不少于8位，包含大小写字母和数字</text>
         </view>
 
@@ -335,6 +309,33 @@
       <view class="dot"></view>
       <view class="dot"></view>
       <view class="dot"></view>
+    </view>
+  </view>
+
+  <!-- 登录权限弹窗 -->
+  <view class="login-permission-modal" wx:if="{{showLoginModal}}">
+    <view class="modal-mask" bindtap="closeLoginModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <view class="modal-icon">
+          <text class="icon">🔒</text>
+        </view>
+        <text class="modal-title">需要登录</text>
+        <text class="modal-subtitle">请先登录后继续操作</text>
+      </view>
+      
+      <view class="modal-body">
+        <text class="modal-message">您需要登录才能访问此功能</text>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="modal-btn cancel-btn" bindtap="closeLoginModal">
+          <text class="btn-text">取消</text>
+        </button>
+        <button class="modal-btn confirm-btn" bindtap="goToLogin">
+          <text class="btn-text">去登录</text>
+        </button>
+      </view>
     </view>
   </view>
 

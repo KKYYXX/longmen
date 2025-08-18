@@ -38,7 +38,10 @@ Page({
     isRegisterFormValid: false,
     
     // 错误信息
-    errorMessage: ''
+    errorMessage: '',
+    
+    // 登录权限弹窗状态
+    showLoginModal: false
   },
 
   /**
@@ -748,6 +751,10 @@ Page({
     
     // 如果用户未登录，显示登录界面
     console.log('用户未登录，显示登录界面');
+    
+    // 检查是否需要显示权限弹窗（可以根据具体需求调整触发条件）
+    // 例如：如果用户尝试访问需要权限的功能时触发
+    // this.checkLoginPermission();
   },
 
   /**
@@ -785,5 +792,112 @@ Page({
 
   },
 
+  // ========== 登录权限弹窗相关方法 ==========
+  
+  /**
+   * 显示登录权限弹窗
+   */
+  showLoginPermissionModal() {
+    // 使用wx.showModal显示登录提示，仿照典型案例和政策文件页面
+    wx.showModal({
+      title: '提示',
+      content: '请先进行登录',
+      confirmText: '去登录',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          // 跳转到登录页面（使用switchTab因为personal是tabBar页面）
+          wx.switchTab({
+            url: '/pages/personal/personal',
+            success: () => {
+              console.log('跳转到登录页面成功');
+              // 确保当前页面是登录模式
+              this.setData({
+                currentMode: 'login',
+                errorMessage: ''
+              });
+              
+              // 滚动到页面顶部
+              wx.pageScrollTo({
+                scrollTop: 0,
+                duration: 300
+              });
+              
+              // 显示提示信息
+              wx.showToast({
+                title: '请完成登录',
+                icon: 'none',
+                duration: 2000
+              });
+            },
+            fail: (err) => {
+              console.error('跳转登录页面失败:', err);
+              wx.showToast({
+                title: '跳转失败',
+                icon: 'none'
+              });
+            }
+          });
+        }
+      }
+    });
+  },
+
+  /**
+   * 关闭登录权限弹窗
+   */
+  closeLoginModal() {
+    this.setData({
+      showLoginModal: false
+    });
+  },
+
+  /**
+   * 跳转到登录页面
+   */
+  goToLogin() {
+    // 关闭弹窗
+    this.closeLoginModal();
+    
+    // 直接调用showLoginPermissionModal方法
+    this.showLoginPermissionModal();
+  },
+
+  /**
+   * 检查用户登录权限
+   */
+  checkLoginPermission() {
+    const app = getApp();
+    const loginStatus = app.getLoginStatus();
+    
+    // 如果用户未登录，显示权限弹窗
+    if (!loginStatus.isLoggedIn) {
+      this.showLoginPermissionModal();
+      return false;
+    }
+    
+    return true;
+  },
+
+  /**
+   * 示例：需要登录权限的操作
+   * 你可以在需要权限检查的地方调用这个方法
+   */
+  performPrivilegedAction() {
+    // 首先检查登录权限
+    if (!this.checkLoginPermission()) {
+      // 如果权限检查失败，弹窗会自动显示
+      return;
+    }
+    
+    // 如果权限检查通过，继续执行需要权限的操作
+    console.log('权限检查通过，执行操作...');
+    
+    // 这里可以添加你的具体业务逻辑
+    wx.showToast({
+      title: '操作成功',
+      icon: 'success'
+    });
+  }
 
 })

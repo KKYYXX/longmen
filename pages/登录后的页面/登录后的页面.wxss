@@ -93,7 +93,7 @@
 
 /* 主要内容区域 */
 .logged-in-content {
-  padding: 0 40rpx 40rpx 40rpx;
+  padding: 80rpx 40rpx 40rpx 40rpx;
   position: relative;
   z-index: 2;
 }
@@ -106,14 +106,14 @@
 .welcome-card {
   background: #ffffff;
   border-radius: 24rpx;
-  padding: 32rpx;
+  padding: 30rpx;
   text-align: center;
   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
   border: 2rpx solid rgba(255, 193, 7, 0.1);
 }
 
 .welcome-icon {
-  margin-bottom: 16rpx;
+  margin-bottom: 10rpx;
 }
 
 .welcome-text {
@@ -225,8 +225,7 @@
 .detail-item {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 16rpx 0;
+  padding: 20rpx 0;
   border-bottom: 1rpx solid rgba(255, 193, 7, 0.1);
 }
 
@@ -234,22 +233,12 @@
   border-bottom: none;
 }
 
-.detail-icon {
-  width: 40rpx;
-  height: 40rpx;
-  background: rgba(255, 193, 7, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .detail-content {
   flex: 1;
 }
 
 .detail-label {
-  font-size: 24rpx;
+  font-size: 30rpx;
   color: #666;
   margin-bottom: 4rpx;
   display: block;

@@ -7,13 +7,7 @@
     <view class="decoration-circle circle-3"></view>
   </view>
 
-  <!-- 页面头部 -->
-  <view class="header">
-    <view class="header-icon">
-    </view>
-    <text class="title">用户中心</text>
-    <text class="subtitle">User Center</text>
-  </view>
+
 
   <!-- 主要内容区域 -->
   <view class="logged-in-content">
@@ -24,7 +18,6 @@
           <text class="icon">👋</text>
         </view>
         <text class="welcome-text">欢迎回来，{{userInfo.name}}</text>
-        <text class="welcome-subtext">Welcome back, {{userInfo.name}}</text>
       </view>
     </view>
 
@@ -32,7 +25,6 @@
     <view class="user-info-section">
       <view class="section-header">
         <text class="section-title">个人信息</text>
-        <text class="section-subtitle">Personal Information</text>
       </view>
       
       <view class="user-info-card">
@@ -40,27 +32,18 @@
         </view>
         <view class="user-details">
           <view class="detail-item">
-            <view class="detail-icon">
-              <text class="icon">👤</text>
-            </view>
             <view class="detail-content">
               <text class="detail-label">姓名</text>
               <text class="detail-value">{{userInfo.name}}</text>
             </view>
           </view>
           <view class="detail-item">
-            <view class="detail-icon">
-              <text class="icon">📱</text>
-            </view>
             <view class="detail-content">
               <text class="detail-label">手机号</text>
               <text class="detail-value">{{userInfo.phone}}</text>
             </view>
           </view>
           <view class="detail-item">
-            <view class="detail-icon">
-              <text class="icon">🔑</text>
-            </view>
             <view class="detail-content">
               <text class="detail-label">用户类型</text>
               <text class="detail-value">{{loginType === 'admin' ? '权限管理员' : '普通用户'}}</text>
@@ -82,7 +65,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">权限管理中心</text>
-            <text class="btn-desc">Permission Management Center</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>
@@ -102,7 +84,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">退出登录</text>
-            <text class="btn-desc">Logout</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>

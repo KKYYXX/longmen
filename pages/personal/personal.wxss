@@ -93,7 +93,7 @@
 
 /* 主要内容区域 */
 .personal-content {
-  padding: 0 40rpx 40rpx 40rpx;
+  padding: 60rpx 40rpx 40rpx 40rpx;
   position: relative;
   z-index: 2;
 }
@@ -138,7 +138,7 @@
 }
 
 .switch-text {
-  font-size: 36rpx;
+  font-size: 40rpx;
   font-weight: bold;
   color: #b8860b;
   transition: color 0.3s ease;
@@ -587,6 +587,152 @@
     padding-left: 30rpx;
     padding-right: 30rpx;
   }
+}
+
+/* ========== 登录权限弹窗样式 ========== */
+
+.login-permission-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4rpx);
+}
+
+.modal-content {
+  position: relative;
+  width: 600rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #ffd580 0%, #ffe9b3 100%);
+  padding: 40rpx 40rpx 30rpx 40rpx;
+  text-align: center;
+  position: relative;
+}
+
+.modal-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.3), transparent);
+}
+
+.modal-icon {
+  margin-bottom: 20rpx;
+}
+
+.modal-icon .icon {
+  font-size: 80rpx;
+  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.1));
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #b8860b;
+  display: block;
+  margin-bottom: 12rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.modal-subtitle {
+  font-size: 26rpx;
+  color: #d4a017;
+  display: block;
+  font-weight: 500;
+}
+
+.modal-body {
+  padding: 40rpx;
+  text-align: center;
+}
+
+.modal-message {
+  font-size: 30rpx;
+  color: #333;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 2rpx solid #f5f5f5;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 100rpx;
+  border: none;
+  background: transparent;
+  font-size: 32rpx;
+  font-weight: 500;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.modal-btn::after {
+  border: none;
+}
+
+.modal-btn:active {
+  transform: scale(0.98);
+}
+
+.cancel-btn {
+  color: #999;
+  border-right: 2rpx solid #f5f5f5;
+}
+
+.cancel-btn:active {
+  background: #f8f8f8;
+}
+
+.confirm-btn {
+  color: #b8860b;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff5e6 100%);
+}
+
+.confirm-btn:active {
+  background: linear-gradient(135deg, #ffe9b3 0%, #ffd580 100%);
+}
+
+.btn-text {
+  display: block;
+  line-height: 100rpx;
 }
 
 

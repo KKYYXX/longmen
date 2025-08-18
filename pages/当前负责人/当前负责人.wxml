@@ -14,15 +14,13 @@
         <text class="icon-text">👤</text>
       </view>
     </view>
-    <text class="manager-title">当前负责人</text>
-    <text class="manager-subtitle">Current Responsible Person</text>
+
   </view>
 
   <!-- 主要内容区域 -->
   <view class="manager-content">
     <view class="content-header">
-      <text class="content-title">负责人信息</text>
-      <text class="content-subtitle">Responsible Person Information</text>
+      <text class="content-title">当前负责人信息</text>
     </view>
     
 
@@ -55,8 +53,6 @@
     <!-- 转让按钮 -->
     <view class="action-section">
       <view class="action-header">
-        <text class="action-title">操作</text>
-        <text class="action-subtitle">Operations</text>
       </view>
       
       <view class="transfer-btn-container">
@@ -66,7 +62,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">转让负责人</text>
-            <text class="btn-desc">Transfer responsibility to another person</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>

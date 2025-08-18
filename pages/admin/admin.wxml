@@ -14,8 +14,7 @@
         <text class="icon-text">🔐</text>
       </view>
     </view>
-    <text class="admin-title">权限管理中心</text>
-    <text class="admin-subtitle">Permission Management Center</text>
+    
   </view>
 
 
@@ -23,7 +22,6 @@
   <view class="admin-content">
     <view class="content-header">
       <text class="content-title">功能操作</text>
-      <text class="content-subtitle">Function Operations</text>
     </view>
     
     <view class="button-group">
@@ -35,7 +33,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">权限管理</text>
-            <text class="btn-desc">管理用户权限分配</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>
@@ -51,7 +48,6 @@
           </view>
           <view class="btn-content">
             <text class="btn-text">负责人转让</text>
-            <text class="btn-desc">转让管理权限</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>
