@@ -2,7 +2,7 @@
 .logged-in-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #fff9f0 0%, #fff5e6 100%);
-  padding: 0;
+  padding: 0 0 140rpx 0; /* 底部留出tabBar空间 */
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -518,71 +518,7 @@
   50% { opacity: 1; }
 }
 
-/* 自定义tabBar样式 */
-.custom-tabbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120rpx;
-  background: #ffffff;
-  border-top: 2rpx solid rgba(255, 193, 7, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.08);
-  z-index: 1000;
-}
 
-.tab-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 100%;
-  transition: all 0.3s ease;
-}
-
-.tab-item:active {
-  transform: scale(0.95);
-}
-
-.tab-item.active {
-  color: #b8860b;
-}
-
-.tab-item:not(.active) {
-  color: #7A7E83;
-}
-
-.tab-icon {
-  width: 48rpx;
-  height: 48rpx;
-  background: rgba(255, 193, 7, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8rpx;
-  transition: all 0.3s ease;
-}
-
-.tab-item.active .tab-icon {
-  background: rgba(255, 193, 7, 0.2);
-  transform: scale(1.1);
-}
-
-.tab-text {
-  font-size: 24rpx;
-  font-weight: bold;
-}
-
-/* 调整主容器底部边距，为tabBar留出空间 */
-.logged-in-container {
-  padding-bottom: 140rpx;
-}
 
 /* 响应式设计 */
 @media (max-width: 750rpx) {

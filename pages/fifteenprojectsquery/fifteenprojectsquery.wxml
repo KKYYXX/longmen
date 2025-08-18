@@ -193,8 +193,7 @@
           <!-- 有联系人数据时显示 -->
           <view class="contact-list" wx:if="{{selectedProject.contacts && selectedProject.contacts.length > 0}}">
             <view class="contact-item" wx:for="{{selectedProject.contacts}}" wx:key="index">
-              <text class="contact-name">{{item.name || item.contact_name || '姓名未知'}}</text>
-              <text class="contact-phone">{{item.phone || item.contact_phone || item.telephone || '电话未知'}}</text>
+              <text class="contact-name">{{item.name || item.contact_name || '联系人未知'}}</text> 
             </view>
           </view>
           
@@ -208,19 +207,7 @@
       <view class="info-item">
         <view class="info-label">备注</view>
         <view class="info-value long-text">{{selectedProject.remarks || '未设置'}}</view>
-      </view>
-
-      <view class="info-item">
-        <view class="info-label">项目进度</view>
-        <view class="info-value">
-          <view class="progress-display">
-            <view class="progress-bar">
-              <view class="progress-fill" style="width: {{selectedProject.progress || 0}}"></view>
-            </view>
-            <text class="progress-text">{{selectedProject.progress || 0}}%</text>
-          </view>
-        </view>
-      </view>
+      </view> 
     </view>
 
     <!-- 进度查询按钮区域 -->

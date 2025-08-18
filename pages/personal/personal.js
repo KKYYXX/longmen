@@ -647,10 +647,20 @@ Page({
       icon: 'success',
       duration: 1500,
       success: () => {
-        // 延迟跳转到首页
+        // 延迟跳转到登录后的页面，使用reLaunch避免回退问题
         setTimeout(() => {
-          wx.switchTab({
-            url: '/pages/index/index'
+          wx.reLaunch({
+            url: '/pages/登录后的页面/登录后的页面',
+            success: () => {
+              console.log('跳转登录后页面成功');
+            },
+            fail: (err) => {
+              console.error('跳转登录后页面失败:', err);
+              wx.showToast({
+                title: '跳转失败',
+                icon: 'none'
+              });
+            }
           });
         }, 1500);
       }
@@ -679,10 +689,20 @@ Page({
       icon: 'success',
       duration: 1500,
       success: () => {
-        // 延迟跳转到权限管理中心
+        // 延迟跳转到权限管理中心，使用navigateTo保持页面堆栈
         setTimeout(() => {
           wx.navigateTo({
-            url: '/pages/admin/admin?name=' + encodeURIComponent(user.name) + '&phone=' + user.phone
+            url: '/pages/admin/admin?name=' + encodeURIComponent(user.name) + '&phone=' + user.phone,
+            success: () => {
+              console.log('跳转权限管理中心成功');
+            },
+            fail: (err) => {
+              console.error('跳转权限管理中心失败:', err);
+              wx.showToast({
+                title: '跳转失败',
+                icon: 'none'
+              });
+            }
           });
         }, 1500);
       }
@@ -713,8 +733,15 @@ Page({
     // 如果用户已登录，跳转到登录后的页面
     if (loginStatus.isLoggedIn) {
       console.log('用户已登录，跳转到登录后的页面');
-      wx.redirectTo({
-        url: '/pages/登录后的页面/登录后的页面'
+      // 使用reLaunch跳转到登录后的页面，避免回退问题
+      wx.reLaunch({
+        url: '/pages/登录后的页面/登录后的页面',
+        success: () => {
+          console.log('跳转登录后页面成功');
+        },
+        fail: (err) => {
+          console.error('跳转登录后页面失败:', err);
+        }
       });
       return;
     }
@@ -756,5 +783,7 @@ Page({
    */
   onShareAppMessage() {
 
-  }
+  },
+
+
 })
