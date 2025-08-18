@@ -282,51 +282,6 @@ Page({
     });
   },
 
-  downloadCase: function(e) {
-    if (e && e.stopPropagation) {
-      e.stopPropagation(); // 阻止事件冒泡
-    }
-    const caseData = e.currentTarget.dataset.case;
-    
-    if (caseData.files && caseData.files.length > 0) {
-      const fileUrl = caseData.files[0].url;
-      // 下载文件
-      wx.downloadFile({
-        url: fileUrl,
-        success: (res) => {
-          if (res.statusCode === 200) {
-            wx.showToast({
-              title: '下载成功',
-              icon: 'success'
-            });
-          }
-        },
-        fail: (error) => {
-          console.error('下载失败:', error);
-          wx.showToast({
-            title: '下载失败',
-            icon: 'none'
-          });
-        }
-      });
-    } else {
-      wx.showToast({
-        title: '暂无文件可下载',
-        icon: 'none'
-      });
-    }
-  },
-
-  shareCase: function(e) {
-    if (e && e.stopPropagation) {
-      e.stopPropagation(); // 阻止事件冒泡
-    }
-    wx.showToast({
-      title: '分享功能开发中',
-      icon: 'none'
-    });
-  },
-
   loadMore: function() {
     wx.showToast({
       title: '没有更多数据',

@@ -1,7 +1,4 @@
 <view class="document-container">
-  <view class="texture-overlay"></view>
-  <view class="light-spot"></view>
-  
   <!-- 头部导航 -->
   <view class="header">
     <view class="back-btn" bindtap="navigateBack">
@@ -24,100 +21,16 @@
 
   <!-- 文档内容 -->
   <view class="document-content" wx:if="{{!loading && caseData}}">
-    <!-- 案例基本信息 -->
-    <view class="case-info-card">
-      <view class="case-header">
-        <text class="case-title">{{caseData.caseName || caseData.title}}</text>
-        <text class="case-time">{{caseData.uploadTime || caseData.createDate}}</text>
+    <!-- 文件内容显示区域 -->
+    <view class="file-content-display" wx:if="{{fileContent}}">
+      <!-- 图片文件显示 -->
+      <view class="image-display" wx:if="{{imageUrl}}">
+        <image class="content-image" src="{{imageUrl}}" mode="widthFix" bindtap="previewImage"></image>
       </view>
-
-
-
-
-    </view>
-
-    <!-- 文件内容展示区域 -->
-    <view class="file-content-container" wx:if="{{caseData.files && caseData.files.length > 0}}">
-      <!-- 文件头部信息 -->
-      <view class="file-header-card">
-        <view class="file-icon-large">
-          <text class="icon">📄</text>
-        </view>
-        <view class="file-info-large">
-          <text class="file-name-large">{{caseData.files[0].name}}</text>
-          <text class="file-size-large">{{caseData.files[0].sizeFormatted || caseData.files[0].size}}</text>
-        </view>
-        <view class="open-btn-large" bindtap="openMainFile">
-          <text class="open-text">打开文件</text>
-        </view>
-      </view>
-
-      <!-- 文件内容显示区域 -->
-      <view class="file-content-display" wx:if="{{fileContent}}">
-        <view class="content-header">
-          <text class="content-title">📄 文件内容</text>
-        </view>
-        
-        <!-- 图片文件显示 -->
-        <view class="image-display" wx:if="{{imageUrl}}">
-          <image class="content-image" src="{{imageUrl}}" mode="widthFix" bindtap="previewImage"></image>
-        </view>
-        
-        <!-- 文本内容显示 -->
-        <view class="content-body" wx:if="{{!imageUrl}}">
-          <text class="content-text">{{fileContent}}</text>
-        </view>
-        
-        <!-- 文件操作按钮 -->
-        <view class="file-actions">
-          <view class="action-btn download-action" bindtap="downloadCurrentFile">
-            <text class="action-icon">⬇️</text>
-            <text class="action-text">下载文件</text>
-          </view>
-          <view class="action-btn share-action" bindtap="shareCurrentFile">
-            <text class="action-icon">📤</text>
-            <text class="action-text">分享文件</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 文件内容末尾的附加内容 -->
-      <view class="file-appendix">
-        <!-- 相关视频 -->
-        <view class="appendix-section" wx:if="{{caseData.videos && caseData.videos.length > 0}}">
-          <view class="appendix-divider"></view>
-          <text class="appendix-title">🎥 相关视频</text>
-          <view class="videos-list">
-            <view class="video-item-compact" wx:for="{{caseData.videos}}" wx:key="index">
-              <view class="video-info-compact">
-                <text class="video-icon-small">🎥</text>
-                <view class="video-details-compact">
-                  <text class="video-name-small">{{item.name}}</text>
-                  <text class="video-duration-small" wx:if="{{item.duration}}">{{item.duration}}</text>
-                </view>
-              </view>
-              <text class="play-btn-small" bindtap="playVideo" data-video="{{item}}">播放</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 相关新闻 -->
-        <view class="appendix-section" wx:if="{{caseData.links && caseData.links.length > 0}}">
-          <view class="appendix-divider"></view>
-          <text class="appendix-title">🔗 相关新闻</text>
-          <view class="links-list">
-            <view class="link-item-compact" wx:for="{{caseData.links}}" wx:key="index">
-              <view class="link-info-compact">
-                <text class="link-icon-small">🔗</text>
-                <view class="link-details-compact">
-                  <text class="link-title-small">{{item.title}}</text>
-                  <text class="link-url-small">{{item.url}}</text>
-                </view>
-              </view>
-              <text class="open-btn-small" bindtap="openLink" data-link="{{item}}">打开</text>
-            </view>
-          </view>
-        </view>
+      
+      <!-- 文本内容显示 -->
+      <view class="content-body" wx:if="{{!imageUrl}}">
+        <text class="content-text">{{fileContent}}</text>
       </view>
     </view>
   </view>

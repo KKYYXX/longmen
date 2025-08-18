@@ -292,7 +292,7 @@ Page({
           console.log('PDF文档打开成功');
           // 设置文件内容为PDF预览提示
           this.setData({
-            fileContent: `PDF文档：${file.fileName}\n\n文档已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+            fileContent: `PDF文档：${file.fileName}\n\n文档已在新窗口中打开，您可以查看完整内容。`
           });
         },
         fail: (error) => {
@@ -300,7 +300,7 @@ Page({
           console.error('PDF打开失败:', error);
           // 如果无法打开，显示文件信息
           this.setData({
-            fileContent: `PDF文档：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：PDF\n\n由于技术限制，无法直接预览PDF内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用其他PDF阅读器打开\n3. 联系管理员获取文件内容摘要`
+            fileContent: `PDF文档：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：PDF\n\n由于技术限制，无法直接预览PDF内容。\n\n您可以：\n1. 使用其他PDF阅读器打开\n2. 联系管理员获取文件内容摘要`
           });
         }
       });
@@ -313,14 +313,14 @@ Page({
           wx.hideLoading();
           console.log('Word文档打开成功');
           this.setData({
-            fileContent: `Word文档：${file.fileName}\n\n文档已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+            fileContent: `Word文档：${file.fileName}\n\n文档已在新窗口中打开，您可以查看完整内容。`
           });
         },
         fail: (error) => {
           wx.hideLoading();
           console.error('Word文档打开失败:', error);
           this.setData({
-            fileContent: `Word文档：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览Word文档内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用Microsoft Word或其他兼容软件打开\n3. 联系管理员获取文档摘要`
+            fileContent: `Word文档：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览Word文档内容。\n\n您可以：\n1. 使用Microsoft Word或其他兼容软件打开\n2. 联系管理员获取文档摘要`
           });
         }
       });
@@ -333,14 +333,14 @@ Page({
           wx.hideLoading();
           console.log('Excel文档打开成功');
           this.setData({
-            fileContent: `Excel表格：${file.fileName}\n\n表格已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+            fileContent: `Excel表格：${file.fileName}\n\n表格已在新窗口中打开，您可以查看完整内容。`
           });
         },
         fail: (error) => {
           wx.hideLoading();
           console.error('Excel文档打开失败:', error);
           this.setData({
-            fileContent: `Excel表格：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览Excel表格内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用Microsoft Excel或其他兼容软件打开\n3. 联系管理员获取表格摘要`
+            fileContent: `Excel表格：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览Excel表格内容。\n\n您可以：\n1. 使用Microsoft Excel或其他兼容软件打开\n2. 联系管理员获取表格摘要`
           });
         }
       });
@@ -353,14 +353,14 @@ Page({
           wx.hideLoading();
           console.log('PowerPoint文档打开成功');
           this.setData({
-            fileContent: `PowerPoint演示文稿：${file.fileName}\n\n演示文稿已在新窗口中打开，您可以查看完整内容。\n\n如需下载文件，请点击下载按钮。`
+            fileContent: `PowerPoint演示文稿：${file.fileName}\n\n演示文稿已在新窗口中打开，您可以查看完整内容。`
           });
         },
         fail: (error) => {
           wx.hideLoading();
           console.error('PowerPoint文档打开失败:', error);
           this.setData({
-            fileContent: `PowerPoint演示文稿：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览PowerPoint内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用Microsoft PowerPoint或其他兼容软件打开\n3. 联系管理员获取演示文稿摘要`
+            fileContent: `PowerPoint演示文稿：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于技术限制，无法直接预览PowerPoint内容。\n\n您可以：\n1. 使用Microsoft PowerPoint或其他兼容软件打开\n2. 联系管理员获取演示文稿摘要`
           });
         }
       });
@@ -368,7 +368,7 @@ Page({
       // 其他类型文档
       wx.hideLoading();
       this.setData({
-        fileContent: `文档文件：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于文件类型限制，无法直接预览内容。\n\n您可以：\n1. 点击下载按钮保存到本地\n2. 使用相应的专业软件打开\n3. 联系管理员获取文件摘要`
+        fileContent: `文档文件：${file.fileName}\n\n文件大小：${file.fileSize}\n文件类型：${fileType.toUpperCase()}\n\n由于文件类型限制，无法直接预览内容。\n\n您可以：\n1. 使用相应的专业软件打开\n2. 联系管理员获取文件摘要`
       });
     }
   },

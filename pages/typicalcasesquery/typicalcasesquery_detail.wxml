@@ -13,14 +13,14 @@
     <!-- 头部信息 -->
     <view class="header">
       <view class="back-btn" bindtap="navigateBack">
-        <text class="back-icon">←</text>
+        <!--<text class="back-icon">←</text>-->
       </view>
       <view class="title-box">
         <text class="title">案例详情</text>
         <text class="subtitle">{{caseData.caseName}}</text>
       </view>
       <view class="share-btn" bindtap="shareCase">
-        <text class="share-icon">📤</text>
+        <!--<text class="share-icon">📤</text>-->
       </view>
     </view>
 

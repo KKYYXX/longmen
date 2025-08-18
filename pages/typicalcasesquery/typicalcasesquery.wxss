@@ -207,10 +207,10 @@ page {
   align-items: center;
   gap: 8rpx;
 }
-
+/*
 .stat-icon {
   font-size: 24rpx;
-}
+}*/
 
 .stat-text {
   font-size: 24rpx;
@@ -248,7 +248,7 @@ page {
   color: #9c27b0;
   background: rgba(156, 39, 176, 0.1);
 }
-
+/*
 .download-btn {
   color: #4CAF50;
   background: rgba(76, 175, 80, 0.1);
@@ -257,7 +257,7 @@ page {
 .share-btn {
   color: #ff9800;
   background: rgba(255, 152, 0, 0.1);
-}
+}*/
 
 .action-btn:active {
   transform: scale(0.95);
