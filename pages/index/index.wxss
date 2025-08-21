@@ -1,6 +1,6 @@
 /**index.wxss**/
 page {
-  background-color: #FFFFF0;
+  background-color: #ffffff;
   color: #444;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
@@ -8,7 +8,7 @@ page {
 .app-container {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #fff9e6 0%, #ffffff 30%, #fef7e0 100%);
+  background: #ffffff;
   padding: 60rpx 40rpx 140rpx 40rpx; /* 底部留出tabBar空间 */
   box-sizing: border-box;
   display: flex;
@@ -110,7 +110,7 @@ page {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 253, 231, 0.3);
+  background: #ffffff;
   position: relative;
   z-index: 1;
 }
@@ -124,18 +124,21 @@ page {
 }
 
 .feature-card {
-  background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
-  border-radius: 36rpx;
+  background: #ffffff;
+  border-radius: 0;
   padding: 44rpx 40rpx;
   display: flex;
   align-items: center;
   box-shadow: 
-    0 8rpx 30rpx rgba(255, 167, 38, 0.3),
-    inset 0 0 0 2rpx rgba(255, 255, 255, 0.2);
+    0 8rpx 30rpx rgba(255, 167, 38, 0.1),
+    inset 0 0 0 2rpx #FFE082;
   transition: all 0.35s ease;
-  color: #ffffff;
+  color: #333333;
   position: relative;
   overflow: hidden;
+  width: 680rpx;
+  box-sizing: border-box;
+  margin-left: -40rpx;
 }
 
 /* 卡片内渐变高光 */
@@ -150,30 +153,30 @@ page {
   pointer-events: none;
 }
 
-/* 不同卡片的渐变区分 */
+/* 不同卡片的边框区分 */
 .feature-card:nth-child(2) {
-  background: linear-gradient(135deg, #FFB74D 0%, #FFCC80 100%);
-  box-shadow: 0 8rpx 30rpx rgba(255, 183, 77, 0.3);
+  border: 2rpx solid #FFE082;
+  box-shadow: 0 8rpx 30rpx rgba(255, 183, 77, 0.1);
 }
 
 .feature-card:nth-child(3) {
-  background: linear-gradient(135deg, #f1a464 0%, #FFB74D 100%);
-  box-shadow: 0 8rpx 30rpx rgba(241, 164, 100, 0.3);
+  border: 2rpx solid #FFE082;
+  box-shadow: 0 8rpx 30rpx rgba(241, 164, 100, 0.1);
 }
 
 /* 卡片交互效果 */
 .feature-card:active {
   transform: translateY(3rpx);
   box-shadow: 
-    0 4rpx 12rpx rgba(255, 167, 38, 0.4),
-    inset 0 0 0 2rpx rgba(255, 255, 255, 0.3);
+    0 4rpx 12rpx rgba(255, 167, 38, 0.2),
+    inset 0 0 0 2rpx #FFE082;
 }
 
 .icon-container {
   width: 120rpx;
   height: 120rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 28rpx;
+  background: rgba(255, 224, 130, 0.1);
+  border-radius: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -181,10 +184,12 @@ page {
   box-shadow: 
     0 4rpx 12rpx rgba(0, 0, 0, 0.04),
     inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  border: 1rpx solid #FFE082;
 }
 
 .feature-icon {
   font-size: 56rpx;
+  color: #FF8F00;
 }
 
 .feature-info {
@@ -195,13 +200,14 @@ page {
   font-size: 36rpx;
   font-weight: 600;
   margin-bottom: 16rpx;
-  text-shadow: 0 2rpx 2rpx rgba(0, 0, 0, 0.1);
+  text-shadow: none;
   display: block;
+  color: #333333;
 }
 
 .feature-desc {
   font-size: 25rpx;
-  color: rgba(255, 255, 255, 0.9);
+  color: #666666;
   opacity: 0.85;
   line-height: 1.4;
   display: block;
@@ -311,4 +317,3 @@ page {
   font-size: 24rpx;
   font-weight: bold;
 }
-
