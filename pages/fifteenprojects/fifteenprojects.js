@@ -64,9 +64,27 @@ Page({
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
-          // 跳转到登录页面（使用switchTab因为personal是tabBar页面）
+          console.log('用户点击去登录，准备跳转...');
+          // 跳转到登录页面（使用switchTab因为登录后的页面是tabBar页面）
           wx.switchTab({
-            url: '/pages/personal/personal'
+            url: '/pages/登录后的页面/登录后的页面',
+            success: () => {
+              console.log('跳转成功');
+            },
+            fail: (err) => {
+              console.error('跳转失败:', err);
+              // 如果switchTab失败，尝试使用navigateTo
+              wx.navigateTo({
+                url: '/pages/personal/personal',
+                fail: (navErr) => {
+                  console.error('navigateTo也失败了:', navErr);
+                  wx.showToast({
+                    title: '跳转失败',
+                    icon: 'none'
+                  });
+                }
+              });
+            }
           });
         }
       }
