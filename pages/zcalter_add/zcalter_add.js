@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     fileName: '',
@@ -78,7 +81,7 @@ Page({
       console.log('开始上传文件:', selectedFile.name, '大小:', selectedFile.size);
       
       wx.uploadFile({
-        url: 'http://127.0.0.1:5000/app/api/upload',
+        url: apiConfig.buildUrl('/app/api/upload'),
         filePath: selectedFile.path,
         name: 'file',
         success: (res) => {
@@ -124,7 +127,7 @@ Page({
       console.log('- file_size 类型:', typeof requestData.file_size, '值:', requestData.file_size);
 
       wx.request({
-        url: 'http://127.0.0.1:5000/app/api/zcdocuments',
+        url: apiConfig.buildUrl('/app/api/zcdocuments'),
         method: 'POST',
         header: {
           'content-type': 'application/json'

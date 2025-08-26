@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     // 典型案例名称
@@ -262,7 +265,7 @@ Page({
     // }
 
     // 前后端联调阶段：先上传文件到文件服务器，然后调用后端接口
-    const uploadServerUrl = 'http://127.0.0.1:5000/app/api/upload';
+    const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
     
     wx.uploadFile({
       url: uploadServerUrl,
@@ -328,7 +331,7 @@ Page({
   saveFileInfoToBackend(file, fileType, fileUrl) {
     // 调用后端 /api/models 接口保存文件信息
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/models',
+      url: apiConfig.buildUrl('/app/api/models'),
       method: 'POST',
       header: {
         'Content-Type': 'application/json'
@@ -457,7 +460,7 @@ Page({
 
     // 前后端联调阶段：调用后端接口保存新闻链接
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/news',
+      url: apiConfig.buildUrl('/app/api/news'),
       method: 'POST',
       header: {
         'Content-Type': 'application/json'
@@ -663,7 +666,7 @@ Page({
     // }
 
     // 前后端联调阶段：先上传视频到文件服务器，然后调用后端接口
-    const uploadServerUrl = 'http://127.0.0.1:5000/app/api/upload';
+    const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
     
     wx.uploadFile({
       url: uploadServerUrl,
@@ -729,7 +732,7 @@ Page({
   saveVideoInfoToBackend(video, videoUrl) {
     // 调用后端 /api/video 接口保存视频信息
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/video',
+      url: apiConfig.buildUrl('/app/api/video'),
       method: 'POST',
       header: {
         'Content-Type': 'application/json'
@@ -793,7 +796,7 @@ Page({
     // 调用后端接口删除文件
     // 接口：DELETE /api/typical-cases/delete-file/{fileId}
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/models/${fileId}`,
+      url: apiConfig.buildUrl(`/app/api/models/${fileId}`),
       method: 'DELETE',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
@@ -832,7 +835,7 @@ Page({
     // 调用后端接口删除新闻链接
     // 接口：DELETE /api/typical-cases/delete-news-link/{linkId}
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/news/${linkId}`,
+      url: apiConfig.buildUrl(`/app/api/news/${linkId}`),
       method: 'DELETE',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`
@@ -871,7 +874,7 @@ Page({
     // 调用后端接口删除视频
     // 接口：DELETE /api/typical-cases/delete-video/{videoId}
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/video/${videoId}`,
+      url: apiConfig.buildUrl(`/app/api/video/${videoId}`),
       method: 'DELETE',
       header: {
         'Authorization': `Bearer ${wx.getStorageSync('token')}`

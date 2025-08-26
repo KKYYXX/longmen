@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     searchKeyword: '',
@@ -20,7 +23,7 @@ Page({
     this.setData({ loading: true });
 
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/zcdocuments',
+      url: apiConfig.buildUrl('/app/api/zcdocuments'),
       method: 'GET',
       success: (res) => {
         if (res.data.success) {
@@ -133,7 +136,7 @@ Page({
     });
 
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/zcdocuments/${file.id}`,
+      url: apiConfig.buildUrl(`/app/api/zcdocuments/${file.id}`),
       method: 'DELETE',
       success: (res) => {
         wx.hideLoading();

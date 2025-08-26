@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     userInfo: null,
@@ -81,54 +84,45 @@ Page({
       title: '验证权限中...'
     });
 
-    // 调用后端API获取有权限的用户列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/alter_model',
+      url: apiConfig.buildUrl('/app/user/alter_model'),
       method: 'GET',
-      timeout: 10000, // 10秒超时
       success: (res) => {
         wx.hideLoading();
+        console.log('权限验证响应:', res);
         
         if (res.statusCode === 200) {
-          // 获取有权限的用户列表
-          const authorizedUsers = res.data;
+          // 获取当前登录用户信息
           const currentUser = this.data.userInfo;
+          const authorizedUsers = res.data || [];
           
-          // 检查当前用户是否在权限列表中
-          const hasPermission = this.checkUserInAuthorizedList(currentUser, authorizedUsers);
-          
-          if (hasPermission) {
-            // 有权限，跳转到修改页面
+          // 检查当前用户是否在授权列表中
+          if (this.checkUserInAuthorizedList(currentUser, authorizedUsers)) {
+            // 有权限，跳转到典型案例修改页面
             wx.navigateTo({
               url: '/pages/typicalcasesalter/typicalcasesalter'
             });
           } else {
             // 没有权限，显示提示
-            wx.showModal({
-              title: '权限不足',
-              content: '您暂无修改案例的权限',
-              showCancel: false,
-              confirmText: '确定'
+            wx.showToast({
+              title: '您没有修改典型案例的权限',
+              icon: 'none',
+              duration: 2000
             });
           }
         } else {
-          // API调用失败
-          wx.showModal({
-            title: '错误',
-            content: '权限验证失败，请稍后重试',
-            showCancel: false,
-            confirmText: '确定'
+          wx.showToast({
+            title: '权限验证失败',
+            icon: 'none'
           });
         }
       },
-      fail: (err) => {
+      fail: (error) => {
         wx.hideLoading();
-        console.error('权限验证请求失败:', err);
-        wx.showModal({
-          title: '网络错误',
-          content: '网络连接失败，请检查网络后重试',
-          showCancel: false,
-          confirmText: '确定'
+        console.error('权限验证失败:', error);
+        wx.showToast({
+          title: '权限验证失败',
+          icon: 'none'
         });
       }
     });

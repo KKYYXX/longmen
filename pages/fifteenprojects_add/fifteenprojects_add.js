@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     // 文件上传相关
@@ -256,7 +259,7 @@ Page({
     // 调用后端接口保存新闻链接
     // 接口：POST /api/fifteen-projects/add-news-link
     wx.request({
-      url: 'http://127.0.0.1:5000/api/fifteen-projects/add-news-link',
+      url: apiConfig.buildUrl('/api/fifteen-projects/add-news-link'),
       method: 'POST',
       header: {
         // 注释掉token验证
@@ -372,7 +375,7 @@ Page({
     // 调用后端接口上传视频
     // 接口：POST /api/fifteen-projects/upload-videos
     wx.uploadFile({
-      url: 'http://127.0.0.1:5000/api/fifteen-projects/upload-videos',
+      url: apiConfig.buildUrl('/api/fifteen-projects/upload-videos'),
       filePath: videos[0].tempFilePath,
       name: 'video',
       header: {
@@ -437,7 +440,7 @@ Page({
     // 调用后端接口删除文件
     // 接口：DELETE /api/fifteen-projects/delete-file/{fileId}
     wx.request({
-      url: `http://127.0.0.1:5000/api/fifteen-projects/delete-file/${fileId}`,
+      url: apiConfig.buildUrl(`/api/fifteen-projects/delete-file/${fileId}`),
       method: 'DELETE',
       header: {
         // 注释掉token验证
@@ -477,7 +480,7 @@ Page({
     // 调用后端接口删除新闻链接
     // 接口：DELETE /api/fifteen-projects/delete-news-link/{linkId}
     wx.request({
-      url: `http://127.0.0.1:5000/api/fifteen-projects/delete-news-link/${linkId}`,
+      url: apiConfig.buildUrl(`/api/fifteen-projects/delete-news-link/${linkId}`),
       method: 'DELETE',
       header: {
         // 注释掉token验证
@@ -517,7 +520,7 @@ Page({
     // 调用后端接口删除视频
     // 接口：DELETE /api/fifteen-projects/delete-video/{videoId}
     wx.request({
-      url: `http://127.0.0.1:5000/api/fifteen-projects/delete-video/${videoId}`,
+      url: apiConfig.buildUrl(`/api/fifteen-projects/delete-video/${videoId}`),
       method: 'DELETE',
       header: {
         // 注释掉token验证
@@ -621,7 +624,7 @@ Page({
     // 调用后端接口提交所有内容
     // 接口：POST /api/fifteen-projects/submit-content
     wx.request({
-      url: 'http://127.0.0.1:5000/api/fifteen-projects/submit-content',
+      url: apiConfig.buildUrl('/api/fifteen-projects/submit-content'),
       method: 'POST',
       header: {
         // 注释掉token验证

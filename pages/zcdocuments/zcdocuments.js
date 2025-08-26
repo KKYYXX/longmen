@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     userInfo: null,
@@ -39,7 +42,7 @@ Page({
 
     // 调用后端接口获取文件列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/zcdocuments',
+      url: apiConfig.buildUrl('/app/api/zcdocuments'),
       method: 'GET',
       timeout: 10000, // 10秒超时
       success: (res) => {
@@ -197,61 +200,86 @@ Page({
     });
   },
 
+  // 获取政策文件列表
+  getPolicyDocuments: function() {
+    wx.showLoading({
+      title: '加载中...'
+    });
+
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/zcdocuments'),
+      method: 'GET',
+      success: (res) => {
+        wx.hideLoading();
+        console.log('获取政策文件列表响应:', res);
+        
+        if (res.statusCode === 200 && res.data.success) {
+          this.setData({
+            policyDocuments: res.data.data || []
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '获取文件列表失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (error) => {
+        wx.hideLoading();
+        console.error('获取政策文件列表失败:', error);
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
   // 检查用户权限
-  checkUserPermission() {
+  checkUserPermission: function() {
     wx.showLoading({
       title: '验证权限中...'
     });
 
-    // 调用后端API验证权限
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/alter_zc',
+      url: apiConfig.buildUrl('/app/user/alter_zc'),
       method: 'GET',
-      timeout: 10000,
       success: (res) => {
         wx.hideLoading();
         console.log('权限验证响应:', res);
         
         if (res.statusCode === 200) {
-          const authorizedUsers = res.data;
-          const userInfo = this.data.userInfo;
+          // 获取当前登录用户信息
+          const currentUser = this.data.userInfo;
+          const authorizedUsers = res.data || [];
           
-          // 检查当前用户是否在授权名单中
-          const hasPermission = this.checkUserInAuthorizedList(userInfo, authorizedUsers);
-          
-          if (hasPermission) {
-            // 有权限，跳转到删改页面
+          // 检查当前用户是否在授权列表中
+          if (this.checkUserInAuthorizedList(currentUser, authorizedUsers)) {
+            // 有权限，直接跳转到政策文件修改页面
             wx.navigateTo({
               url: '/pages/zcalter/zcalter'
             });
           } else {
             // 没有权限，显示提示
-            this.showNoPermissionModal();
+            wx.showToast({
+              title: '您没有修改政策文件的权限',
+              icon: 'none',
+              duration: 2000
+            });
           }
         } else {
-          console.error('权限验证失败:', res);
           wx.showToast({
             title: '权限验证失败',
             icon: 'none'
           });
         }
       },
-      fail: (err) => {
+      fail: (error) => {
         wx.hideLoading();
-        console.error('权限验证请求失败:', err);
-        
-        // 检查是否在开发模式下，如果是则使用测试数据
-        if (this.isDevelopmentMode()) {
-          console.log('使用测试权限验证模式');
-          this.useTestPermissionCheck();
-          return;
-        }
-        
-        wx.showModal({
-          title: '网络错误',
-          content: '无法连接到服务器进行权限验证',
-          showCancel: false,
-          confirmText: '确定'
+        console.error('权限验证失败:', error);
+        wx.showToast({
+          title: '权限验证失败',
+          icon: 'none'
         });
       }
     });

@@ -36,6 +36,9 @@
  * - news: 新闻链接（从添加新闻链接获取，存储文件路径）
  */
 
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     currentStep: 1,
@@ -147,7 +150,7 @@ Page({
     });
 
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/names',
+      url: apiConfig.buildUrl('/app/api/15projects/names'),
       method: 'GET',
       success: (res) => {
         wx.hideLoading();
@@ -278,7 +281,7 @@ Page({
     console.log('开始查找项目ID，项目名称:', projectName);
     
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/search',
+      url: apiConfig.buildUrl('/app/api/15projects/search'),
       method: 'GET',
       data: {
         project_name: projectName
@@ -313,7 +316,7 @@ Page({
     console.log('获取项目详细数据，项目ID:', projectId);
     
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/15projects/detail/${projectId}`,
+      url: apiConfig.buildUrl(`/app/api/15projects/detail/${projectId}`),
       method: 'GET',
       data: {
         project_id: projectId
@@ -1002,7 +1005,7 @@ Page({
 
     // 调用后端接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/add',
+      url: apiConfig.buildUrl('/app/api/progress/add'),
       method: 'POST',
       data: progressData,
       success: (res) => {
@@ -1179,7 +1182,7 @@ Page({
 
     // 调用后端接口获取指定项目的进度记录
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      url: apiConfig.buildUrl('/app/api/progress/times'),
       method: 'GET',
       data: {
         project_name: selectedProject.projectName
@@ -1254,7 +1257,7 @@ Page({
     progressList.forEach((item, index) => {
       // 调用后端接口获取每条记录的详细信息
       wx.request({
-        url: 'http://127.0.0.1:5000/app/api/progress/detail',
+        url: apiConfig.buildUrl('/app/api/progress/detail'),
         method: 'GET',
         data: {
           project_name: projectName,
@@ -1503,7 +1506,7 @@ Page({
         };
 
       wx.request({
-        url: 'http://127.0.0.1:5000/app/api/progress/delete',
+        url: apiConfig.buildUrl('/app/api/progress/delete'),
         method: 'DELETE',
         data: deleteData,
         success: (res) => {
@@ -1604,7 +1607,7 @@ Page({
 
     // 调用后端接口获取指定项目的进度记录
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      url: apiConfig.buildUrl('/app/api/progress/times'),
       method: 'GET',
       data: {
         project_name: selectedProject.projectName
@@ -1679,7 +1682,7 @@ Page({
     progressList.forEach((item, index) => {
       // 调用后端接口获取每条记录的详细信息
       wx.request({
-        url: 'http://127.0.0.1:5000/app/api/progress/detail',
+        url: apiConfig.buildUrl('/app/api/progress/detail'),
         method: 'GET',
         data: {
           project_name: projectName,
@@ -1817,7 +1820,7 @@ Page({
 
     // 调用后端接口获取详细信息
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/detail',
+      url: apiConfig.buildUrl('/app/api/progress/detail'),
       method: 'GET',
       data: {
         project_name: selectedProject.projectName,
@@ -2155,7 +2158,7 @@ Page({
 
     // 调用后端PUT接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/update',
+      url: apiConfig.buildUrl('/app/api/progress/update'),
       method: 'PUT',
       data: updateData,
       success: (res) => {
@@ -2285,7 +2288,7 @@ Page({
 
     // 调用后端PUT接口
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/15projects/${selectedProject.id}`,
+      url: apiConfig.buildUrl(`/app/api/15projects/${selectedProject.id}`),
       method: 'PUT',
       data: modifyData,
       success: (res) => {

@@ -1,4 +1,7 @@
 // pages/项目进度内容/项目进度内容.js
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     // 项目信息
@@ -68,11 +71,11 @@ Page({
 
     // 第一步：调用 /api/progress/times 接口获取项目所有进度时间点
     console.log('🚀 开始调用第一个接口: /api/progress/times');
-    console.log('请求URL:', 'http://127.0.0.1:5000/app/api/progress/times');
+    console.log('请求URL:', apiConfig.buildUrl('/app/api/progress/times'));
     console.log('请求参数:', { project_name: projectName });
     
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      url: apiConfig.buildUrl('/app/api/progress/times'),
       method: 'GET',
       data: {
         project_name: projectName
@@ -312,7 +315,7 @@ Page({
 
     // 第一步：调用 /api/progress/times 接口获取项目进度时间列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      url: apiConfig.buildUrl('/app/api/progress/times'),
       method: 'GET',
       data: {
         project_name: projectName
@@ -429,7 +432,7 @@ Page({
     console.log('最终发送的时间参数:', formattedTime);
     
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/detail',
+      url: apiConfig.buildUrl('/app/api/progress/detail'),
       method: 'GET',
       data: {
         project_name: projectName,

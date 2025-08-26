@@ -3,13 +3,19 @@ const config = {
   // 开发环境配置
   development: {
     baseUrl: 'http://127.0.0.1:5000',
-    mockEnabled: false  // 关闭模拟模式，使用真实后端接口
+    timeout: 10000
+  },
+  
+  // 测试环境配置
+  test: {
+    baseUrl: 'http://test-server.com',
+    timeout: 10000
   },
   
   // 生产环境配置
   production: {
     baseUrl: 'https://your-production-server.com',
-    mockEnabled: false
+    timeout: 15000
   }
 };
 
@@ -20,75 +26,47 @@ const currentEnv = 'development';
 const apiConfig = {
   // 基础配置
   baseUrl: config[currentEnv].baseUrl,
-  mockEnabled: config[currentEnv].mockEnabled,
+  timeout: config[currentEnv].timeout,
   
-  // API接口列表
-  api: {
-    // 典型案例相关接口
-    typicalCases: {
-      list: '/api/models',
-      detail: '/api/models/:id',
-      create: '/api/models',
-      update: '/api/models/:id',
-      delete: '/api/models/:id',
-      uploadFiles: '/api/upload'
-    },
+  // 构建完整的API URL - 简单拼接域名和路径
+  buildUrl: function(path) {
+    if (!path) return this.baseUrl;
     
-    // 视频相关接口
-    video: {
-      query: '/api/video',
-      add: '/api/video',
-      delete: '/api/video'
-    },
+    // 如果path已经是完整URL，直接返回
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
     
-    // 新闻相关接口
-    news: {
-      query: '/api/news',
-      add: '/api/news',
-      delete: '/api/news'
-    },
-    
-    // 十五个项目相关接口
-    fifteenProjects: {
-      list: '/api/15projects',
-      detail: '/api/15projects/:id',
-      create: '/api/15projects',
-      update: '/api/15projects/:id',
-      delete: '/api/15projects/:id',
-      search: '/api/15projects/search',
-      names: '/api/15projects/names'
-    },
-    
-    // 项目进度相关接口
-    progress: {
-      times: '/api/progress/times',      // 获取项目进度时间列表
-      detail: '/api/progress/detail'     // 根据项目名称和时间段获取项目进度详细信息
-    },
-    
-    // 用户相关接口
-    user: {
-      login: '/api/user/login',
-      profile: '/api/user/profile',
-      permissions: '/api/user/permissions'
-    },
-    
-    // 文件上传接口
-    upload: '/api/upload'
-  },
-  
-  // 构建完整的API URL
-  buildApiUrl: function(endpoint) {
-    return this.baseUrl + endpoint;
-  },
-  
-  // 检查是否启用模拟模式
-  isMockEnabled: function() {
-    return this.mockEnabled;
+    // 确保path以/开头
+    const cleanPath = path.startsWith('/') ? path : '/' + path;
+    return this.baseUrl + cleanPath;
   },
   
   // 获取当前环境
   getEnvironment: function() {
     return currentEnv;
+  },
+  
+  // 获取当前配置
+  getCurrentConfig: function() {
+    return config[currentEnv];
+  },
+  
+  // 切换环境
+  switchEnvironment: function(env) {
+    if (config[env]) {
+      currentEnv = env;
+      this.baseUrl = config[env].baseUrl;
+      this.timeout = config[env].timeout;
+      console.log(`已切换到${env}环境，baseUrl: ${this.baseUrl}`);
+    } else {
+      console.error(`环境${env}不存在`);
+    }
+  },
+  
+  // 获取请求超时时间
+  getTimeout: function() {
+    return this.timeout;
   }
 };
 

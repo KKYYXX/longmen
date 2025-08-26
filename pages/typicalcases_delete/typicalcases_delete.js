@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     searchKeyword: '',
@@ -22,7 +25,7 @@ Page({
     try {
       // 从后端获取数据库中的典型案例列表
       wx.request({
-        url: 'http://127.0.0.1:5000/app/api/models',
+        url: apiConfig.buildUrl('/app/api/models'),
         method: 'GET',
         success: (res) => {
           if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
@@ -261,7 +264,7 @@ Page({
     }
 
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/models',
+      url: apiConfig.buildUrl('/app/api/models'),
       method: 'GET',
       success: (res) => {
         if (res.statusCode === 200 && res.data && res.data.success && Array.isArray(res.data.data)) {
@@ -287,7 +290,7 @@ Page({
   // 调用后端删除接口
   callDeleteAPI(modelId, caseItem) {
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/models/${modelId}`,
+      url: apiConfig.buildUrl(`/app/api/models/${modelId}`),
       method: 'DELETE',
       success: (res) => {
         wx.hideLoading();

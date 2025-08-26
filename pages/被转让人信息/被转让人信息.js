@@ -1,4 +1,7 @@
 // pages/被转让人信息/被转让人信息.js
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
 
   /**
@@ -149,7 +152,7 @@ Page({
 
     // 调用后端 /user/transfer_principal 接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/transfer_principal',
+      url: apiConfig.buildUrl('/app/user/transfer_principal'),
       method: 'POST',
       header: {
         'content-type': 'application/x-www-form-urlencoded'

@@ -29,7 +29,7 @@ Page({
   // 从后端获取典型案例数据
   fetchCasesFromBackend: function() {
     const apiConfig = require('../../config/api.js');
-    const url = apiConfig.buildApiUrl('/app/api/models');
+    const url = apiConfig.buildUrl('/app/api/models');
     
     wx.request({
       url: url,
@@ -107,7 +107,7 @@ Page({
   // 获取案例的视频信息
   fetchVideoInfo: function(modelName, callback) {
     const apiConfig = require('../../config/api.js');
-    const url = apiConfig.buildApiUrl('/app/api/video');
+    const url = apiConfig.buildUrl('/app/api/video');
     
     wx.request({
       url: url,
@@ -133,7 +133,7 @@ Page({
   // 获取案例的新闻链接信息
   fetchNewsInfo: function(modelName, callback) {
     const apiConfig = require('../../config/api.js');
-    const url = apiConfig.buildApiUrl('/app/api/news');
+    const url = apiConfig.buildUrl('/app/api/news');
     
     wx.request({
       url: url,

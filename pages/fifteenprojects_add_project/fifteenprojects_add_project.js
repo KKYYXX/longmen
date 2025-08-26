@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     projectData: {},
@@ -54,7 +57,7 @@ Page({
   testBackendConnection() {
     console.log('测试后端接口连接...');
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/names',
+      url: apiConfig.buildUrl('/app/api/15projects/names'),
       method: 'GET',
       success: (res) => {
         console.log('后端接口连接测试成功:', res);
@@ -221,7 +224,7 @@ Page({
 
     // 调用后端API保存项目
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects',
+      url: apiConfig.buildUrl('/app/api/15projects'),
       method: 'POST',
       header: {
         'Content-Type': 'application/json'

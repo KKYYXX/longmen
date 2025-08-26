@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     projectName: null, // 项目名称
@@ -60,7 +63,7 @@ Page({
     
     // 调用第一个接口获取项目所有进度时间点
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      url: apiConfig.buildUrl('/app/api/progress/times'),
       method: 'GET',
       data: {
         project_name: projectName
@@ -158,7 +161,7 @@ Page({
     }
     
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/detail',
+      url: apiConfig.buildUrl('/app/api/progress/detail'),
       method: 'GET',
       data: {
         project_name: projectName,
@@ -511,7 +514,7 @@ Page({
     console.log('删除进度记录:', { project_name, practice_time });
     
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/delete',
+      url: apiConfig.buildUrl('/app/api/progress/delete'),
       method: 'DELETE',
       data: {
         project_name: project_name,

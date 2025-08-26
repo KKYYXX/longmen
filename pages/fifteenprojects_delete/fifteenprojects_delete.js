@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     searchKeyword: '',
@@ -41,7 +44,7 @@ Page({
 
     // 从后端获取数据库中的十五项项目列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/names',
+      url: apiConfig.buildUrl('/app/api/15projects/names'),
       method: 'GET',
       success: (res) => {
         wx.hideLoading();
@@ -269,7 +272,7 @@ Page({
   getProjectIdByName(projectName, callback) {
     // 通过项目名称在数据库中查找项目ID
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/search',
+      url: apiConfig.buildUrl('/app/api/15projects/search'),
       method: 'GET',
       data: {
         project_name: projectName
@@ -301,7 +304,7 @@ Page({
   callDeleteAPI(projectId, projectItem) {
     // 现在有了真实的项目ID，调用删除接口
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/15projects/${projectId}`,
+      url: apiConfig.buildUrl(`/app/api/15projects/${projectId}`),
       method: 'DELETE',
       success: (res) => {
         wx.hideLoading();

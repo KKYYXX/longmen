@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     allRecords: [],           // 原始数据
@@ -16,7 +19,7 @@ Page({
   fetchRecords() {
     // 调用后端 /user/alter_model 接口获取典型案例修改权限人员列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/alter_model', // 直接调用后端接口
+      url: apiConfig.buildUrl('/app/user/alter_model'), // 直接调用后端接口
       method: 'GET',
       success: res => {
         console.log('接口完整响应:', res);
@@ -86,7 +89,7 @@ Page({
         name: newName,
         phone: newPhone
       },
-      url: 'http://127.0.0.1:5000/app/user/alter_model_add',
+      url: apiConfig.buildUrl('/app/user/alter_model_add'),
       method: 'POST',
       success: res => {
         if (res.statusCode === 200) {
@@ -120,7 +123,7 @@ Page({
         if (res.confirm) {
           // 调用后端删除接口，传递name和phone
           wx.request({
-            url: 'http://127.0.0.1:5000/app/user/alter_model_delete',
+            url: apiConfig.buildUrl('/app/user/alter_model_delete'),
             method: 'POST',
             header: { 
               'content-type': 'application/x-www-form-urlencoded' 

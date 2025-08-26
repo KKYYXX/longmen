@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     searchKeyword: '',
@@ -34,7 +37,7 @@ Page({
     
     // 测试搜索接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/search',
+      url: apiConfig.buildUrl('/app/api/15projects/search'),
       method: 'GET',
       data: {
         project_name: '测试项目'
@@ -49,7 +52,7 @@ Page({
     
     // 测试详情接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/detail',
+      url: apiConfig.buildUrl('/app/api/15projects/detail'),
       method: 'GET',
       data: {
         project_id: 1
@@ -145,7 +148,7 @@ Page({
 
     // 调用后端接口获取项目列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/names',
+      url: apiConfig.buildUrl('/app/api/15projects/names'),
       method: 'GET',
       success: (res) => {
         this.setData({
@@ -277,7 +280,7 @@ Page({
     console.log('原始项目数据:', originalProject);
     
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/15projects/detail/${projectId}`,
+      url: apiConfig.buildUrl(`/app/api/15projects/detail/${projectId}`),
       method: 'GET',
       data: {
         project_id: projectId
@@ -751,7 +754,7 @@ Page({
     console.log('开始查找项目ID，项目名称:', projectName);
     
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/15projects/search',
+      url: apiConfig.buildUrl('/app/api/15projects/search'),
       method: 'GET',
       data: {
         project_name: projectName
@@ -793,7 +796,7 @@ Page({
     console.log('原始项目数据:', originalProject);
     
     wx.request({
-      url: `http://127.0.0.1:5000/app/api/15projects/detail/${projectId}`,
+      url: apiConfig.buildUrl(`/app/api/15projects/detail/${projectId}`),
       method: 'GET',
       data: {
         project_id: projectId
@@ -1059,7 +1062,7 @@ Page({
 
     // 第一步：调用 /api/progress/times 接口获取项目进度时间列表
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/times',
+      url: apiConfig.buildUrl('/app/api/progress/times'),
       method: 'GET',
       data: {
         project_name: projectName
@@ -1091,7 +1094,7 @@ Page({
     console.log('开始获取项目进度详细信息');
     
     wx.request({
-      url: 'http://127.0.0.1:5000/app/api/progress/detail',
+      url: apiConfig.buildUrl('/app/api/progress/detail'),
       method: 'GET',
       data: {
         project_name: projectName,

@@ -1,4 +1,7 @@
 // pages/登录后的页面/登录后的页面.js
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
 
   /**
@@ -414,7 +417,7 @@ Page({
 
     // 连接后端注册接口
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/register',
+      url: apiConfig.buildUrl('/app/user/register'),
       method: 'POST',
       header: {
         'content-type': 'application/json'
@@ -492,7 +495,7 @@ Page({
 
       // 连接后端普通登录接口 - 手机号登录
       wx.request({
-        url: 'http://127.0.0.1:5000/app/user/common_login',
+        url: apiConfig.buildUrl('/app/user/common_login'),
         method: 'POST',
         header: {
           'content-type': 'application/json'
@@ -530,7 +533,7 @@ Page({
 
       // 连接后端普通登录接口 - 微信号登录
       wx.request({
-        url: 'http://127.0.0.1:5000/app/user/common_login',
+        url: apiConfig.buildUrl('/app/user/common_login'),
         method: 'POST',
         header: {
           'content-type': 'application/json'
@@ -586,7 +589,7 @@ Page({
 
       // 连接后端权限管理登录接口 - 手机号登录
       wx.request({
-        url: 'http://127.0.0.1:5000/app/user/principal_login',
+        url: apiConfig.buildUrl('/app/user/principal_login'),
         method: 'POST',
         header: {
           'content-type': 'application/json'
@@ -624,7 +627,7 @@ Page({
 
       // 连接后端权限管理登录接口 - 微信号登录
       wx.request({
-        url: 'http://127.0.0.1:5000/app/user/principal_login',
+        url: apiConfig.buildUrl('/app/user/principal_login'),
         method: 'POST',
         header: {
           'content-type': 'application/json'

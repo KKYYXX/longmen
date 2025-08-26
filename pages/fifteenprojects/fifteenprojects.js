@@ -1,3 +1,6 @@
+// 导入API配置
+const apiConfig = require('../../config/api.js');
+
 Page({
   data: {
     userInfo: null,
@@ -99,7 +102,7 @@ Page({
 
     // 调用后端API验证查询权限
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/query_15',
+      url: apiConfig.buildUrl('/app/user/query_15'),
       method: 'GET',
       timeout: 10000,
       success: (res) => {
@@ -159,7 +162,7 @@ Page({
 
     // 调用后端API验证修改权限
     wx.request({
-      url: 'http://127.0.0.1:5000/app/user/alter_15',
+      url: apiConfig.buildUrl('/app/user/alter_15'),
       method: 'GET',
       timeout: 10000,
       success: (res) => {
