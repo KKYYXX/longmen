@@ -36,35 +36,35 @@ const pagesToUpdate = [
 // 需要替换的URL模式
 const urlReplacements = [
   {
-    pattern: /'http:\/\/127\.0\.0\.1:5000\/app\/api\/([^']+)'/g,
+            pattern: /'http:\/\/127\.0\.0\.1:80\/app\/api\/([^']+)'/g,
     replacement: "apiConfig.buildUrl('/app/api/$1')"
   },
   {
-    pattern: /"http:\/\/127\.0\.0\.1:5000\/app\/api\/([^"]+)"/g,
+            pattern: /"http:\/\/127\.0\.0\.1:80\/app\/api\/([^"]+)"/g,
     replacement: 'apiConfig.buildUrl(\'/app/api/$1\')'
   },
   {
-    pattern: /'http:\/\/127\.0\.0\.1:5000\/app\/([^']+)'/g,
+            pattern: /'http:\/\/127\.0\.0\.1:80\/app\/([^']+)'/g,
     replacement: "apiConfig.buildUrl('/app/$1')"
   },
   {
-    pattern: /"http:\/\/127\.0\.0\.1:5000\/app\/([^"]+)"/g,
+            pattern: /"http:\/\/127\.0\.0\.1:80\/app\/([^"]+)"/g,
     replacement: 'apiConfig.buildUrl(\'/app/$1\')'
   },
   {
-    pattern: /'http:\/\/127\.0\.0\.1:5000\/api\/([^']+)'/g,
+            pattern: /'http:\/\/127\.0\.0\.1:80\/api\/([^']+)'/g,
     replacement: "apiConfig.buildUrl('/api/$1')"
   },
   {
-    pattern: /"http:\/\/127\.0\.0\.1:5000\/api\/([^"]+)"/g,
+            pattern: /"http:\/\/127\.0\.0\.1:80\/api\/([^"]+)"/g,
     replacement: 'apiConfig.buildUrl(\'/api/$1\')'
   },
   {
-    pattern: /'http:\/\/127\.0\.0\.1:5000\/user\/([^']+)'/g,
+            pattern: /'http:\/\/127\.0\.0\.1:80\/user\/([^']+)'/g,
     replacement: "apiConfig.buildUrl('/user/$1')"
   },
   {
-    pattern: /"http:\/\/127\.0\.0\.1:5000\/user\/([^"]+)"/g,
+            pattern: /"http:\/\/127\.0\.0\.1:80\/user\/([^"]+)"/g,
     replacement: 'apiConfig.buildUrl(\'/user/$1\')'
   }
 ];
@@ -147,7 +147,7 @@ function checkFile(filePath) {
 
     const content = fs.readFileSync(filePath, 'utf8');
     const hasApiConfigImport = content.includes('const apiConfig = require');
-    const hasHardcodedUrls = content.includes('http://127.0.0.1:5000');
+    const hasHardcodedUrls = content.includes('http://127.0.0.1:80');
     
     console.log(`📁 ${filePath}:`);
     console.log(`  - API配置导入: ${hasApiConfigImport ? '✅' : '❌'}`);
@@ -155,7 +155,7 @@ function checkFile(filePath) {
     
     if (hasHardcodedUrls) {
       // 统计硬编码URL数量
-      const urlCount = (content.match(/http:\/\/127\.0\.0\.1:5000/g) || []).length;
+      const urlCount = (content.match(/http:\/\/127\.0\.0\.1:80/g) || []).length;
       console.log(`  - 硬编码URL数量: ${urlCount}`);
     }
     console.log('');

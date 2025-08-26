@@ -2,7 +2,7 @@
 const config = {
   // 开发环境配置
   development: {
-    baseUrl: 'http://127.0.0.1:5000',
+    baseUrl: 'http://127.0.0.1:80',
     timeout: 10000
   },
   

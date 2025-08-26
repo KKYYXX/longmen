@@ -18,7 +18,7 @@
 ```javascript
 const config = {
   development: {
-    baseUrl: 'http://127.0.0.1:5000',
+    baseUrl: 'http://127.0.0.1:80',
     mockEnabled: false,
     timeout: 10000
   },
@@ -69,21 +69,21 @@ const apiConfig = require('../../config/api.js');
 
 // 使用标准API前缀 (/api)
 const url = apiConfig.buildStandardUrl('/models');
-// 结果: http://127.0.0.1:5000/api/models
+// 结果: http://127.0.0.1:80/api/models
 ```
 
 #### 构建应用接口URL
 ```javascript
 // 使用应用接口前缀 (/app)
 const url = apiConfig.buildAppUrl('/models');
-// 结果: http://127.0.0.1:5000/app/models
+// 结果: http://127.0.0.1:80/app/models
 ```
 
 #### 构建用户接口URL
 ```javascript
 // 使用用户接口前缀 (/user)
 const url = apiConfig.buildUserUrl('/login');
-// 结果: http://127.0.0.1:5000/user/login
+// 结果: http://127.0.0.1:80/user/login
 ```
 
 ### 2. 高级用法
@@ -92,21 +92,21 @@ const url = apiConfig.buildUserUrl('/login');
 ```javascript
 // 获取典型案例列表接口
 const url = apiConfig.getFullUrl('typicalCases', 'list');
-// 结果: http://127.0.0.1:5000/api/models
+// 结果: http://127.0.0.1:80/api/models
 ```
 
 #### 带参数的URL构建
 ```javascript
 // 替换URL中的参数占位符
 const url = apiConfig.buildUrlWithParams('/models/:id', { id: 123 });
-// 结果: http://127.0.0.1:5000/api/models/123
+// 结果: http://127.0.0.1:80/api/models/123
 
 // 使用预定义接口配置并带参数
 const url = apiConfig.buildUrlWithParams(
   apiConfig.endpoints.fifteenProjects.detail, 
   { id: 456 }
 );
-// 结果: http://127.0.0.5000/api/15projects/456
+// 结果: http://127.0.0.1:80/api/15projects/456
 ```
 
 ### 3. 实际使用场景
@@ -183,7 +183,7 @@ console.log('当前超时时间:', currentConfig.timeout);
 ```javascript
 // 旧方式 - 硬编码URL
 wx.request({
-  url: 'http://127.0.0.1:5000/app/api/models',
+  url: 'http://127.0.0.1:80/app/api/models',
   // ...
 });
 ```
@@ -205,9 +205,9 @@ wx.request({
 #### 更新典型案例相关接口
 ```javascript
 // 之前需要逐个修改
-const listUrl = 'http://127.0.0.1:5000/app/api/models';
-const detailUrl = 'http://127.0.0.1:5000/app/api/models/123';
-const createUrl = 'http://127.0.0.1:5000/app/api/models';
+const listUrl = 'http://127.0.0.1:80/app/api/models';
+const detailUrl = 'http://127.0.0.1:80/app/api/models/123';
+const createUrl = 'http://127.0.0.1:80/app/api/models';
 
 // 现在只需要修改config/api.js中的baseUrl
 // 所有接口自动更新到新的域名

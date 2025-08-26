@@ -5,12 +5,12 @@ const path = require('path');
 // 硬编码URL模式
 const hardcodedUrlPatterns = [
   {
-    pattern: /http:\/\/127\.0\.0\.1:5000\/app\/api\/([^'"]+)/g,
+    pattern: /http:\/\/127\.0\.0\.1:80\/app\/api\/([^'"]+)/g,
     replacement: (match, endpoint) => `apiConfig.buildAppUrl('/${endpoint}')`,
     description: '开发环境应用接口'
   },
   {
-    pattern: /http:\/\/127\.0\.0\.1:5000\/app\/([^'"]+)/g,
+    pattern: /http:\/\/127\.0\.0\.1:80\/app\/([^'"]+)/g,
     replacement: (match, endpoint) => `apiConfig.buildAppUrl('/${endpoint}')`,
     description: '开发环境应用接口'
   }

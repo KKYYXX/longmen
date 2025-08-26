@@ -8,29 +8,29 @@ const apiConfig = require('./api.js');
 // 1. 构建标准API接口URL（使用/api前缀）
 const standardUrl = apiConfig.buildStandardUrl('/models');
 console.log('标准API URL:', standardUrl);
-// 输出: http://127.0.0.1:5000/api/models
+// 输出: http://127.0.0.1:80/api/models
 
 // 2. 构建应用接口URL（使用/app前缀）
 const appUrl = apiConfig.buildAppUrl('/models');
 console.log('应用接口 URL:', appUrl);
-// 输出: http://127.0.0.1:5000/app/models
+// 输出: http://127.0.0.1:80/app/models
 
 // 3. 构建用户接口URL（使用/user前缀）
 const userUrl = apiConfig.buildUserUrl('/login');
 console.log('用户接口 URL:', userUrl);
-// 输出: http://127.0.0.1:5000/user/login
+// 输出: http://127.0.0.1:80/user/login
 
 // ===== 高级用法示例 =====
 
 // 4. 使用预定义的接口配置
 const typicalCasesListUrl = apiConfig.getFullUrl('typicalCases', 'list');
 console.log('典型案例列表接口:', typicalCasesListUrl);
-// 输出: http://127.0.0.1:5000/api/models
+// 输出: http://127.0.0.1:80/api/models
 
 // 5. 带参数的URL构建
 const detailUrl = apiConfig.buildUrlWithParams('/models/:id', { id: 123 });
 console.log('带参数的详情接口:', detailUrl);
-// 输出: http://127.0.0.1:5000/api/models/123
+// 输出: http://127.0.0.1:80/api/models/123
 
 // 6. 使用预定义接口配置并带参数
 const projectDetailUrl = apiConfig.buildUrlWithParams(
@@ -39,7 +39,7 @@ const projectDetailUrl = apiConfig.buildUrlWithParams(
   'api'
 );
 console.log('项目详情接口:', projectDetailUrl);
-// 输出: http://127.0.0.1:5000/api/15projects/456
+// 输出: http://127.0.0.1:80/api/15projects/456
 
 // ===== 实际使用场景示例 =====
 

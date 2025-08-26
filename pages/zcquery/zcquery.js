@@ -93,8 +93,29 @@ Page({
     const index = e.currentTarget.dataset.index;
     const file = this.data.fileList[index];
     
-    // 直接预览文件内容
-    this.previewFile(file);
+    // 跳转到文件详情页面
+    this.goToFileDetail(file);
+  },
+
+  // 跳转到文件详情页面
+  goToFileDetail(file) {
+    const fileUrl = file.fileUrl;
+    const fileName = file.fileName;
+    
+    // 判断是否为本地文件
+    const isLocalFile = fileUrl.startsWith('D:\\') || fileUrl.startsWith('C:\\') || fileUrl.startsWith('/');
+    
+    if (isLocalFile) {
+      // 本地文件，显示文件信息详情
+      wx.navigateTo({
+        url: `/pages/webview/webview?url=${encodeURIComponent('file://' + fileUrl)}&fileName=${encodeURIComponent(fileName)}&isLocal=true`
+      });
+    } else {
+      // 网络文件，直接跳转到webview页面
+      wx.navigateTo({
+        url: `/pages/webview/webview?url=${encodeURIComponent(fileUrl)}&fileName=${encodeURIComponent(fileName)}&isLocal=false`
+      });
+    }
   },
 
   // 预览文件内容

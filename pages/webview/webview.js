@@ -12,11 +12,18 @@ Page({
     
     if (options.url) {
       const originalUrl = decodeURIComponent(options.url);
+      const fileName = options.fileName ? decodeURIComponent(options.fileName) : '';
+      const isLocal = options.isLocal === 'true';
+      
       console.log('要打开的URL:', originalUrl);
+      console.log('文件名:', fileName);
+      console.log('是否本地文件:', isLocal);
       
       this.setData({
         originalUrl: originalUrl,
-        webUrl: this.processUrl(originalUrl)
+        fileName: fileName,
+        isLocal: isLocal,
+        webUrl: this.processUrl(originalUrl, isLocal)
       });
     } else {
       this.setData({
@@ -28,7 +35,12 @@ Page({
   },
 
   // 处理URL，确保可以在微信中打开
-  processUrl(url) {
+  processUrl(url, isLocal = false) {
+    if (isLocal) {
+      // 本地文件，返回一个特殊的处理URL
+      return 'https://example.com/local-file-placeholder';
+    }
+    
     // 确保URL有协议
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'https://' + url;
