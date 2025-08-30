@@ -2149,8 +2149,11 @@ Page({
       practice_time: this.formatDateToYYYYMMDD(selectedModifyRecord.practice_time), // 确保只传递年月日
       practice_location: modifyRecord.location || '',
       practice_members: modifyRecord.person || '',
-      practice_image_url: modifyRecord.images && modifyRecord.images.length > 0 ? modifyRecord.images[0] : '',
+      // 修复图片URL处理：支持多图片并正确处理删除情况
+      practice_image_url: modifyRecord.images && modifyRecord.images.length > 0 ? modifyRecord.images.join(',') : '',
+      // 修复视频URL处理：正确处理删除情况  
       video_url: modifyRecord.videos && modifyRecord.videos.length > 0 ? modifyRecord.videos[0] : '',
+      // 修复新闻稿处理：正确处理删除情况
       news: modifyRecord.newsFiles && modifyRecord.newsFiles.length > 0 ? modifyRecord.newsFiles[0].path : ''
     };
 
@@ -2174,6 +2177,17 @@ Page({
             success: () => {
               // 重新加载进度数据
               this.loadModifyProgressData();
+              // 重置修改记录状态，确保下次进入时显示最新数据
+              this.setData({
+                selectedModifyRecord: null,
+                modifyRecord: {
+                  location: '',
+                  person: '',
+                  images: [],
+                  videos: [],
+                  newsFiles: []
+                }
+              });
               this.backToModifyList();
             }
           });
