@@ -1342,5 +1342,178 @@ Page({
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  },
+
+  // 按顺序上传文件
+  uploadFilesSequentially() {
+    return new Promise((resolve, reject) => {
+      if (this.data.tempFiles.length === 0) {
+        resolve();
+        return;
+      }
+
+      let uploadedCount = 0;
+      const totalFiles = this.data.tempFiles.length;
+
+      const uploadNextFile = (index) => {
+        if (index >= totalFiles) {
+          resolve();
+          return;
+        }
+
+        const file = this.data.tempFiles[index];
+        const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
+        
+        wx.uploadFile({
+          url: uploadServerUrl,
+          filePath: file.tempFilePath,
+          name: 'file',
+          header: {
+            'Authorization': `Bearer ${wx.getStorageSync('token')}`
+          },
+          formData: {
+            fileType: file.type
+          },
+          success: (res) => {
+            try {
+              const result = JSON.parse(res.data);
+              if (result.success) {
+                // 文件上传成功后，调用后端接口保存文件信息
+                this.saveFileInfoToBackend(file, file.type, result.file_url);
+                uploadedCount++;
+                
+                if (uploadedCount === totalFiles) {
+                  resolve();
+                } else {
+                  uploadNextFile(index + 1);
+                }
+              } else {
+                reject(new Error(result.message || '文件上传失败'));
+              }
+            } catch (e) {
+              reject(new Error('文件上传响应解析失败'));
+            }
+          },
+          fail: (err) => {
+            reject(new Error('文件上传失败：' + err.errMsg));
+          }
+        });
+      };
+
+      uploadNextFile(0);
+    });
+  },
+
+  // 按顺序上传新闻链接
+  uploadNewsLinksSequentially() {
+    return new Promise((resolve, reject) => {
+      if (this.data.tempNewsLinks.length === 0) {
+        resolve();
+        return;
+      }
+
+      let uploadedCount = 0;
+      const totalLinks = this.data.tempNewsLinks.length;
+
+      const uploadNextLink = (index) => {
+        if (index >= totalLinks) {
+          resolve();
+          return;
+        }
+
+        const link = this.data.tempNewsLinks[index];
+        
+        wx.request({
+          url: apiConfig.buildUrl('/app/api/news'),
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json'
+          },
+          data: {
+            model_name: this.data.caseName,
+            news_title: link.title,
+            news_url: link.url
+          },
+          success: (res) => {
+            if (res.data.success) {
+              uploadedCount++;
+              
+              if (uploadedCount === totalLinks) {
+                resolve();
+              } else {
+                uploadNextLink(index + 1);
+              }
+            } else {
+              reject(new Error(res.data.message || '新闻链接上传失败'));
+            }
+          },
+          fail: (err) => {
+            reject(new Error('新闻链接上传失败：' + err.errMsg));
+          }
+        });
+      };
+
+      uploadNextLink(0);
+    });
+  },
+
+  // 按顺序上传视频
+  uploadVideosSequentially() {
+    return new Promise((resolve, reject) => {
+      if (this.data.tempVideos.length === 0) {
+        resolve();
+        return;
+      }
+
+      let uploadedCount = 0;
+      const totalVideos = this.data.tempVideos.length;
+
+      const uploadNextVideo = (index) => {
+        if (index >= totalVideos) {
+          resolve();
+          return;
+        }
+
+        const video = this.data.tempVideos[index];
+        const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
+        
+        wx.uploadFile({
+          url: uploadServerUrl,
+          filePath: video.tempFilePath,
+          name: 'file',
+          header: {
+            'Authorization': `Bearer ${wx.getStorageSync('token')}`
+          },
+          formData: {
+            fileType: 'video'
+          },
+          success: (res) => {
+            try {
+              const result = JSON.parse(res.data);
+              if (result.success) {
+                // 视频上传成功后，调用后端接口保存视频信息
+                this.saveVideoInfoToBackend(video, result.file_url);
+                uploadedCount++;
+                
+                if (uploadedCount === totalVideos) {
+                  resolve();
+                } else {
+                  uploadNextVideo(index + 1);
+                }
+              } else {
+                reject(new Error(result.message || '视频上传失败'));
+              }
+            } catch (e) {
+              reject(new Error('视频上传响应解析失败'));
+            }
+          },
+          fail: (err) => {
+            reject(new Error('视频上传失败：' + err.errMsg));
+          }
+        });
+      };
+
+      uploadNextVideo(0);
+    });
   }
 });
