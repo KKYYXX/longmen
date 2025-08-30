@@ -41,7 +41,7 @@ Page({
       var self = this;
       wx.showModal({
         title: '提示',
-        content: '每个案例只能上传一个文件，是否要替换当前文件？',
+        content: '每个案例只需上传一个文件，是否要替换当前文件？',
         success: function(res) {
           if (res.confirm) {
             // 清空当前文件，允许上传新文件
@@ -363,7 +363,7 @@ Page({
           // 显示成功提示
           wx.showModal({
             title: '✅ 上传成功',
-            content: `文件"${uploadedFile.name}"已成功上传并保存到后端！\n\n文件大小：${uploadedFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}`,
+            content: `文件"${uploadedFile.name}"已成功上传并保存\n\n文件大小：${uploadedFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}`,
             showCancel: false,
             confirmText: '确定',
             success: () => {
@@ -393,6 +393,15 @@ Page({
 
   // 新闻链接上传功能
   uploadNewsLinks() {
+    // 检查是否已上传文件
+    if (this.data.uploadedFiles.length === 0) {
+      wx.showToast({
+        title: '请先上传文件再上传新闻链接或视频',
+        icon: 'none'
+      });
+      return;
+    }
+
     wx.showModal({
       title: '添加新闻链接',
       editable: true,
@@ -486,7 +495,7 @@ Page({
           // 显示成功提示
           wx.showModal({
             title: '✅ 链接添加成功',
-            content: `新闻链接"${title}"已成功保存到后端！\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
+            content: `新闻链接"${title}"已成功保存\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
             showCancel: false,
             confirmText: '确定',
             success: () => {
@@ -523,6 +532,15 @@ Page({
 
   // 视频上传功能
   uploadVideos() {
+    // 检查是否已上传文件
+    if (this.data.uploadedFiles.length === 0) {
+      wx.showToast({
+        title: '请先上传文件再上传新闻链接或视频',
+        icon: 'none'
+      });
+      return;
+    }
+
     // 显示选择来源的弹窗
     wx.showActionSheet({
       itemList: ['从相册选择', '从聊天记录选择', '拍摄视频'],
@@ -761,7 +779,7 @@ Page({
           // 显示成功提示
           wx.showModal({
             title: '✅ 视频上传成功',
-            content: `视频"${uploadedVideo.name}"已成功上传并保存到后端！\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
+            content: `视频"${uploadedVideo.name}"已成功上传并保存\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
             showCancel: false,
             confirmText: '确定',
             success: () => {
@@ -1171,7 +1189,7 @@ Page({
       wx.hideLoading();
       wx.showModal({
         title: '🎉 提交成功',
-        content: `典型案例"${this.data.caseName}"已成功提交到后端！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n所有数据已保存到后端数据库`,
+        content: `典型案例"${this.data.caseName}"已成功提交\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n所有数据已保存`,
         showCancel: false,
         confirmText: '完成',
         success: () => {

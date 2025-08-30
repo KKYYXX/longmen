@@ -17,33 +17,8 @@
     </view>
   </view>
   
-  <!-- 本地文件信息显示 -->
-  <view class="local-file-info" wx:if="{{!loading && !error && isLocal}}">
-    <view class="file-header">
-      <text class="file-icon">📄</text>
-      <text class="file-title">{{fileName}}</text>
-    </view>
-    <view class="file-details">
-      <view class="detail-item">
-        <text class="detail-label">文件路径：</text>
-        <text class="detail-value">{{originalUrl}}</text>
-      </view>
-      <view class="detail-item">
-        <text class="detail-label">文件类型：</text>
-        <text class="detail-value">{{fileName.split('.').pop().toUpperCase()}}</text>
-      </view>
-      <view class="detail-item">
-        <text class="detail-label">状态：</text>
-        <text class="detail-value local-status">本地文件</text>
-      </view>
-    </view>
-    <view class="file-actions">
-      <text class="action-btn info-btn">此文件存储在本地计算机上</text>
-    </view>
-  </view>
-
   <!-- WebView -->
-  <web-view wx:if="{{!loading && !error && webUrl && !isLocal}}" 
+  <web-view wx:if="{{!loading && !error && webUrl}}" 
             src="{{webUrl}}" 
             bindload="onWebViewLoad"
             binderror="onWebViewError">
