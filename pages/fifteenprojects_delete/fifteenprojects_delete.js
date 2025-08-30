@@ -53,7 +53,7 @@ Page({
           const projectNames = res.data.data;
           // 将项目名称映射为页面展示所需的结构
           const mappedProjects = projectNames.map((projectName, index) => ({
-            id: index + 1, // 临时ID，用于前端显示
+            id: projectName, // 使用项目名称作为临时ID，便于后续查找
             projectName: projectName,
             projectType: '待分类',
             startDate: '',
@@ -248,18 +248,8 @@ Page({
       title: '删除中...'
     });
 
-    // 通过项目名称查找项目ID，然后调用删除接口
-    this.findProjectIdByName(projectItem.projectName, (projectId) => {
-      if (projectId) {
-        this.callDeleteAPI(projectId, projectItem);
-      } else {
-        wx.hideLoading();
-        wx.showToast({
-          title: '未找到项目ID',
-          icon: 'none'
-        });
-      }
-    });
+    // 直接使用项目名称调用删除接口，简化删除逻辑
+    this.callDeleteAPIByName(projectItem.projectName, projectItem);
   },
 
   // 通过项目名称查找项目ID
@@ -300,12 +290,132 @@ Page({
     });
   },
 
-  // 调用删除API
+  // 通过项目名称直接删除（简化删除逻辑）
+  callDeleteAPIByName(projectName, projectItem) {
+    // 先通过项目名称查找项目ID，然后调用删除接口
+    this.findProjectIdByName(projectName, (projectId) => {
+      if (projectId) {
+        this.deleteProjectWithProgressRecords(projectId, projectItem);
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: '未找到项目ID',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 删除项目及其进度记录
+  deleteProjectWithProgressRecords(projectId, projectItem) {
+    console.log('开始删除项目及其进度记录，ID:', projectId, '项目名称:', projectItem.projectName);
+    
+    // 先查询该项目的所有进度记录时间
+    this.queryAndDeleteProgressRecords(projectItem.projectName, () => {
+      console.log('进度记录删除完成，开始删除项目记录');
+      // 删除进度记录后，再删除项目记录
+      this.callDeleteAPI(projectId, projectItem);
+    });
+  },
+
+  // 查询并删除关联的进度记录
+  queryAndDeleteProgressRecords(projectName, callback) {
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/progress/times'),
+      method: 'GET',
+      data: {
+        project_name: projectName
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success && res.data.data && res.data.data.length > 0) {
+          console.log('找到关联进度记录，数量:', res.data.data.length);
+          // 删除所有关联的进度记录
+          this.deleteAllProgressRecords(projectName, res.data.data, callback);
+        } else {
+          console.log('没有找到关联的进度记录');
+          callback();
+        }
+      },
+      fail: (err) => {
+        console.error('查询进度记录失败:', err);
+        callback();
+      }
+    });
+  },
+
+  // 删除所有关联的进度记录
+  deleteAllProgressRecords(projectName, progressTimes, callback) {
+    console.log('开始删除进度记录，项目名称:', projectName, '时间数量:', progressTimes.length);
+    
+    let deletedCount = 0;
+    const totalCount = progressTimes.length;
+    
+    if (totalCount === 0) {
+      console.log('没有进度记录需要删除');
+      callback();
+      return;
+    }
+    
+    console.log('进度记录详情:', progressTimes);
+    
+    // 逐个删除进度记录
+    progressTimes.forEach((progressTime, index) => {
+      console.log(`准备删除第${index + 1}条进度记录:`, progressTime);
+      this.deleteProgressRecord(projectName, progressTime.practice_time, () => {
+        deletedCount++;
+        console.log(`进度记录删除进度: ${deletedCount}/${totalCount}`);
+        
+        if (deletedCount === totalCount) {
+          console.log('所有进度记录删除完成');
+          callback();
+        }
+      });
+    });
+  },
+
+  // 删除单个进度记录
+  deleteProgressRecord(projectName, practiceTime, callback) {
+    console.log('准备删除进度记录，项目名称:', projectName, '时间:', practiceTime);
+    
+    // 将时间格式从 YYYY-MM-DD HH:MM:SS 转换为 YYYY-MM-DD
+    let formattedTime = practiceTime;
+    if (practiceTime && practiceTime.includes(' ')) {
+      formattedTime = practiceTime.split(' ')[0];
+    }
+    
+    console.log('格式化后的时间:', formattedTime);
+    
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/progress/delete'),
+      method: 'DELETE',
+      data: {
+        project_name: projectName,
+        practice_time: formattedTime
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          console.log('删除进度记录成功:', formattedTime);
+        } else {
+          console.error('删除进度记录失败:', res);
+        }
+        callback();
+      },
+      fail: (err) => {
+        console.error('删除进度记录请求失败:', err);
+        callback();
+      }
+    });
+  },
+
+  // 调用删除API（通过ID删除，保留原有方法）
   callDeleteAPI(projectId, projectItem) {
     // 现在有了真实的项目ID，调用删除接口
     wx.request({
       url: apiConfig.buildUrl(`/app/api/15projects/${projectId}`),
       method: 'DELETE',
+      header: {
+        'Content-Type': 'application/json'
+      },
       success: (res) => {
         wx.hideLoading();
         console.log('删除接口响应:', res);
