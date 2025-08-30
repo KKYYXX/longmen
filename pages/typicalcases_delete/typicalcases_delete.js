@@ -189,69 +189,133 @@ Page({
       title: '删除中...'
     });
 
-    // 新逻辑：根据案例名称到数据库查询对应ID，未找到则删除失败
-    this.findModelIdByName(caseItem.title, (modelId) => {
-      if (modelId) {
-        this.callDeleteAPI(modelId, caseItem);
-      } else {
-        wx.hideLoading();
-        wx.showToast({
-          title: '未找到对应案例，删除失败',
-          icon: 'none'
-        });
-      }
-    });
-
-    /* 原本地删除逻辑（保留为注释）
-    try {
-      console.log('删除案例，ID：', caseItem.id);
-
-      // 如果是系统默认案例（ID <= 10），从删除的默认案例列表中记录
-      if (caseItem.id <= 10) {
-        const deletedDefaultCases = wx.getStorageSync('deletedDefaultCases') || [];
-        if (!deletedDefaultCases.includes(caseItem.id)) {
-          deletedDefaultCases.push(caseItem.id);
-          wx.setStorageSync('deletedDefaultCases', deletedDefaultCases);
+    // 先查询关联记录，再删除主记录
+    if (caseItem.id && caseItem.id !== '') {
+      this.deleteCaseWithRelatedRecords(caseItem.id, caseItem);
+    } else {
+      // 如果没有ID，则通过名称查找
+      this.findModelIdByName(caseItem.title, (modelId) => {
+        if (modelId) {
+          this.deleteCaseWithRelatedRecords(modelId, caseItem);
+        } else {
+          wx.hideLoading();
+          wx.showToast({
+            title: '未找到对应案例，删除失败',
+            icon: 'none'
+          });
         }
-      } else {
-        // 如果是用户添加的案例，从本地存储中删除
-        const storedCases = wx.getStorageSync('typicalCases') || [];
-        const updatedCases = storedCases.filter(item => item.id !== caseItem.id);
-        wx.setStorageSync('typicalCases', updatedCases);
-      }
-
-      // 从所有列表中移除
-      const allCases = this.data.allCases.filter(item => item.id !== caseItem.id);
-      const caseList = this.data.caseList.filter(item => item.id !== caseItem.id);
-
-      setTimeout(() => {
-        wx.hideLoading();
-        this.setData({
-          allCases: allCases,
-          caseList: caseList,
-          filteredCases: caseList
-        });
-
-        wx.showToast({
-          title: '删除成功',
-          icon: 'success'
-        });
-
-        // 通知其他页面数据已更新
-        wx.setStorageSync('caseListNeedRefresh', true);
-
-        console.log('案例删除成功，ID:', caseItem.id);
-      }, 800);
-
-    } catch (error) {
-      wx.hideLoading();
-      console.error('删除案例失败:', error);
-      wx.showToast({
-        title: '删除失败',
-        icon: 'none'
       });
     }
-    */
+  },
+
+  // 删除案例及其关联记录
+  deleteCaseWithRelatedRecords(modelId, caseItem) {
+    console.log('开始删除案例及其关联记录，ID:', modelId);
+    
+    // 先查询关联的新闻链接
+    this.queryAndDeleteNewsRecords(caseItem.title, () => {
+      // 再查询关联的视频记录
+      this.queryAndDeleteVideoRecords(caseItem.title, () => {
+        // 最后删除主记录
+        this.callDeleteAPI(modelId, caseItem);
+      });
+    });
+  },
+
+  // 查询并删除关联的新闻记录
+  queryAndDeleteNewsRecords(modelName, callback) {
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/news'),
+      method: 'GET',
+      data: {
+        model_name: modelName
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success && res.data.data && res.data.data.length > 0) {
+          console.log('找到关联新闻记录，数量:', res.data.data.length);
+          // 删除关联的新闻记录
+          this.deleteNewsRecords(modelName, callback);
+        } else {
+          console.log('没有找到关联的新闻记录');
+          callback();
+        }
+      },
+      fail: (err) => {
+        console.error('查询新闻记录失败:', err);
+        callback();
+      }
+    });
+  },
+
+  // 删除关联的新闻记录
+  deleteNewsRecords(modelName, callback) {
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/news'),
+      method: 'DELETE',
+      data: {
+        model_name: modelName
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          console.log('删除新闻记录成功，数量:', res.data.deleted_count);
+        } else {
+          console.error('删除新闻记录失败:', res);
+        }
+        callback();
+      },
+      fail: (err) => {
+        console.error('删除新闻记录请求失败:', err);
+        callback();
+      }
+    });
+  },
+
+  // 查询并删除关联的视频记录
+  queryAndDeleteVideoRecords(modelName, callback) {
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/video'),
+      method: 'GET',
+      data: {
+        model_name: modelName
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success && res.data.data && res.data.data.length > 0) {
+          console.log('找到关联视频记录，数量:', res.data.data.length);
+          // 删除关联的视频记录
+          this.deleteVideoRecords(modelName, callback);
+        } else {
+          console.log('没有找到关联的视频记录');
+          callback();
+        }
+      },
+      fail: (err) => {
+        console.error('查询视频记录失败:', err);
+        callback();
+      }
+    });
+  },
+
+  // 删除关联的视频记录
+  deleteVideoRecords(modelName, callback) {
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/video'),
+      method: 'DELETE',
+      data: {
+        model_name: modelName
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          console.log('删除视频记录成功，数量:', res.data.deleted_count);
+        } else {
+          console.error('删除视频记录失败:', res);
+        }
+        callback();
+      },
+      fail: (err) => {
+        console.error('删除视频记录请求失败:', err);
+        callback();
+      }
+    });
   },
 
   // 通过案例名称在数据库中查找模型ID
@@ -297,9 +361,16 @@ Page({
         console.log('删除接口响应:', res);
 
         if (res.statusCode === 200 && res.data && res.data.success) {
-          // 删除成功：从当前列表中移除（按标题移除，避免前端ID与后端ID不一致）
-          const caseList = this.data.caseList.filter(item => item.title !== caseItem.title);
-          this.setData({ caseList });
+          // 删除成功：从所有相关列表中移除
+          const updatedCaseList = this.data.caseList.filter(item => item.title !== caseItem.title);
+          const updatedAllCases = this.data.allCases.filter(item => item.title !== caseItem.title);
+          const updatedFilteredCases = this.data.filteredCases.filter(item => item.title !== caseItem.title);
+          
+          this.setData({
+            caseList: updatedCaseList,
+            allCases: updatedAllCases,
+            filteredCases: updatedFilteredCases
+          });
 
           wx.showToast({
             title: '删除成功',
@@ -308,6 +379,8 @@ Page({
 
           // 通知其他页面数据已更新
           wx.setStorageSync('caseListNeedRefresh', true);
+          
+          console.log('案例删除成功，标题:', caseItem.title, 'ID:', modelId);
         } else {
           wx.showToast({
             title: (res.data && res.data.message) ? res.data.message : '删除失败',

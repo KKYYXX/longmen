@@ -97,7 +97,17 @@ Page({
           this.setData({ showModal: false })
           this.showToast('添加成功')
         } else {
-          this.showToast(res.data.message || '添加失败')
+          // 检查是否是用户不存在的情况
+          if (res.statusCode === 404 && res.data.message === '用户不存在') {
+            wx.showModal({
+              title: '添加失败',
+              content: '该用户尚未进行注册',
+              showCancel: false,
+              confirmText: '确定'
+            })
+          } else {
+            this.showToast(res.data.message || '添加失败')
+          }
         }
       },
       fail: (err) => {
