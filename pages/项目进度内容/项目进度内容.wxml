@@ -93,61 +93,67 @@
                 <text class="location-text">{{item.location}}</text>
             </view>
             
-                           <!-- 图片区域 -->
-              <view class="media-section">
-                  <view class="media-header">
-                      <text class="media-icon">📷</text>
-                      <text class="media-label">现场图片</text>
-                  </view>
-                  <view class="media-content">
-                      <view wx:if="{{item.originalData.practice_image_url}}" class="url-links">
-                          <view wx:for="{{item.originalData.practice_image_url.split(',')}}" wx:key="index" wx:for-item="imageUrl">
-                              <text wx:if="{{imageUrl.trim()}}" class="url-link" bindtap="openUrl" data-url="{{imageUrl.trim()}}">
-                                  {{imageUrl.trim()}}
-                              </text>
-                          </view>
-                      </view>
-                      <view wx:else class="no-content">
-                          <text class="no-content-text">无内容</text>
-                      </view>
-                  </view>
-              </view>
+            <!-- 图片区域 -->
+            <view class="media-section">
+                <view class="media-header">
+                    <text class="media-icon">📷</text>
+                    <text class="media-label">现场图片</text>
+                </view>
+                <view class="media-content">
+                    <view wx:if="{{item.images && item.images.length > 0}}" class="current-media">
+                        <view class="media-item" wx:for="{{item.images}}" wx:key="index" wx:for-item="imageUrl">
+                            <image class="media-preview" src="{{imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{imageUrl}}" data-urls="{{item.images}}"></image>
+                        </view>
+                    </view>
+                    <view wx:else class="no-content">
+                        <text class="no-content-text">无图片</text>
+                    </view>
+                </view>
+            </view>
               
-              <!-- 视频区域 -->
-              <view class="media-section">
-                  <view class="media-header">
-                      <text class="media-icon">🎥</text>
-                      <text class="media-label">现场视频</text>
-                  </view>
-                  <view class="media-content">
-                      <view wx:if="{{item.originalData.video_url}}" class="url-links">
-                          <text class="url-link" bindtap="openUrl" data-url="{{item.originalData.video_url}}">
-                              {{item.originalData.video_url}}
-                          </text>
-                      </view>
-                      <view wx:else class="no-content">
-                          <text class="no-content-text">无内容</text>
-                      </view>
-                  </view>
-              </view>
+            <!-- 视频区域 -->
+            <view class="media-section">
+                <view class="media-header">
+                    <text class="media-icon">🎥</text>
+                    <text class="media-label">现场视频</text>
+                </view>
+                <view class="media-content">
+                    <view wx:if="{{item.videos && item.videos.length > 0}}" class="current-media">
+                        <view class="media-item" wx:for="{{item.videos}}" wx:key="index" wx:for-item="videoUrl">
+                            <video class="media-preview" src="{{videoUrl}}" controls bindtap="playVideo" data-url="{{videoUrl}}"></video>
+                        </view>
+                    </view>
+                    <view wx:else class="no-content">
+                        <text class="no-content-text">无视频</text>
+                    </view>
+                </view>
+            </view>
              
-             <!-- 新闻稿区域 -->
-             <view class="media-section">
-                 <view class="media-header">
-                     <text class="media-icon">📰</text>
-                     <text class="media-label">新闻稿</text>
-                 </view>
-                 <view class="media-content">
-                     <view wx:if="{{item.originalData.news}}" class="url-links">
-                         <text class="url-link" bindtap="openUrl" data-url="{{item.originalData.news}}">
-                             {{item.originalData.news}}
-                         </text>
-                     </view>
-                     <view wx:else class="no-content">
-                         <text class="no-content-text">无内容</text>
-                     </view>
-                 </view>
-             </view>
+            <!-- 新闻稿区域 -->
+            <view class="media-section">
+                <view class="media-header">
+                    <text class="media-icon">📰</text>
+                    <text class="media-label">新闻稿文件</text>
+                </view>
+                <view class="media-content">
+                    <view wx:if="{{item.newsFiles && item.newsFiles.length > 0}}" class="uploaded-files">
+                        <view class="file-item" wx:for="{{item.newsFiles}}" wx:key="index">
+                            <view class="file-info">
+                                <view class="file-details">
+                                    <text class="file-name">{{item.name}}</text>
+                                    <text class="file-size">{{item.sizeText}}</text>
+                                </view>
+                            </view>
+                            <view class="file-actions">
+                                <text class="file-action preview" bindtap="previewFile" data-index="{{index}}" data-file="{{item}}">预览</text>
+                            </view>
+                        </view>
+                    </view>
+                    <view wx:else class="no-content">
+                        <text class="no-content-text">无文件</text>
+                    </view>
+                </view>
+            </view>
         </view>
     </view>
 

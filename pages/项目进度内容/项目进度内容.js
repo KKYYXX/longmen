@@ -655,6 +655,45 @@ Page({
         }
       }
 
+      // 处理图片数据 - 参考十五项项目修改页面的数据格式
+      let images = [];
+      if (item.practice_image_url) {
+        images = item.practice_image_url.split(',')
+          .map(url => url.trim())
+          .filter(url => url.length > 0);
+      }
+      
+      // 处理视频数据
+      let videos = [];
+      if (item.video_url) {
+        videos = [item.video_url.trim()];
+      }
+      
+      // 处理新闻稿文件数据 - 完全参考十五项项目修改页面的文件格式
+      let newsFiles = [];
+      if (item.news) {
+        const newsUrl = item.news.trim();
+        if (newsUrl) {
+          // 从URL中提取文件名
+          const fileName = newsUrl.split('/').pop() || '新闻稿文件';
+          const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
+          
+          console.log('=== 处理新闻稿文件 ===');
+          console.log('原始URL:', newsUrl);
+          console.log('文件名:', fileName);
+          console.log('文件扩展名:', fileExt);
+          
+          newsFiles = [{
+            name: fileName,
+            path: newsUrl, // 保持原始路径，不做任何修改
+            type: this.getFileType(fileExt),
+            sizeText: '未知大小'
+          }];
+          
+          console.log('生成的文件对象:', newsFiles[0]);
+        }
+      }
+
       return {
         id: item.id || index + 1,
         person: person,
@@ -662,6 +701,10 @@ Page({
         location: item.practice_location || '未知地点',
         content: item.news || '无详细描述',
         date: date,
+        // 新增媒体数据 - 参考十五项项目修改页面
+        images: images,
+        videos: videos,
+        newsFiles: newsFiles,
         // 保留原始数据，用于后续扩展和记录选择
         originalData: {
           ...item,
@@ -726,9 +769,560 @@ Page({
       return;
     }
 
-    console.log('准备打开链接:', url);
+    console.log('🔗 === openUrl 开始处理 ===');
+    console.log('原始链接:', url);
+    console.log('链接类型判断:');
+    console.log('- 是否 wxfile:// ?', url.startsWith('wxfile://'));
+    console.log('- 是否 http/https ?', url.startsWith('http://') || url.startsWith('https://'));
+    console.log('- 是否包含视频扩展名 ?', url.includes('.mp4') || url.includes('.avi') || url.includes('.mov'));
+    console.log('- 是否包含图片扩展名 ?', url.includes('.jpg') || url.includes('.png') || url.includes('.jpeg') || url.includes('.gif'));
     
-    // 直接使用微信小程序的webview打开链接
+    // 判断链接类型并采用不同的处理方式
+    if (url.startsWith('wxfile://')) {
+      console.log('✅ 识别为 wxfile:// 本地文件，调用 handleLocalFile');
+      this.handleLocalFile(url);
+    } else if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.log('✅ 识别为网络链接，调用 openInWebView');
+      this.openInWebView(url);
+    } else if (url.includes('.mp4') || url.includes('.avi') || url.includes('.mov')) {
+      console.log('✅ 识别为视频文件，调用 handleVideoFile');
+      this.handleVideoFile(url);
+    } else if (url.includes('.jpg') || url.includes('.png') || url.includes('.jpeg') || url.includes('.gif')) {
+      console.log('✅ 识别为图片文件，调用 handleImageFile');
+      this.handleImageFile(url);
+    } else {
+      console.log('❓ 未识别的链接类型，调用 handleOtherFile');
+      this.handleOtherFile(url);
+    }
+  },
+
+  // 处理本地文件（wxfile://）
+  handleLocalFile: function(url) {
+    console.log('处理本地文件:', url);
+    
+    // 提取真实文件路径
+    const realPath = url.replace('wxfile://', '');
+    console.log('真实文件路径:', realPath);
+    
+    // 判断文件类型
+    const fileName = realPath.split('/').pop() || '';
+    const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
+    
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExt)) {
+      // 图片文件，直接预览
+      wx.previewImage({
+        urls: [realPath],
+        current: realPath,
+        fail: (err) => {
+          console.error('预览图片失败:', err);
+          wx.showToast({
+            title: '图片预览失败',
+            icon: 'none'
+          });
+        }
+      });
+    } else if (['mp4', 'avi', 'mov', 'wmv', 'flv', '3gp', 'm4v'].includes(fileExt)) {
+      // 视频文件，使用video组件播放
+      wx.navigateTo({
+        url: `/pages/video-player/video-player?url=${encodeURIComponent(realPath)}&title=${encodeURIComponent('现场视频')}`,
+        fail: (err) => {
+          console.error('跳转视频播放页面失败:', err);
+          wx.showToast({
+            title: '无法播放视频',
+            icon: 'none'
+          });
+        }
+      });
+    } else {
+      // 文档文件，跳转到专门的文档预览页面
+      console.log('跳转到文档预览页面');
+      wx.navigateTo({
+        url: `/pages/document-viewer/document-viewer?url=${encodeURIComponent(url)}&title=${encodeURIComponent('新闻稿预览')}`,
+        success: () => {
+          console.log('跳转文档预览页面成功');
+        },
+        fail: (err) => {
+          console.error('跳转文档预览页面失败:', err);
+          wx.showToast({
+            title: '无法打开预览页面',
+            icon: 'none'
+          });
+        }
+      });
+    }
+  },
+
+  // 获取文件类型 - 参考十五项项目修改页面
+  getFileType: function(fileExt) {
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExt)) {
+      return 'image';
+    } else if (['mp4', 'avi', 'mov', 'wmv', 'flv', '3gp', 'm4v'].includes(fileExt)) {
+      return 'video';
+    } else if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(fileExt)) {
+      return 'document';
+    } else {
+      return 'file';
+    }
+  },
+
+  // 图片预览功能 - 参考十五项项目修改页面的实现
+  previewImage: function(e) {
+    const url = e.currentTarget.dataset.url;
+    const urls = e.currentTarget.dataset.urls;
+    
+    console.log('预览图片:', url);
+    console.log('图片列表:', urls);
+    
+    if (!url) {
+      wx.showToast({
+        title: '图片地址无效',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 使用微信原生图片预览
+    wx.previewImage({
+      urls: urls || [url],
+      current: url,
+      success: () => {
+        console.log('图片预览成功');
+      },
+      fail: (err) => {
+        console.error('图片预览失败:', err);
+        // 如果原生预览失败，尝试调用之前的 handleLocalFile 逻辑
+        this.handleLocalFile(`wxfile://${url.replace('wxfile://', '')}`);
+      }
+    });
+  },
+
+  // 视频播放功能 - 参考十五项项目修改页面的实现
+  playVideo: function(e) {
+    const url = e.currentTarget.dataset.url;
+    
+    console.log('播放视频:', url);
+    
+    if (!url) {
+      wx.showToast({
+        title: '视频地址无效',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 跳转到专用视频播放页面
+    wx.navigateTo({
+      url: `/pages/video-player/video-player?url=${encodeURIComponent(url)}&title=${encodeURIComponent('现场视频')}`,
+      success: () => {
+        console.log('跳转视频播放页面成功');
+      },
+      fail: (err) => {
+        console.error('跳转视频播放页面失败:', err);
+        // 如果跳转失败，尝试调用之前的 handleLocalFile 逻辑
+        this.handleLocalFile(`wxfile://${url.replace('wxfile://', '')}`);
+      }
+    });
+  },
+
+  // 文件预览功能 - 完全按照项目修改页面的实现
+  previewFile: function(e) {
+    const index = e.currentTarget.dataset.index;
+    const file = e.currentTarget.dataset.file;
+    
+    console.log('=== 项目进度内容文件预览 ===');
+    console.log('index:', index);
+    console.log('file:', file);
+    
+    if (!file) {
+      wx.showToast({
+        title: '文件信息无效',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 完全按照项目修改页面的逻辑，简单直接
+    if (file.type === 'image') {
+      wx.previewImage({
+        urls: [file.path],
+        current: file.path
+      });
+    } else {
+      wx.openDocument({
+        filePath: file.path,
+        success: () => {
+          console.log('打开文档成功');
+        },
+        fail: (err) => {
+          console.error('打开文档失败:', err);
+          wx.showToast({
+            title: '无法预览此文件',
+            icon: 'none'
+          });
+        }
+      });
+    }
+  },
+
+  // 复制文件路径
+  copyFilePath: function(url) {
+    wx.setClipboardData({
+      data: url,
+      success: () => {
+        wx.showToast({
+          title: '路径已复制',
+          icon: 'success'
+        });
+      }
+    });
+  },
+
+  // 尝试读取文件内容（仅用于文本文件）
+  tryReadFileContent: function(url) {
+    const filePath = url.replace('wxfile://', '');
+    
+    wx.showLoading({
+      title: '读取文件内容...',
+      mask: true
+    });
+
+    const fs = wx.getFileSystemManager();
+    fs.readFile({
+      filePath: filePath,
+      encoding: 'utf8',
+      success: (res) => {
+        wx.hideLoading();
+        const content = res.data;
+        wx.showModal({
+          title: '文件内容',
+          content: content.length > 500 ? content.substring(0, 500) + '...\n\n(内容过长，仅显示前500字符)' : content,
+          showCancel: true,
+          cancelText: '关闭',
+          confirmText: '复制内容',
+          success: (modalRes) => {
+            if (modalRes.confirm) {
+              wx.setClipboardData({
+                data: content,
+                success: () => {
+                  wx.showToast({
+                    title: '内容已复制',
+                    icon: 'success'
+                  });
+                }
+              });
+            }
+          }
+        });
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('读取文本文件失败:', err);
+        wx.showToast({
+          title: '文件读取失败，可能不是文本文件',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 预览本地图片
+  previewLocalImage: function(filePath) {
+    console.log('尝试预览图片:', filePath);
+    
+    wx.showLoading({
+      title: '加载图片中...',
+      mask: true
+    });
+
+    // 先检查文件是否存在
+    wx.getFileInfo({
+      filePath: filePath,
+      success: (fileInfo) => {
+        console.log('图片文件信息:', fileInfo);
+        wx.hideLoading();
+        
+        // 使用微信原生图片预览
+        wx.previewImage({
+          urls: [filePath],
+          current: filePath,
+          success: () => {
+            console.log('图片预览成功');
+          },
+          fail: (err) => {
+            console.error('预览图片失败:', err);
+            // 如果原生预览失败，尝试其他方式
+            this.showImageInModal(filePath);
+          }
+        });
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('获取图片文件信息失败:', err);
+        wx.showModal({
+          title: '图片无法访问',
+          content: `图片文件可能已被删除或移动\n\n文件路径：${filePath}\n\n您可以尝试：\n1. 在微信聊天中查找原图片\n2. 重新上传图片`,
+          showCancel: true,
+          cancelText: '关闭',
+          confirmText: '复制路径',
+          success: (res) => {
+            if (res.confirm) {
+              this.copyFilePath(`wxfile://${filePath}`);
+            }
+          }
+        });
+      }
+    });
+  },
+
+  // 在模态框中显示图片（备用方案）
+  showImageInModal: function(filePath) {
+    wx.showModal({
+      title: '图片预览',
+      content: `无法直接预览此图片\n\n可能原因：\n1. 图片格式不支持\n2. 文件已损坏\n3. 权限不足\n\n建议复制路径到微信聊天中查看`,
+      showCancel: true,
+      cancelText: '关闭', 
+      confirmText: '复制路径',
+      success: (res) => {
+        if (res.confirm) {
+          this.copyFilePath(`wxfile://${filePath}`);
+        }
+      }
+    });
+  },
+
+  // 播放本地视频
+  playLocalVideo: function(filePath) {
+    console.log('尝试播放视频:', filePath);
+    
+    wx.showLoading({
+      title: '加载视频中...',
+      mask: true
+    });
+
+    // 先检查文件是否存在
+    wx.getFileInfo({
+      filePath: filePath,
+      success: (fileInfo) => {
+        console.log('视频文件信息:', fileInfo);
+        wx.hideLoading();
+        
+        // 跳转到专用视频播放页面
+        wx.navigateTo({
+          url: `/pages/video-player/video-player?url=${encodeURIComponent(filePath)}&title=${encodeURIComponent('现场视频')}`,
+          success: () => {
+            console.log('跳转视频播放页面成功');
+          },
+          fail: (err) => {
+            console.error('跳转视频播放页面失败:', err);
+            // 如果跳转失败，尝试在当前页面播放
+            this.playVideoInCurrentPage(filePath);
+          }
+        });
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('获取视频文件信息失败:', err);
+        wx.showModal({
+          title: '视频无法访问',
+          content: `视频文件可能已被删除或移动\n\n文件路径：${filePath}\n\n您可以尝试：\n1. 在微信聊天中查找原视频\n2. 重新上传视频`,
+          showCancel: true,
+          cancelText: '关闭',
+          confirmText: '复制路径',
+          success: (res) => {
+            if (res.confirm) {
+              this.copyFilePath(`wxfile://${filePath}`);
+            }
+          }
+        });
+      }
+    });
+  },
+
+  // 在当前页面播放视频（备用方案）
+  playVideoInCurrentPage: function(filePath) {
+    wx.showModal({
+      title: '视频播放',
+      content: `准备播放视频文件\n\n如果无法正常播放，建议：\n1. 复制路径到微信聊天中播放\n2. 使用其他视频播放器`,
+      showCancel: true,
+      cancelText: '取消',
+      confirmText: '尝试播放',
+      success: (res) => {
+        if (res.confirm) {
+          // 这里可以添加在当前页面显示video组件的逻辑
+          // 或者复制路径让用户在微信中打开
+          this.copyFilePath(`wxfile://${filePath}`);
+          wx.showToast({
+            title: '路径已复制，请在微信中打开',
+            icon: 'none',
+            duration: 3000
+          });
+        }
+      }
+    });
+  },
+
+  // 打开本地文档
+  openLocalDocument: function(filePath) {
+    console.log('=== 开始打开本地文档 ===');
+    console.log('文档路径:', filePath);
+    
+    wx.showLoading({
+      title: '正在打开文档...',
+      mask: true
+    });
+
+    // 直接尝试使用微信原生文档预览，不先检查文件信息
+    wx.openDocument({
+      filePath: filePath,
+      success: () => {
+        wx.hideLoading();
+        console.log('✅ 文档打开成功');
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('❌ 打开文档失败:', err);
+        console.error('错误详情:', JSON.stringify(err));
+        
+        // 如果直接打开失败，再显示错误信息
+        wx.showModal({
+          title: '无法打开文档',
+          content: `文档打开失败，可能原因：\n1. 文档格式不支持\n2. 文件已损坏或移动\n3. 权限不足\n\n建议复制路径到微信聊天中打开`,
+          showCancel: true,
+          cancelText: '关闭',
+          confirmText: '复制路径',
+          success: (res) => {
+            if (res.confirm) {
+              this.copyFilePath(`wxfile://${filePath}`);
+            }
+          }
+        });
+      }
+    });
+  },
+
+  // 显示文档选项
+  showDocumentOptions: function(filePath, fileInfo) {
+    const size = fileInfo.size;
+    const sizeStr = size > 1024 * 1024 ? 
+      `${(size / (1024 * 1024)).toFixed(2)} MB` : 
+      `${(size / 1024).toFixed(2)} KB`;
+    
+    wx.showModal({
+      title: '文档预览',
+      content: `无法直接预览此文档\n\n文件大小：${sizeStr}\n\n建议：\n1. 复制路径到微信聊天中打开\n2. 使用其他应用打开\n3. 如果是文本文件，可尝试读取内容`,
+      showCancel: true,
+      cancelText: '关闭',
+      confirmText: '复制路径',
+      success: (res) => {
+        if (res.confirm) {
+          this.copyFilePath(`wxfile://${filePath}`);
+        }
+      }
+    });
+  },
+
+  // 显示文件选项
+  showFileOptions: function(originalUrl, filePath, fileName) {
+    wx.showActionSheet({
+      itemList: [
+        '复制文件路径',
+        '查看文件信息', 
+        '尝试读取内容',
+        '保存到相册(仅图片)',
+        '在微信中打开'
+      ],
+      success: (res) => {
+        switch(res.tapIndex) {
+          case 0:
+            this.copyFilePath(originalUrl);
+            break;
+          case 1:
+            this.showFileDetailsSimple(filePath, fileName);
+            break;
+          case 2:
+            this.tryReadFileContent(originalUrl);
+            break;
+          case 3:
+            this.saveToPhotos(originalUrl);
+            break;
+          case 4:
+            this.copyFilePath(originalUrl);
+            wx.showToast({
+              title: '路径已复制，请在微信中粘贴打开',
+              icon: 'none',
+              duration: 3000
+            });
+            break;
+        }
+      }
+    });
+  },
+
+  // 显示简单文件详情
+  showFileDetailsSimple: function(filePath, fileName) {
+    wx.getFileInfo({
+      filePath: filePath,
+      success: (fileInfo) => {
+        const size = fileInfo.size;
+        const sizeStr = size > 1024 * 1024 ? 
+          `${(size / (1024 * 1024)).toFixed(2)} MB` : 
+          `${(size / 1024).toFixed(2)} KB`;
+        
+        wx.showModal({
+          title: '文件信息',
+          content: `文件名：${fileName}\n文件大小：${sizeStr}\n修改时间：${new Date(fileInfo.createTime).toLocaleString()}`,
+          showCancel: false
+        });
+      },
+      fail: () => {
+        wx.showToast({
+          title: '获取文件信息失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 保存到相册（仅限图片）
+  saveToPhotos: function(url) {
+    const filePath = url.replace('wxfile://', '');
+    
+    if (!filePath.includes('.jpg') && !filePath.includes('.png') && !filePath.includes('.jpeg')) {
+      wx.showToast({
+        title: '仅支持图片文件',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.saveImageToPhotosAlbum({
+      filePath: filePath,
+      success: () => {
+        wx.showToast({
+          title: '已保存到相册',
+          icon: 'success'
+        });
+      },
+      fail: (err) => {
+        console.error('保存图片失败:', err);
+        if (err.errMsg.includes('auth')) {
+          wx.showModal({
+            title: '需要授权',
+            content: '保存图片需要访问相册权限，请在设置中开启',
+            showCancel: false
+          });
+        } else {
+          wx.showToast({
+            title: '保存失败',
+            icon: 'none'
+          });
+        }
+      }
+    });
+  },
+
+  // 在webview中打开网络链接
+  openInWebView: function(url) {
     wx.navigateTo({
       url: `/pages/webview/webview?url=${encodeURIComponent(url)}`,
       fail: (err) => {
@@ -752,6 +1346,121 @@ Page({
             });
           }
         });
+      }
+    });
+  },
+
+  // 处理视频文件
+  handleVideoFile: function(url) {
+    const isNetworkVideo = url.startsWith('http://') || url.startsWith('https://');
+    
+    if (isNetworkVideo) {
+      // 网络视频，尝试使用视频播放器
+      wx.navigateTo({
+        url: `/pages/video-player/video-player?url=${encodeURIComponent(url)}`,
+        fail: (err) => {
+          console.error('跳转视频播放器失败:', err);
+          // 失败则使用webview
+          this.openInWebView(url);
+        }
+      });
+    } else {
+      // 本地视频文件
+      wx.showModal({
+        title: '视频文件',
+        content: `文件：${url}\n\n这是一个本地视频文件。请选择操作：`,
+        showCancel: true,
+        cancelText: '复制路径',
+        confirmText: '尝试播放',
+        success: (res) => {
+          if (res.confirm) {
+            // 尝试播放
+            this.openInWebView(url);
+          } else {
+            // 复制路径
+            wx.setClipboardData({
+              data: url,
+              success: () => {
+                wx.showToast({
+                  title: '路径已复制',
+                  icon: 'success'
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+  },
+
+  // 处理图片文件
+  handleImageFile: function(url) {
+    const isNetworkImage = url.startsWith('http://') || url.startsWith('https://');
+    
+    if (isNetworkImage) {
+      // 网络图片，使用图片预览
+      wx.previewImage({
+        urls: [url],
+        current: url,
+        fail: (err) => {
+          console.error('图片预览失败:', err);
+          // 失败则使用webview
+          this.openInWebView(url);
+        }
+      });
+    } else {
+      // 本地图片文件
+      wx.showModal({
+        title: '图片文件',
+        content: `文件：${url}\n\n这是一个本地图片文件。请选择操作：`,
+        showCancel: true,
+        cancelText: '复制路径',
+        confirmText: '尝试查看',
+        success: (res) => {
+          if (res.confirm) {
+            // 尝试查看
+            this.openInWebView(url);
+          } else {
+            // 复制路径
+            wx.setClipboardData({
+              data: url,
+              success: () => {
+                wx.showToast({
+                  title: '路径已复制',
+                  icon: 'success'
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+  },
+
+  // 处理其他类型文件
+  handleOtherFile: function(url) {
+    wx.showModal({
+      title: '文档文件',
+      content: `文件：${url}\n\n请选择操作方式：`,
+      showCancel: true,
+      cancelText: '复制路径',
+      confirmText: '尝试打开',
+      success: (res) => {
+        if (res.confirm) {
+          // 尝试在webview中打开
+          this.openInWebView(url);
+        } else {
+          // 复制路径
+          wx.setClipboardData({
+            data: url,
+            success: () => {
+              wx.showToast({
+                title: '路径已复制',
+                icon: 'success'
+              });
+            }
+          });
+        }
       }
     });
   },

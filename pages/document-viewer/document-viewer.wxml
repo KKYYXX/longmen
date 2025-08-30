@@ -1,0 +1,30 @@
+<view class="document-viewer-container">
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">正在打开文档...</text>
+    </view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:if="{{error}}">
+    <view class="error-content">
+      <view class="error-icon">📄</view>
+      <text class="error-title">无法预览文档</text>
+      <text class="error-message">{{errorMessage}}</text>
+      <view class="error-actions">
+        <button class="retry-btn" bindtap="onRetry">重试</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成功状态 -->
+  <view class="success-container" wx:if="{{!loading && !error}}">
+    <view class="success-content">
+      <view class="success-icon">✓</view>
+      <text class="success-text">文档已在新窗口中打开</text>
+    </view>
+  </view>
+</view>

@@ -76,10 +76,10 @@
 
 .form-label {
   display: block;
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 600;
   color: #2c2c2c;
-  margin-bottom: 20rpx;
+  margin-bottom: 18rpx;
   line-height: 1.4;
   text-shadow: 0 1rpx 2rpx rgba(255, 255, 255, 0.8);
 }
@@ -91,23 +91,25 @@
 
 .form-input, .form-textarea {
   width: 100%;
-  padding: 30rpx 25rpx;
+  padding: 25rpx 20rpx;
   border: 2rpx solid #e9ecef;
   border-radius: 12rpx;
-  font-size: 30rpx;
+  font-size: 28rpx;
   color: #2c2c2c;
   background: #ffffff;
   box-sizing: border-box;
   transition: all 0.3s ease;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  min-height: 90rpx;
-  line-height: 1.4;
+  min-height: 100rpx;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
 }
 
 /* 占位符样式 */
 .form-input::placeholder, .form-textarea::placeholder {
   color: #999999;
-  font-size: 28rpx;
+  font-size: 26rpx;
   opacity: 1;
 }
 
@@ -118,10 +120,12 @@
 }
 
 .form-textarea {
-  min-height: 150rpx;
+  min-height: 160rpx;
   resize: none;
   line-height: 1.6;
-  padding: 30rpx 25rpx;
+  padding: 25rpx 20rpx;
+  display: block;
+  align-items: flex-start;
 }
 
 .form-picker {
@@ -129,17 +133,17 @@
 }
 
 .picker-display {
-  padding: 30rpx 60rpx 30rpx 25rpx;
+  padding: 25rpx 60rpx 25rpx 20rpx;
   border: 2rpx solid #e9ecef;
   border-radius: 12rpx;
-  font-size: 30rpx;
+  font-size: 28rpx;
   color: #2c2c2c;
   background: #ffffff;
   position: relative;
   transition: all 0.3s ease;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  min-height: 90rpx;
-  line-height: 1.4;
+  min-height: 100rpx;
+  line-height: 1.5;
   display: flex;
   align-items: center;
 }
@@ -148,7 +152,7 @@
 .picker-display:empty::before {
   content: attr(data-placeholder);
   color: #999999;
-  font-size: 28rpx;
+  font-size: 26rpx;
 }
 
 .picker-display::after {
@@ -409,13 +413,16 @@
 
 .contact-form-input {
   width: 100%;
-  padding: 24rpx 20rpx;
+  padding: 22rpx 18rpx;
   border: 1rpx solid #ddd;
   border-radius: 12rpx;
-  font-size: 30rpx;
+  font-size: 28rpx;
   background: #fafafa;
   box-sizing: border-box;
-  min-height: 80rpx;
+  min-height: 90rpx;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
 }
 
 .contact-form-input:focus {
@@ -456,4 +463,44 @@
 
 .contact-save-btn:active {
   background: #357abd;
+}
+
+/* 移动端适配优化 */
+@media screen and (max-width: 750rpx) {
+  .form-input, .form-textarea {
+    font-size: 26rpx;
+    padding: 22rpx 18rpx;
+    min-height: 105rpx;
+    line-height: 1.6;
+  }
+  
+  .form-textarea {
+    min-height: 170rpx;
+    line-height: 1.7;
+  }
+  
+  .picker-display {
+    font-size: 26rpx;
+    padding: 22rpx 55rpx 22rpx 18rpx;
+    min-height: 105rpx;
+    line-height: 1.6;
+  }
+  
+  .form-label {
+    font-size: 28rpx;
+    margin-bottom: 16rpx;
+  }
+  
+  .form-input::placeholder, 
+  .form-textarea::placeholder,
+  .picker-display:empty::before {
+    font-size: 24rpx;
+  }
+  
+  .contact-form-input {
+    font-size: 26rpx;
+    padding: 20rpx 16rpx;
+    min-height: 95rpx;
+    line-height: 1.6;
+  }
 }
