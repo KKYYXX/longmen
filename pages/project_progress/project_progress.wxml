@@ -155,11 +155,43 @@
               />
             </view>
 
+            <!-- 进度视频 -->
+            <view class="progress-videos" wx:if="{{item.videos && item.videos.length > 0}}">
+              <view 
+                class="progress-video-item" 
+                wx:for="{{item.videos}}" 
+                wx:for-item="video"
+                wx:key="*this"
+                bindtap="previewVideo"
+                data-src="{{video}}"
+                data-title="{{item.title}}"
+              >
+                <text class="video-icon">▶️</text>
+                <text class="video-text">播放视频</text>
+              </view>
+            </view>
+
+            <!-- 进度文档 -->
+            <view class="progress-documents" wx:if="{{item.documents && item.documents.length > 0}}">
+              <view 
+                class="progress-document-item" 
+                wx:for="{{item.documents}}" 
+                wx:for-item="doc"
+                wx:key="*this"
+                bindtap="previewDocument"
+                data-src="{{doc}}"
+                data-title="{{item.title}}"
+              >
+                <text class="document-icon">📄</text>
+                <text class="document-text">查看文档</text>
+              </view>
+            </view>
+
             <!-- 完成度 -->
             <view class="completion-info" wx:if="{{item.completion}}">
               <text class="completion-label">完成度：</text>
               <view class="completion-bar">
-                <view class="completion-fill" style="width: {{item.completion}}%"></view>
+                <view class="completion-fill" style="width: {{item.completion}}"></view>
               </view>
               <text class="completion-text">{{item.completion}}%</text>
             </view>

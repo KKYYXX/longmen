@@ -436,7 +436,7 @@
         <view class="media-upload-area">
           <view class="current-media" wx:if="{{modifyRecord.images && modifyRecord.images.length > 0}}">
             <view class="media-item" wx:for="{{modifyRecord.images}}" wx:key="index">
-              <image class="media-preview" src="{{item}}" mode="aspectFill"></image>
+              <image class="media-preview" src="{{item}}" mode="aspectFill" bindtap="previewModifyImage" data-index="{{index}}"></image>
               <view class="media-remove" bindtap="removeModifyImage" data-index="{{index}}">×</view>
             </view>
           </view>
@@ -456,6 +456,9 @@
           <view class="current-media" wx:if="{{modifyRecord.videos && modifyRecord.videos.length > 0}}">
             <view class="media-item" wx:for="{{modifyRecord.videos}}" wx:key="index">
               <video class="media-preview" src="{{item}}" controls></video>
+              <view class="media-overlay" bindtap="previewModifyVideo" data-index="{{index}}">
+                <text class="play-icon">▶️</text>
+              </view>
               <view class="media-remove" bindtap="removeModifyVideo" data-index="{{index}}">×</view>
             </view>
           </view>
@@ -591,15 +594,83 @@
         <!-- 已添加的内容列表 -->
         <view class="added-content" wx:if="{{addedItems.length > 0}}">
           <text class="content-label">已添加的内容：</text>
-          <view
-            class="added-item"
-            wx:for="{{addedItems}}"
-            wx:key="index"
-          >
-            <text class="item-type">{{item.type}}</text>
-            <text class="item-name">{{item.name}}</text>
-            <view class="item-actions">
-              <button class="remove-btn" bindtap="removeItem" data-index="{{index}}">删除</button>
+          
+          <!-- 图片预览 -->
+          <view class="added-images" wx:if="{{imageItems.length > 0}}">
+            <text class="media-label">图片：</text>
+            <view class="image-grid">
+              <view 
+                class="image-item" 
+                wx:for="{{imageItems}}" 
+                wx:key="index"
+              >
+                <image 
+                  class="preview-image" 
+                  src="{{item.serverUrl || item.path}}" 
+                  mode="aspectFill"
+                  bindtap="previewAddedImage"
+                  data-index="{{item.originalIndex}}"
+                ></image>
+                <view class="image-remove" bindtap="removeItem" data-index="{{item.originalIndex}}">×</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 视频预览 -->
+          <view class="added-videos" wx:if="{{videoItems.length > 0}}">
+            <text class="media-label">视频：</text>
+            <view class="video-list">
+              <view 
+                class="video-item" 
+                wx:for="{{videoItems}}" 
+                wx:key="index"
+              >
+                <video 
+                  class="preview-video" 
+                  src="{{item.serverUrl || item.path}}" 
+                  controls
+                ></video>
+                <view class="video-overlay" bindtap="previewAddedVideo" data-index="{{item.originalIndex}}">
+                  <text class="play-icon">▶️</text>
+                </view>
+                <view class="video-remove" bindtap="removeItem" data-index="{{item.originalIndex}}">×</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 文档预览 -->
+          <view class="added-documents" wx:if="{{documentItems.length > 0}}">
+            <text class="media-label">文档：</text>
+            <view class="document-list">
+              <view 
+                class="document-item" 
+                wx:for="{{documentItems}}" 
+                wx:key="index"
+              >
+                <view class="document-info">
+                  <text class="document-name">{{item.name}}</text>
+                  <text class="document-size">{{item.sizeText}}</text>
+                </view>
+                <view class="document-actions">
+                  <button class="preview-btn" bindtap="previewAddedDocument" data-index="{{item.originalIndex}}">预览</button>
+                  <button class="remove-btn" bindtap="removeItem" data-index="{{item.originalIndex}}">删除</button>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 其他内容 -->
+          <view class="other-items" wx:if="{{otherItems.length > 0}}">
+            <view
+              class="added-item"
+              wx:for="{{otherItems}}"
+              wx:key="index"
+            >
+              <text class="item-type">{{item.type}}</text>
+              <text class="item-name">{{item.name}}</text>
+              <view class="item-actions">
+                <button class="remove-btn" bindtap="removeItem" data-index="{{item.originalIndex}}">删除</button>
+              </view>
             </view>
           </view>
         </view>

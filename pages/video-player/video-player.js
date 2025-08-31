@@ -35,9 +35,23 @@ Page({
 
   onVideoError(e) {
     console.error('视频播放错误:', e.detail);
+    
+    // 根据错误类型给出不同的提示
+    let errorMessage = '视频播放失败';
+    if (e.detail && e.detail.errMsg) {
+      if (e.detail.errMsg.includes('timeout')) {
+        errorMessage = '视频加载超时，请检查网络连接';
+      } else if (e.detail.errMsg.includes('fail')) {
+        errorMessage = '视频加载失败，请检查文件是否存在';
+      } else if (e.detail.errMsg.includes('abort')) {
+        errorMessage = '视频加载被中断';
+      }
+    }
+    
     wx.showToast({
-      title: '视频播放失败',
-      icon: 'none'
+      title: errorMessage,
+      icon: 'none',
+      duration: 2000
     });
   },
 

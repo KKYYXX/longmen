@@ -1,5 +1,7 @@
 // 导入API配置
 const apiConfig = require('../../config/api.js');
+// 导入文件上传工具
+const fileUpload = require('../../utils/fileUpload.js');
 
 Page({
   data: {
@@ -53,7 +55,15 @@ Page({
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: (res) => {
+        console.log('选择的图片文件:', res.tempFiles);
         this.uploadFilesToServer(res.tempFiles, 'image');
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err);
+        wx.showToast({
+          title: '选择图片失败',
+          icon: 'none'
+        });
       }
     });
   },
@@ -62,26 +72,42 @@ Page({
   chooseDocumentFiles(fileType) {
     // 使用微信的文件选择API
     wx.chooseMessageFile({
-      count: 1,
+      count: 3,
       type: 'file',
-      extension: fileType === 'pdf' ? ['pdf'] : 
-                 fileType === 'doc' ? ['doc', 'docx'] : 
-                 fileType === 'xlsx' ? ['xlsx', 'xls'] : ['all'],
       success: (res) => {
-        // 过滤文件类型
+        console.log('选择的文件:', res.tempFiles);
+        
+        // 过滤和验证文件类型
         const validFiles = res.tempFiles.filter(file => {
-          const fileName = file.name.toLowerCase();
-          if (fileType === 'pdf') return fileName.endsWith('.pdf');
-          if (fileType === 'doc') return fileName.endsWith('.doc') || fileName.endsWith('.docx');
-          if (fileType === 'xlsx') return fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+          const fileExtension = file.name.split('.').pop().toLowerCase();
+          const allowedTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
+          
+          if (!allowedTypes.includes(fileExtension)) {
+            wx.showToast({
+              title: `只支持 ${allowedTypes.join(', ')} 格式`,
+              icon: 'none'
+            });
+            return false;
+          }
+          
+          // 检查文件大小（50MB限制）
+          const maxSize = 50 * 1024 * 1024;
+          if (file.size > maxSize) {
+            wx.showToast({
+              title: '文件大小不能超过50MB',
+              icon: 'none'
+            });
+            return false;
+          }
+          
           return true;
         });
         
         if (validFiles.length > 0) {
-          this.uploadFilesToServer(validFiles, fileType);
+          this.uploadFilesToServer(validFiles, 'document');
         } else {
           wx.showToast({
-            title: `请选择${fileType.toUpperCase()}格式的文件`,
+            title: '没有有效的文件被选择',
             icon: 'none'
           });
         }
@@ -98,128 +124,57 @@ Page({
 
   // 上传文件到服务器
   uploadFilesToServer(files, fileType) {
-    this.setData({
-      isUploading: true,
-      fileUploadProgress: 0
+    console.log('开始上传文件:', files);
+
+    // 批量上传文件到服务器
+    const uploadPromises = files.map((file, index) => {
+      const fileName = file.name || `文件_${Date.now()}_${index}.${fileType}`;
+      return fileUpload.uploadDocument(file.tempFilePath, fileName);
     });
 
-    // 显示上传进度
-    const progressTimer = setInterval(() => {
-      if (this.data.fileUploadProgress < 90) {
-        this.setData({
-          fileUploadProgress: this.data.fileUploadProgress + 10
-        });
-      }
-    }, 200);
-
-    // 开发环境：模拟上传成功
-    if (wx.getAccountInfoSync().miniProgram.envVersion === 'develop') {
-      setTimeout(() => {
-        clearInterval(progressTimer);
-        this.setData({
-          fileUploadProgress: 100,
-          isUploading: false
-        });
-
-        // 模拟上传成功
-        const uploadedFile = {
-          id: Date.now(),
-          name: files[0].name || `文件_${Date.now()}.${fileType}`,
-          url: files[0].tempFilePath,
-          type: fileType,
-          size: files[0].size || 1024 * 1024,
-          uploadTime: new Date().toISOString()
-        };
-
-        this.setData({
-          uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
-        });
-
-        wx.showToast({
-          title: '文件上传成功（开发模式）',
-          icon: 'success'
-        });
-      }, 2000);
-      return;
-    }
-
-    // 生产环境：实际上传到服务器
-    const serverUrl = 'https://your-server-domain.com/api/fifteen-projects/upload-files';
-    
-    wx.uploadFile({
-      url: serverUrl,
-      filePath: files[0].tempFilePath,
-      name: 'file',
-      header: {
-        // 注释掉token验证
-        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      formData: {
-        fileType: fileType,
-        projectId: Date.now() // 临时项目ID
-      },
-      success: (res) => {
-        clearInterval(progressTimer);
-        this.setData({
-          fileUploadProgress: 100,
-          isUploading: false
-        });
-
-        try {
-          const result = JSON.parse(res.data);
+    Promise.all(uploadPromises)
+      .then(results => {
+        // 处理上传结果
+        results.forEach((result, index) => {
           if (result.success) {
             // 添加到已上传文件列表
             const uploadedFile = {
-              id: result.fileId,
-              name: files[0].name,
+              id: Date.now() + index,
+              name: result.fileName,
               url: result.fileUrl,
+              serverUrl: result.fileUrl,
               type: fileType,
-              size: files[0].size,
+              size: result.fileSize,
+              sizeText: fileUpload.formatFileSize(result.fileSize),
               uploadTime: new Date().toISOString()
             };
 
             this.setData({
               uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
             });
-
-            wx.showToast({
-              title: '文件上传成功',
-              icon: 'success'
-            });
           } else {
             wx.showToast({
-              title: result.message || '文件上传失败',
+              title: `文件${index + 1}上传失败: ${result.error || '未知错误'}`,
               icon: 'none'
             });
           }
-        } catch (e) {
-          console.error('解析响应失败:', e);
+        });
+
+        const successCount = results.filter(r => r.success).length;
+        if (successCount > 0) {
           wx.showToast({
-            title: '服务器响应异常',
-            icon: 'none'
+            title: `已上传${successCount}个文件`,
+            icon: 'success'
           });
         }
-      },
-      fail: (err) => {
-        clearInterval(progressTimer);
-        this.setData({
-          isUploading: false
-        });
-        console.error('文件上传失败:', err);
-        
-        let errorMsg = '文件上传失败';
-        if (err.errMsg.includes('timeout')) {
-          errorMsg = '上传超时，请检查网络';
-        } else if (err.errMsg.includes('fail')) {
-          errorMsg = '网络连接失败';
-        }
-        
+      })
+      .catch(error => {
+        console.error('文件上传失败:', error);
         wx.showToast({
-          title: errorMsg,
+          title: `文件上传失败: ${error.message}`,
           icon: 'none'
         });
-      }
-    });
+      });
   },
 
   // 新闻链接上传功能
@@ -342,6 +297,7 @@ Page({
           sourceType: sourceType,
           maxDuration: 300, // 最大5分钟
           success: (res) => {
+            console.log('选择的视频文件:', res.tempFiles);
             this.uploadVideosToServer(res.tempFiles);
           },
           fail: (err) => {
@@ -358,79 +314,57 @@ Page({
 
   // 上传视频到服务器
   uploadVideosToServer(videos) {
-    this.setData({
-      isUploading: true,
-      videoUploadProgress: 0
+    console.log('开始上传视频:', videos);
+
+    // 批量上传视频到服务器
+    const uploadPromises = videos.map((video, index) => {
+      const fileName = video.name || `文件_${Date.now()}_${index}.mp4`;
+      return fileUpload.uploadVideo(video.tempFilePath, fileName);
     });
 
-    // 显示上传进度
-    const progressTimer = setInterval(() => {
-      if (this.data.videoUploadProgress < 90) {
-        this.setData({
-          videoUploadProgress: this.data.videoUploadProgress + 10
+    Promise.all(uploadPromises)
+      .then(results => {
+        // 处理上传结果
+        results.forEach((result, index) => {
+          if (result.success) {
+            // 添加到已上传视频列表
+            const uploadedVideo = {
+              id: Date.now() + index,
+              name: result.fileName,
+              url: result.fileUrl,
+              serverUrl: result.fileUrl,
+              size: result.fileSize,
+              sizeText: fileUpload.formatFileSize(result.fileSize),
+              duration: videos[index].duration,
+              uploadTime: new Date().toISOString()
+            };
+
+            this.setData({
+              uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
+            });
+          } else {
+            wx.showToast({
+              title: `视频${index + 1}上传失败: ${result.error || '未知错误'}`,
+              icon: 'none'
+            });
+          }
         });
-      }
-    }, 300);
 
-    // 调用后端接口上传视频
-    // 接口：POST /api/fifteen-projects/upload-videos
-    wx.uploadFile({
-      url: apiConfig.buildUrl('/api/fifteen-projects/upload-videos'),
-      filePath: videos[0].tempFilePath,
-      name: 'video',
-      header: {
-        // 注释掉token验证
-        // 'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      formData: {
-        projectId: Date.now() // 临时项目ID
-      },
-      success: (res) => {
-        clearInterval(progressTimer);
-        this.setData({
-          videoUploadProgress: 100,
-          isUploading: false
-        });
-
-        const result = JSON.parse(res.data);
-        if (result.success) {
-          // 添加到已上传视频列表
-          const uploadedVideo = {
-            id: result.videoId,
-            name: videos[0].name || `视频_${Date.now()}.mp4`,
-            url: result.videoUrl,
-            size: videos[0].size,
-            duration: videos[0].duration,
-            uploadTime: new Date().toISOString()
-          };
-
-          this.setData({
-            uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
-          });
-
+        const successCount = results.filter(r => r.success).length;
+        if (successCount > 0) {
           wx.showToast({
-            title: '视频上传成功',
+            title: `已上传${successCount}个视频`,
             icon: 'success'
           });
-        } else {
-          wx.showToast({
-            title: result.message || '视频上传失败',
-            icon: 'none'
-          });
         }
-      },
-      fail: (err) => {
-        clearInterval(progressTimer);
-        this.setData({
-          isUploading: false
-        });
-        console.error('视频上传失败:', err);
+      })
+      .catch(error => {
+        console.error('视频上传失败:', error);
         wx.showToast({
-          title: '视频上传失败',
+          title: `视频上传失败: ${error.message}`,
           icon: 'none'
         });
-      }
-    });
+      });
   },
 
   // 删除已上传的文件

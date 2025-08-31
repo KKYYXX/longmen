@@ -12,7 +12,8 @@ Page({
       completedTasks: 0,
       ongoingTasks: 0,
       pendingTasks: 0
-    }
+    },
+    serverAvailable: true // 服务器可用状态
   },
 
   onLoad: function(options) {
@@ -23,6 +24,37 @@ Page({
       });
       this.loadProjectData();
     }
+  },
+
+  // 检查服务器状态
+  checkServerStatus: function() {
+    const apiConfig = require('../../config/api.js');
+    const testUrl = apiConfig.buildFileUrl('test.txt');
+    
+    wx.request({
+      url: testUrl,
+      method: 'HEAD',
+      timeout: 5000,
+      success: (res) => {
+        console.log('服务器状态检查成功:', res.statusCode);
+        this.setData({
+          serverAvailable: true
+        });
+      },
+      fail: (err) => {
+        console.log('服务器状态检查失败:', err);
+        this.setData({
+          serverAvailable: false
+        });
+        
+        // 显示服务器不可用的提示
+        wx.showToast({
+          title: '本地服务器未启动，部分功能可能受限',
+          icon: 'none',
+          duration: 3000
+        });
+      }
+    });
   },
 
   navigateBack: function() {
@@ -47,6 +79,9 @@ Page({
 
   loadProjectData: function() {
     this.setData({ loading: true });
+    
+    // 检查服务器状态
+    this.checkServerStatus();
     
     const apiConfig = require('../../config/api.js');
     
@@ -172,6 +207,8 @@ Page({
 
   // 生成进度数据
   generateProgressData: function(projectData) {
+    const apiConfig = require('../../config/api.js');
+    
     const progressTemplates = {
       1: [ // 智慧城市项目
         {
@@ -185,7 +222,16 @@ Page({
           status: "completed",
           statusText: "已完成",
           completion: 100,
-          images: []
+          images: [
+            apiConfig.buildFileUrl('project_image_1.jpg'),
+            apiConfig.buildFileUrl('project_image_2.jpg')
+          ],
+          videos: [
+            apiConfig.buildFileUrl('project_video_1.mp4')
+          ],
+          documents: [
+            apiConfig.buildFileUrl('project_document_1.pdf')
+          ]
         },
         {
           id: 2,
@@ -198,7 +244,13 @@ Page({
           status: "completed",
           statusText: "已完成",
           completion: 100,
-          images: []
+          images: [
+            apiConfig.buildFileUrl('feasibility_report_1.jpg')
+          ],
+          videos: [],
+          documents: [
+            apiConfig.buildFileUrl('feasibility_report.pdf')
+          ]
         },
         {
           id: 3,
@@ -211,7 +263,16 @@ Page({
           status: "completed",
           statusText: "已完成",
           completion: 100,
-          images: []
+          images: [
+            apiConfig.buildFileUrl('bidding_meeting_1.jpg'),
+            apiConfig.buildFileUrl('bidding_meeting_2.jpg')
+          ],
+          videos: [
+            apiConfig.buildFileUrl('bidding_process.mp4')
+          ],
+          documents: [
+            apiConfig.buildFileUrl('bidding_documents.pdf')
+          ]
         },
         {
           id: 4,
@@ -224,7 +285,9 @@ Page({
           status: "completed",
           statusText: "已完成",
           completion: 100,
-          images: []
+          images: [],
+          videos: [],
+          documents: []
         },
         {
           id: 5,
@@ -237,7 +300,9 @@ Page({
           status: "completed",
           statusText: "已完成",
           completion: 100,
-          images: []
+          images: [],
+          videos: [],
+          documents: []
         },
         {
           id: 6,
@@ -792,10 +857,121 @@ Page({
   previewImage: function(e) {
     const src = e.currentTarget.dataset.src;
     const urls = e.currentTarget.dataset.urls;
+    
+    // 确保URLs是数组格式
+    const imageUrls = Array.isArray(urls) ? urls : [src];
+    
     wx.previewImage({
-      urls: urls,
+      urls: imageUrls,
       current: src
     });
+  },
+
+  // 预览视频
+  previewVideo: function(e) {
+    const videoUrl = e.currentTarget.dataset.src;
+    const title = e.currentTarget.dataset.title || '视频预览';
+    
+    // 检查URL是否有效
+    if (!videoUrl) {
+      wx.showToast({
+        title: '视频路径无效',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 使用微信小程序的视频播放器
+    wx.navigateTo({
+      url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(title)}`
+    });
+  },
+
+  // 预览文档
+  previewDocument: function(e) {
+    const documentUrl = e.currentTarget.dataset.src;
+    const title = e.currentTarget.dataset.title || '文档预览';
+    
+    // 检查URL是否有效
+    if (!documentUrl) {
+      wx.showToast({
+        title: '文件路径无效',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 如果是服务器URL，需要先下载到本地
+    if (documentUrl.startsWith('http')) {
+      wx.showLoading({
+        title: '正在下载文件...'
+      });
+      
+      wx.downloadFile({
+        url: documentUrl,
+        timeout: 10000, // 10秒超时
+        success: (res) => {
+          wx.hideLoading();
+          if (res.statusCode === 200) {
+            wx.openDocument({
+              filePath: res.tempFilePath,
+              success: () => {
+                console.log('打开文档成功');
+              },
+              fail: (err) => {
+                console.error('打开文档失败:', err);
+                wx.showToast({
+                  title: '无法预览此文件',
+                  icon: 'none'
+                });
+              }
+            });
+          } else {
+            wx.showToast({
+              title: '文件下载失败',
+              icon: 'none'
+            });
+          }
+        },
+        fail: (err) => {
+          wx.hideLoading();
+          console.error('下载文件失败:', err);
+          
+          // 根据错误类型给出不同的提示
+          let errorMessage = '文件下载失败';
+          if (err.errMsg) {
+            if (err.errMsg.includes('timeout')) {
+              errorMessage = '下载超时，请检查网络连接';
+            } else if (err.errMsg.includes('fail')) {
+              errorMessage = '服务器连接失败，请检查服务器状态';
+            } else if (err.errMsg.includes('abort')) {
+              errorMessage = '下载被中断';
+            }
+          }
+          
+          wx.showToast({
+            title: errorMessage,
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+    } else {
+      // 本地文件直接打开
+      wx.openDocument({
+        filePath: documentUrl,
+        success: () => {
+          console.log('打开文档成功');
+        },
+        fail: (err) => {
+          console.error('打开文档失败:', err);
+          wx.showToast({
+            title: '无法预览此文件',
+            icon: 'none'
+          });
+        }
+      });
+    }
   },
 
   // 分享项目

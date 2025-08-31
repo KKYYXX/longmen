@@ -38,6 +38,8 @@
 
 // 导入API配置
 const apiConfig = require('../../config/api.js');
+// 导入文件上传工具
+const fileUpload = require('../../utils/fileUpload.js');
 
 Page({
   data: {
@@ -53,6 +55,11 @@ Page({
     locationName: '',
     personName: '',
     addedItems: [],
+    // 过滤后的项目内容数据
+    imageItems: [],
+    videoItems: [],
+    documentItems: [],
+    otherItems: [],
     loading: false, // 添加加载状态
     searchKeyword: '', // 搜索关键词
     filteredProjectList: [], // 过滤后的项目列表
@@ -580,23 +587,36 @@ Page({
 
   // 上传图片
   uploadImage() {
-    wx.chooseImage({
+    wx.chooseMedia({
       count: 3,
-      sizeType: ['original', 'compressed'],
+      mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: (res) => {
-        const tempFilePaths = res.tempFilePaths;
-        tempFilePaths.forEach((path, index) => {
+        const tempFiles = res.tempFiles;
+        
+        console.log('选择的图片文件:', tempFiles);
+        
+        // 直接添加到列表，不立即上传，等保存时统一上传
+        tempFiles.forEach((file, index) => {
           this.addItem({
             type: '图片',
-            name: `图片${this.data.addedItems.length + index + 1}.jpg`,
-            path: path
+            name: `图片${this.data.addedItems.length + index + 1}_${Date.now()}.jpg`,
+            path: file.tempFilePath, // 保存临时路径，等待统一上传
+            size: file.size,
+            sizeText: fileUpload.formatFileSize(file.size)
           });
         });
 
         wx.showToast({
-          title: `已添加${tempFilePaths.length}张图片`,
+          title: `已添加${tempFiles.length}张图片`,
           icon: 'success'
+        });
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err);
+        wx.showToast({
+          title: '选择图片失败',
+          icon: 'none'
         });
       }
     });
@@ -628,10 +648,16 @@ Page({
           maxDuration: 60,
           camera: 'back',
           success: (res) => {
+            console.log('选择的视频文件:', res);
+            
+            // 直接添加到列表，不立即上传，等保存时统一上传
             this.addItem({
               type: '视频',
-              name: `视频${this.data.addedItems.length + 1}.mp4`,
-              path: res.tempFilePath
+              name: `视频${this.data.addedItems.length + 1}_${Date.now()}.mp4`,
+              path: res.tempFilePath, // 保存临时路径，等待统一上传
+              size: res.size,
+              sizeText: fileUpload.formatFileSize(res.size),
+              duration: res.duration
             });
 
             wx.showToast({
@@ -802,8 +828,9 @@ Page({
           this.addItem({
             type: '新闻稿',
             name: file.name || `文档${this.data.addedItems.length + index + 1}`,
-            path: file.path,
-            size: file.size
+            path: file.path, // 保存临时路径，等待统一上传
+            size: file.size,
+            sizeText: fileUpload.formatFileSize(file.size)
           });
         });
 
@@ -815,6 +842,34 @@ Page({
     });
   },
 
+  // 计算过滤后的项目数据
+  computeFilteredItems() {
+    const addedItems = this.data.addedItems;
+    
+    const imageItems = addedItems
+      .map((item, index) => ({ ...item, originalIndex: index }))
+      .filter(item => item.type === '图片');
+    
+    const videoItems = addedItems
+      .map((item, index) => ({ ...item, originalIndex: index }))
+      .filter(item => item.type === '视频');
+    
+    const documentItems = addedItems
+      .map((item, index) => ({ ...item, originalIndex: index }))
+      .filter(item => item.type === '新闻稿');
+    
+    const otherItems = addedItems
+      .map((item, index) => ({ ...item, originalIndex: index }))
+      .filter(item => item.type !== '图片' && item.type !== '视频' && item.type !== '新闻稿');
+    
+    this.setData({
+      imageItems: imageItems,
+      videoItems: videoItems,
+      documentItems: documentItems,
+      otherItems: otherItems
+    });
+  },
+
   // 添加项目到列表
   addItem(item) {
     console.log('添加新项目到列表:', item);
@@ -823,6 +878,9 @@ Page({
     this.setData({
       addedItems: addedItems
     });
+
+    // 计算过滤后的数据
+    this.computeFilteredItems();
 
     // 显示添加成功的提示
     wx.showToast({
@@ -844,10 +902,143 @@ Page({
       addedItems: addedItems
     });
 
+    // 计算过滤后的数据
+    this.computeFilteredItems();
+
     wx.showToast({
       title: '已移除',
       icon: 'success'
     });
+  },
+
+  // 预览添加的图片
+  previewAddedImage(e) {
+    const index = e.currentTarget.dataset.index;
+    const item = this.data.addedItems[index];
+    
+    if (item.type === '图片') {
+      // 获取图片URL，优先使用服务器URL
+      const imageUrl = item.serverUrl || item.path;
+      
+      // 获取所有图片URL用于预览
+      const imageUrls = this.data.addedItems
+        .filter(item => item.type === '图片')
+        .map(item => item.serverUrl || item.path)
+        .filter(url => url); // 过滤掉无效的URL
+      
+      if (imageUrls.length === 0) {
+        wx.showToast({
+          title: '没有可预览的图片',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      wx.previewImage({
+        urls: imageUrls,
+        current: imageUrl
+      });
+    }
+  },
+
+  // 预览添加的视频
+  previewAddedVideo(e) {
+    const index = e.currentTarget.dataset.index;
+    const item = this.data.addedItems[index];
+    
+    if (item.type === '视频') {
+      // 获取视频URL，优先使用服务器URL
+      const videoUrl = item.serverUrl || item.path;
+      
+      if (!videoUrl) {
+        wx.showToast({
+          title: '视频路径无效',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      // 使用微信小程序的视频播放器
+      wx.navigateTo({
+        url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(item.name || '视频预览')}`
+      });
+    }
+  },
+
+  // 预览添加的文档
+  previewAddedDocument(e) {
+    const index = e.currentTarget.dataset.index;
+    const item = this.data.addedItems[index];
+    
+    if (item.type === '新闻稿') {
+      // 获取文档URL，优先使用服务器URL
+      const documentUrl = item.serverUrl || item.path;
+      
+      if (!documentUrl) {
+        wx.showToast({
+          title: '文档路径无效',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      // 如果是服务器URL，需要先下载到本地
+      if (documentUrl.startsWith('http')) {
+        wx.showLoading({
+          title: '正在下载文件...'
+        });
+        
+        wx.downloadFile({
+          url: documentUrl,
+          success: (res) => {
+            wx.hideLoading();
+            if (res.statusCode === 200) {
+              wx.openDocument({
+                filePath: res.tempFilePath,
+                success: () => {
+                  console.log('打开文档成功');
+                },
+                fail: (err) => {
+                  console.error('打开文档失败:', err);
+                  wx.showToast({
+                    title: '无法预览此文件',
+                    icon: 'none'
+                  });
+                }
+              });
+            } else {
+              wx.showToast({
+                title: '文件下载失败',
+                icon: 'none'
+              });
+            }
+          },
+          fail: (err) => {
+            wx.hideLoading();
+            console.error('下载文件失败:', err);
+            wx.showToast({
+              title: '文件下载失败',
+              icon: 'none'
+            });
+          }
+        });
+      } else {
+        // 本地文件直接打开
+        wx.openDocument({
+          filePath: documentUrl,
+          success: () => {
+            console.log('打开文档成功');
+          },
+          fail: (err) => {
+            console.error('打开文档失败:', err);
+            wx.showToast({
+              title: '无法预览此文件',
+              icon: 'none'
+            });
+          }
+        });
+      }
+    }
   },
 
   // 保存添加的内容
@@ -944,10 +1135,11 @@ Page({
     }
 
     wx.showLoading({
-      title: '保存进度信息中...'
+      title: '正在处理文件上传...'
     });
 
-    // 构建要发送到后端的数据，按照后端接口要求调整字段
+    // 分离需要上传的文件和普通数据
+    const filesToUpload = [];
     const progressData = {
       project_name: selectedProject.projectName || selectedProject.name,
       practice_time: '',
@@ -958,17 +1150,39 @@ Page({
       news: ''
     };
 
-    // 处理已添加的内容，按类型分类并映射到后端字段
+    // 处理已添加的内容，识别需要上传的文件
     addedItems.forEach(item => {
       switch (item.type) {
         case '图片':
-          progressData.practice_image_url = item.path || item.name;
+          if (item.path && !item.serverUrl) {
+            // 需要上传的图片文件
+            filesToUpload.push({
+              filePath: item.path,
+              fileName: item.name || `图片_${Date.now()}.jpg`,
+              fileType: 'image',
+              itemType: '图片'
+            });
+          } else {
+            // 已经上传过的图片，直接使用URL
+            progressData.practice_image_url = item.serverUrl || item.path || item.name;
+          }
           break;
         case '视频':
-          progressData.video_url = item.path || item.name;
+          if (item.path && !item.serverUrl) {
+            // 需要上传的视频文件
+            filesToUpload.push({
+              filePath: item.path,
+              fileName: item.name || `视频_${Date.now()}.mp4`,
+              fileType: 'video',
+              itemType: '视频'
+            });
+          } else {
+            // 已经上传过的视频，直接使用URL
+            progressData.video_url = item.serverUrl || item.path || item.name;
+          }
           break;
         case '时间':
-          progressData.practice_time = item.name; // 这里存储的是日期（YYYY-MM-DD格式）
+          progressData.practice_time = item.name;
           break;
         case '地点':
           progressData.practice_location = item.name;
@@ -977,33 +1191,172 @@ Page({
           progressData.practice_members = item.name;
           break;
         case '新闻稿':
-          progressData.news = item.path || item.name; // 存储文件路径
+          if (item.path && !item.serverUrl) {
+            // 需要上传的文档文件
+            filesToUpload.push({
+              filePath: item.path,
+              fileName: item.name || `文档_${Date.now()}.pdf`,
+              fileType: 'document',
+              itemType: '新闻稿'
+            });
+          } else {
+            // 已经上传过的文档，直接使用URL
+            progressData.news = item.serverUrl || item.path || item.name;
+          }
           break;
       }
     });
 
-    console.log('准备发送到后端的进度数据:', progressData);
-    console.log('验证各字段值:');
-    console.log('- project_name:', progressData.project_name);
-    console.log('- practice_time:', progressData.practice_time);
-    console.log('- practice_location:', progressData.practice_location);
-    console.log('- practice_members:', progressData.practice_members);
-    console.log('- news:', progressData.news);
-    console.log('- practice_image_url:', progressData.practice_image_url);
-    console.log('- video_url:', progressData.video_url);
+    console.log('需要上传的文件:', filesToUpload);
+    console.log('进度数据:', progressData);
+
+    // 如果有文件需要上传，先上传文件
+    if (filesToUpload.length > 0) {
+      this.uploadFilesAndSaveProgress(filesToUpload, progressData);
+    } else {
+      // 没有文件需要上传，直接保存进度数据
+      this.saveProgressDataToDatabase(progressData);
+    }
+  },
+
+  // 上传文件并保存进度数据
+  uploadFilesAndSaveProgress(filesToUpload, progressData) {
+    console.log('开始上传文件，文件数量:', filesToUpload.length);
+    
+    wx.showLoading({
+      title: `正在上传文件 (0/${filesToUpload.length})...`
+    });
+
+    let uploadedCount = 0;
+    const uploadResults = [];
+
+    // 逐个上传文件
+    filesToUpload.forEach((fileInfo, index) => {
+      console.log(`开始上传文件 ${index + 1}:`, fileInfo);
+
+      // 使用文件上传工具上传文件
+      const uploadPromise = fileUpload.uploadFileToServer(
+        fileInfo.filePath, 
+        fileInfo.fileName, 
+        fileInfo.fileType
+      );
+
+      uploadPromise
+        .then(result => {
+          console.log(`文件 ${fileInfo.fileName} 上传成功:`, result);
+          uploadResults[index] = {
+            ...fileInfo,
+            success: true,
+            serverUrl: result.fileUrl
+          };
+          uploadedCount++;
+
+          // 更新上传进度
+          wx.showLoading({
+            title: `正在上传文件 (${uploadedCount}/${filesToUpload.length})...`
+          });
+
+          // 检查是否所有文件都上传完成
+          if (uploadedCount === filesToUpload.length) {
+            this.processUploadResults(uploadResults, progressData);
+          }
+        })
+        .catch(error => {
+          console.error(`文件 ${fileInfo.fileName} 上传失败:`, error);
+          uploadResults[index] = {
+            ...fileInfo,
+            success: false,
+            error: error.message
+          };
+          uploadedCount++;
+
+          // 更新上传进度
+          wx.showLoading({
+            title: `正在上传文件 (${uploadedCount}/${filesToUpload.length})...`
+          });
+
+          // 检查是否所有文件都处理完成
+          if (uploadedCount === filesToUpload.length) {
+            this.processUploadResults(uploadResults, progressData);
+          }
+        });
+    });
+  },
+
+  // 处理上传结果并保存进度数据
+  processUploadResults(uploadResults, progressData) {
+    console.log('文件上传结果:', uploadResults);
+
+    // 统计上传成功和失败的文件
+    const successResults = uploadResults.filter(result => result.success);
+    const failedResults = uploadResults.filter(result => !result.success);
+
+    // 显示上传结果
+    if (failedResults.length > 0) {
+      wx.hideLoading();
+      const failedFiles = failedResults.map(result => result.fileName).join('\n');
+      wx.showModal({
+        title: '部分文件上传失败',
+        content: `以下文件上传失败：\n${failedFiles}\n\n是否继续保存其他内容？`,
+        success: (res) => {
+          if (res.confirm) {
+            // 用户选择继续，更新进度数据并保存
+            this.updateProgressDataWithUploadResults(successResults, progressData);
+          }
+        }
+      });
+      return;
+    }
+
+    // 所有文件上传成功，更新进度数据并保存
+    this.updateProgressDataWithUploadResults(successResults, progressData);
+  },
+
+  // 使用上传结果更新进度数据
+  updateProgressDataWithUploadResults(uploadResults, progressData) {
+    console.log('使用上传结果更新进度数据');
+
+    // 将上传成功的文件URL添加到进度数据中
+    uploadResults.forEach(result => {
+      switch (result.itemType) {
+        case '图片':
+          progressData.practice_image_url = result.serverUrl;
+          break;
+        case '视频':
+          progressData.video_url = result.serverUrl;
+          break;
+        case '新闻稿':
+          progressData.news = result.serverUrl;
+          break;
+      }
+    });
+
+    console.log('更新后的进度数据:', progressData);
+
+    // 保存进度数据到数据库
+    this.saveProgressDataToDatabase(progressData);
+  },
+
+  // 保存进度数据到数据库
+  saveProgressDataToDatabase(progressData) {
+    console.log('开始保存进度数据到数据库:', progressData);
 
     // 验证必要参数
-    if (!progressData.project_name || !progressData.practice_time || !progressData.practice_location || !progressData.practice_members || !progressData.news) {
+    if (!progressData.project_name || !progressData.practice_time || !progressData.practice_location || !progressData.practice_members) {
       wx.hideLoading();
       wx.showModal({
         title: '参数不完整',
-        content: '请确保添加了：时间、地点、人员、新闻稿等必要内容',
+        content: '请确保添加了：时间、地点、人员等必要内容',
         showCancel: false
       });
       return;
     }
 
-    // 调用后端接口
+    wx.showLoading({
+      title: '正在保存到数据库...'
+    });
+
+    // 调用后端接口保存进度数据
     wx.request({
       url: apiConfig.buildUrl('/app/api/progress/add'),
       method: 'POST',
@@ -1016,7 +1369,7 @@ Page({
           // 保存成功
           wx.showModal({
             title: '保存成功',
-            content: `项目进度信息已成功保存！\n项目：${progressData.project_name}\n已添加${addedItems.length}项内容。`,
+            content: `项目进度信息已成功保存！\n项目：${progressData.project_name}\n文件已上传并保存到数据库。`,
             showCancel: false,
             success: () => {
               // 保存成功后，重置状态
@@ -1961,21 +2314,40 @@ Page({
     wx.chooseMessageFile({
       count: 3,
       type: 'file',
-      extension: fileType === 'pdf' ? ['pdf'] : ['doc', 'docx'],
       success: (res) => {
-        // 过滤文件类型
+        console.log('选择的文件:', res.tempFiles);
+        
+        // 过滤和验证文件类型
         const validFiles = res.tempFiles.filter(file => {
-          const fileName = file.name.toLowerCase();
-          if (fileType === 'pdf') return fileName.endsWith('.pdf');
-          if (fileType === 'doc') return fileName.endsWith('.doc') || fileName.endsWith('.docx');
+          const fileExtension = file.name.split('.').pop().toLowerCase();
+          const allowedTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
+          
+          if (!allowedTypes.includes(fileExtension)) {
+            wx.showToast({
+              title: `只支持 ${allowedTypes.join(', ')} 格式`,
+              icon: 'none'
+            });
+            return false;
+          }
+          
+          // 检查文件大小（50MB限制）
+          const maxSize = 50 * 1024 * 1024;
+          if (file.size > maxSize) {
+            wx.showToast({
+              title: '文件大小不能超过50MB',
+              icon: 'none'
+            });
+            return false;
+          }
+          
           return true;
         });
 
         if (validFiles.length > 0) {
-          this.processSelectedFiles(validFiles, fileType);
+          this.processSelectedFiles(validFiles, 'document');
         } else {
           wx.showToast({
-            title: `请选择${fileType.toUpperCase()}格式的文件`,
+            title: '没有有效的文件被选择',
             icon: 'none'
           });
         }
@@ -1994,12 +2366,15 @@ Page({
   processSelectedFiles(files, fileType) {
     const newsFiles = this.data.modifyRecord.newsFiles || [];
 
-    files.forEach(file => {
+    console.log('选择的文件:', files);
+
+    // 直接添加到列表，不立即上传，等保存时统一上传
+    files.forEach((file, index) => {
       const fileInfo = {
-        name: file.name || `${fileType}文件${newsFiles.length + 1}`,
-        path: file.tempFilePath || file.path,
+        name: file.name || `${fileType}文件${newsFiles.length + index + 1}_${Date.now()}`,
+        path: file.tempFilePath || file.path, // 保存临时路径，等待统一上传
         size: file.size,
-        sizeText: this.formatFileSize(file.size),
+        sizeText: fileUpload.formatFileSize(file.size),
         type: fileType,
         uploadTime: new Date().toLocaleString()
       };
@@ -2031,24 +2406,72 @@ Page({
     const file = this.data.modifyRecord.newsFiles[index];
 
     if (file.type === 'image') {
+      // 图片文件使用预览图片功能
+      const imageUrl = file.serverUrl || file.path;
       wx.previewImage({
-        urls: [file.path],
-        current: file.path
+        urls: [imageUrl],
+        current: imageUrl
       });
     } else {
-      wx.openDocument({
-        filePath: file.path,
-        success: () => {
-          console.log('打开文档成功');
-        },
-        fail: (err) => {
-          console.error('打开文档失败:', err);
-          wx.showToast({
-            title: '无法预览此文件',
-            icon: 'none'
-          });
-        }
-      });
+      // 文档文件使用打开文档功能
+      const documentUrl = file.serverUrl || file.path;
+      
+      // 如果是服务器URL，需要先下载到本地
+      if (documentUrl.startsWith('http')) {
+        wx.showLoading({
+          title: '正在下载文件...'
+        });
+        
+        wx.downloadFile({
+          url: documentUrl,
+          success: (res) => {
+            wx.hideLoading();
+            if (res.statusCode === 200) {
+              wx.openDocument({
+                filePath: res.tempFilePath,
+                success: () => {
+                  console.log('打开文档成功');
+                },
+                fail: (err) => {
+                  console.error('打开文档失败:', err);
+                  wx.showToast({
+                    title: '无法预览此文件',
+                    icon: 'none'
+                  });
+                }
+              });
+            } else {
+              wx.showToast({
+                title: '文件下载失败',
+                icon: 'none'
+              });
+            }
+          },
+          fail: (err) => {
+            wx.hideLoading();
+            console.error('下载文件失败:', err);
+            wx.showToast({
+              title: '文件下载失败',
+              icon: 'none'
+            });
+          }
+        });
+      } else {
+        // 本地文件直接打开
+        wx.openDocument({
+          filePath: documentUrl,
+          success: () => {
+            console.log('打开文档成功');
+          },
+          fail: (err) => {
+            console.error('打开文档失败:', err);
+            wx.showToast({
+              title: '无法预览此文件',
+              icon: 'none'
+            });
+          }
+        });
+      }
     }
   },
 
@@ -2083,11 +2506,58 @@ Page({
       sourceType: ['album', 'camera'],
       success: (res) => {
         const currentImages = this.data.modifyRecord.images || [];
+        // 直接添加到列表，不立即上传，等保存时统一上传
         const newImages = [...currentImages, ...res.tempFilePaths];
         this.setData({
           'modifyRecord.images': newImages
         });
+        
+        wx.showToast({
+          title: `已添加${res.tempFilePaths.length}张图片`,
+          icon: 'success'
+        });
       }
+    });
+  },
+
+  // 预览修改图片
+  previewModifyImage(e) {
+    const index = e.currentTarget.dataset.index;
+    const image = this.data.modifyRecord.images[index];
+    
+    // 处理图片URL - 可能是字符串路径或对象
+    let imageUrl;
+    let imageUrls = [];
+    
+    if (typeof image === 'string') {
+      // 如果是字符串，直接使用
+      imageUrl = image;
+      imageUrls = this.data.modifyRecord.images.filter(img => img);
+    } else if (image && typeof image === 'object') {
+      // 如果是对象，获取URL
+      imageUrl = image.serverUrl || image.path;
+      imageUrls = this.data.modifyRecord.images
+        .map(img => (typeof img === 'string' ? img : (img.serverUrl || img.path)))
+        .filter(url => url);
+    } else {
+      wx.showToast({
+        title: '图片数据无效',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (imageUrls.length === 0) {
+      wx.showToast({
+        title: '没有可预览的图片',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    wx.previewImage({
+      urls: imageUrls,
+      current: imageUrl
     });
   },
 
@@ -2109,11 +2579,47 @@ Page({
       camera: 'back',
       success: (res) => {
         const currentVideos = this.data.modifyRecord.videos || [];
+        // 直接添加到列表，不立即上传，等保存时统一上传
         const newVideos = [...currentVideos, res.tempFilePath];
         this.setData({
           'modifyRecord.videos': newVideos
         });
+        
+        wx.showToast({
+          title: '已添加视频',
+          icon: 'success'
+        });
       }
+    });
+  },
+
+  // 预览修改视频
+  previewModifyVideo(e) {
+    const index = e.currentTarget.dataset.index;
+    const video = this.data.modifyRecord.videos[index];
+    
+    // 处理视频URL - 可能是字符串路径或对象
+    let videoUrl;
+    let videoName = '视频预览';
+    
+    if (typeof video === 'string') {
+      // 如果是字符串，直接使用
+      videoUrl = video;
+    } else if (video && typeof video === 'object') {
+      // 如果是对象，获取URL和名称
+      videoUrl = video.serverUrl || video.path;
+      videoName = video.name || '视频预览';
+    } else {
+      wx.showToast({
+        title: '视频数据无效',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 使用微信小程序的视频播放器
+    wx.navigateTo({
+      url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(videoName)}`
     });
   },
 
@@ -2140,26 +2646,240 @@ Page({
     }
 
     wx.showLoading({
-      title: '保存中...'
+      title: '正在处理文件上传...'
     });
 
-    // 构建要发送到后端的数据
+    // 分离需要上传的文件和普通数据
+    const filesToUpload = [];
     const updateData = {
       project_name: selectedProject.projectName,
       practice_time: this.formatDateToYYYYMMDD(selectedModifyRecord.practice_time), // 确保只传递年月日
       practice_location: modifyRecord.location || '',
       practice_members: modifyRecord.person || '',
-      // 修复图片URL处理：支持多图片并正确处理删除情况
-      practice_image_url: modifyRecord.images && modifyRecord.images.length > 0 ? modifyRecord.images.join(',') : '',
-      // 修复视频URL处理：正确处理删除情况  
-      video_url: modifyRecord.videos && modifyRecord.videos.length > 0 ? modifyRecord.videos[0] : '',
-      // 修复新闻稿处理：正确处理删除情况
-      news: modifyRecord.newsFiles && modifyRecord.newsFiles.length > 0 ? modifyRecord.newsFiles[0].path : ''
+      practice_image_url: '',
+      video_url: '',
+      news: ''
     };
 
-    console.log('准备发送到后端的更新数据:', updateData);
+    // 处理图片文件
+    if (modifyRecord.images && modifyRecord.images.length > 0) {
+      // 分离已上传的图片（有serverUrl的）和需要上传的图片（只有path的）
+      const existingImages = [];
+      modifyRecord.images.forEach(image => {
+        if (image.serverUrl) {
+          // 已经上传过的图片，直接使用URL
+          existingImages.push(image.serverUrl);
+        } else if (image.path) {
+          // 需要上传的图片文件
+          filesToUpload.push({
+            filePath: image.path,
+            fileName: `修改图片_${Date.now()}.jpg`,
+            fileType: 'image',
+            itemType: '图片'
+          });
+        }
+      });
+      
+      // 合并现有图片URL
+      if (existingImages.length > 0) {
+        updateData.practice_image_url = existingImages.join(',');
+      }
+    }
 
-    // 调用后端PUT接口
+    // 处理视频文件
+    if (modifyRecord.videos && modifyRecord.videos.length > 0) {
+      // 分离已上传的视频和需要上传的视频
+      const existingVideos = [];
+      modifyRecord.videos.forEach(video => {
+        if (video.serverUrl) {
+          // 已经上传过的视频，直接使用URL
+          existingVideos.push(video.serverUrl);
+        } else if (video.path) {
+          // 需要上传的视频文件
+          filesToUpload.push({
+            filePath: video.path,
+            fileName: `修改视频_${Date.now()}.mp4`,
+            fileType: 'video',
+            itemType: '视频'
+          });
+        }
+      });
+      
+      // 合并现有视频URL
+      if (existingVideos.length > 0) {
+        updateData.video_url = existingVideos[0]; // 视频通常只保存一个
+      }
+    }
+
+    // 处理新闻稿文件
+    if (modifyRecord.newsFiles && modifyRecord.newsFiles.length > 0) {
+      // 分离已上传的文档和需要上传的文档
+      const existingNews = [];
+      modifyRecord.newsFiles.forEach(file => {
+        if (file.serverUrl) {
+          // 已经上传过的文档，直接使用URL
+          existingNews.push(file.serverUrl);
+        } else if (file.path) {
+          // 需要上传的文档文件
+          filesToUpload.push({
+            filePath: file.path,
+            fileName: file.name || `修改文档_${Date.now()}.pdf`,
+            fileType: 'document',
+            itemType: '新闻稿'
+          });
+        }
+      });
+      
+      // 合并现有文档URL
+      if (existingNews.length > 0) {
+        updateData.news = existingNews[0]; // 新闻稿通常只保存一个
+      }
+    }
+
+    console.log('需要上传的文件:', filesToUpload);
+    console.log('更新数据:', updateData);
+
+    // 如果有文件需要上传，先上传文件
+    if (filesToUpload.length > 0) {
+      this.uploadFilesAndUpdateProgress(filesToUpload, updateData);
+    } else {
+      // 没有文件需要上传，直接保存更新数据
+      this.saveModifyDataToDatabase(updateData);
+    }
+  },
+
+  // 上传文件并更新进度数据
+  uploadFilesAndUpdateProgress(filesToUpload, updateData) {
+    console.log('开始上传文件，文件数量:', filesToUpload.length);
+    
+    wx.showLoading({
+      title: `正在上传文件 (0/${filesToUpload.length})...`
+    });
+
+    let uploadedCount = 0;
+    const uploadResults = [];
+
+    // 逐个上传文件
+    filesToUpload.forEach((fileInfo, index) => {
+      console.log(`开始上传文件 ${index + 1}:`, fileInfo);
+
+      // 使用文件上传工具上传文件
+      const uploadPromise = fileUpload.uploadFileToServer(
+        fileInfo.filePath, 
+        fileInfo.fileName, 
+        fileInfo.fileType
+      );
+
+      uploadPromise
+        .then(result => {
+          console.log(`文件 ${fileInfo.fileName} 上传成功:`, result);
+          uploadResults[index] = {
+            ...fileInfo,
+            success: true,
+            serverUrl: result.fileUrl
+          };
+          uploadedCount++;
+
+          // 更新上传进度
+          wx.showLoading({
+            title: `正在上传文件 (${uploadedCount}/${filesToUpload.length})...`
+          });
+
+          // 检查是否所有文件都上传完成
+          if (uploadedCount === filesToUpload.length) {
+            this.processModifyUploadResults(uploadResults, updateData);
+          }
+        })
+        .catch(error => {
+          console.error(`文件 ${fileInfo.fileName} 上传失败:`, error);
+          uploadResults[index] = {
+            ...fileInfo,
+            success: false,
+            error: error.message
+          };
+          uploadedCount++;
+
+          // 更新上传进度
+          wx.showLoading({
+            title: `正在上传文件 (${uploadedCount}/${filesToUpload.length})...`
+          });
+
+          // 检查是否所有文件都处理完成
+          if (uploadedCount === filesToUpload.length) {
+            this.processModifyUploadResults(uploadResults, updateData);
+          }
+        });
+    });
+  },
+
+  // 处理修改上传结果并保存数据
+  processModifyUploadResults(uploadResults, updateData) {
+    console.log('文件上传结果:', uploadResults);
+
+    // 统计上传成功和失败的文件
+    const successResults = uploadResults.filter(result => result.success);
+    const failedResults = uploadResults.filter(result => !result.success);
+
+    // 显示上传结果
+    if (failedResults.length > 0) {
+      wx.hideLoading();
+      const failedFiles = failedResults.map(result => result.fileName).join('\n');
+      wx.showModal({
+        title: '部分文件上传失败',
+        content: `以下文件上传失败：\n${failedFiles}\n\n是否继续保存其他内容？`,
+        success: (res) => {
+          if (res.confirm) {
+            // 用户选择继续，更新数据并保存
+            this.updateModifyDataWithUploadResults(successResults, updateData);
+          }
+        }
+      });
+      return;
+    }
+
+    // 所有文件上传成功，更新数据并保存
+    this.updateModifyDataWithUploadResults(successResults, updateData);
+  },
+
+  // 使用上传结果更新修改数据
+  updateModifyDataWithUploadResults(uploadResults, updateData) {
+    console.log('使用上传结果更新修改数据');
+
+    // 将上传成功的文件URL添加到更新数据中
+    uploadResults.forEach(result => {
+      switch (result.itemType) {
+        case '图片':
+          // 合并现有图片URL和新上传的图片URL
+          const currentImages = updateData.practice_image_url ? updateData.practice_image_url.split(',') : [];
+          currentImages.push(result.serverUrl);
+          updateData.practice_image_url = currentImages.join(',');
+          break;
+        case '视频':
+          // 视频通常只保存一个，优先使用新上传的
+          updateData.video_url = result.serverUrl;
+          break;
+        case '新闻稿':
+          // 新闻稿通常只保存一个，优先使用新上传的
+          updateData.news = result.serverUrl;
+          break;
+      }
+    });
+
+    console.log('更新后的修改数据:', updateData);
+
+    // 保存修改数据到数据库
+    this.saveModifyDataToDatabase(updateData);
+  },
+
+  // 保存修改数据到数据库
+  saveModifyDataToDatabase(updateData) {
+    console.log('开始保存修改数据到数据库:', updateData);
+
+    wx.showLoading({
+      title: '正在保存到数据库...'
+    });
+
+    // 调用后端PUT接口保存修改数据
     wx.request({
       url: apiConfig.buildUrl('/app/api/progress/update'),
       method: 'PUT',
@@ -2172,7 +2892,7 @@ Page({
           // 修改成功
           wx.showModal({
             title: '修改成功',
-            content: '进度记录已成功修改！',
+            content: '进度记录已成功修改！文件已上传并保存到数据库。',
             showCancel: false,
             success: () => {
               // 重新加载进度数据

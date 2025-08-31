@@ -97,134 +97,87 @@ Page({
     this.goToFileDetail(file);
   },
 
-  // 跳转到文件详情页面
+  // 直接预览文件 - 参考项目进度修改内容页面的实现
   goToFileDetail(file) {
+    console.log('=== 政策文件查询预览 ===');
+    console.log('file:', file);
+    
     const fileUrl = file.fileUrl;
     const fileName = file.fileName;
     
-    // 判断是否为本地文件
-    const isLocalFile = fileUrl.startsWith('D:\\') || fileUrl.startsWith('C:\\') || fileUrl.startsWith('/');
+    if (!fileUrl) {
+      wx.showToast({
+        title: '文件链接无效',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 获取文件扩展名
+    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
     
-    if (isLocalFile) {
-      // 本地文件，显示文件信息详情
-      wx.navigateTo({
-        url: `/pages/webview/webview?url=${encodeURIComponent('file://' + fileUrl)}&fileName=${encodeURIComponent(fileName)}&isLocal=true`
+    // 根据文件类型处理 - 参考项目进度修改内容页面的逻辑
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension)) {
+      // 图片文件直接预览
+      wx.previewImage({
+        urls: [fileUrl],
+        current: fileUrl
       });
     } else {
-      // 网络文件，直接跳转到webview页面
-      wx.navigateTo({
-        url: `/pages/webview/webview?url=${encodeURIComponent(fileUrl)}&fileName=${encodeURIComponent(fileName)}&isLocal=false`
+      // 文档文件直接预览 - 参考项目进度修改内容页面的实现
+      wx.openDocument({
+        filePath: fileUrl,
+        success: () => {
+          console.log('打开文档成功');
+        },
+        fail: (err) => {
+          console.error('打开文档失败:', err);
+          wx.showToast({
+            title: '无法预览此文件',
+            icon: 'none'
+          });
+        }
       });
     }
   },
 
-  // 预览文件内容
+  // 预览文件内容 - 参考项目进度修改内容页面的实现
   previewFile(file) {
+    console.log('=== 政策文件预览 ===');
+    console.log('file:', file);
+    
     const fileUrl = file.fileUrl;
     const fileName = file.fileName;
     
-    // 判断是否为本地文件
-    const isLocalFile = fileUrl.startsWith('D:\\') || fileUrl.startsWith('C:\\') || fileUrl.startsWith('/');
+    if (!fileUrl) {
+      return;
+    }
+
+    // 获取文件扩展名
+    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
     
-    if (isLocalFile) {
-      // 本地文件，显示提示
-      wx.showModal({
-        title: '本地文件',
-        content: '此文件存储在本地计算机上，无法直接预览。',
-        showCancel: false,
-        confirmText: '确定'
+    // 根据文件类型处理 - 参考项目进度修改内容页面的逻辑
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension)) {
+      // 图片文件直接预览
+      wx.previewImage({
+        urls: [fileUrl],
+        current: fileUrl
       });
     } else {
-      // 网络文件，尝试预览
-      wx.showLoading({
-        title: '加载中...'
+      // 文档文件直接预览 - 参考项目进度修改内容页面的实现
+      wx.openDocument({
+        filePath: fileUrl,
+        success: () => {
+          console.log('打开文档成功');
+        },
+        fail: (err) => {
+          console.error('打开文档失败:', err);
+          wx.showToast({
+            title: '无法预览此文件',
+            icon: 'none'
+          });
+        }
       });
-      
-      // 根据文件类型选择不同的预览方式
-      const fileExtension = fileName.split('.').pop().toLowerCase();
-      
-      if (fileExtension === 'pdf') {
-        // PDF文件直接使用微信预览
-        wx.hideLoading();
-        wx.downloadFile({
-          url: fileUrl,
-          success: (res) => {
-            if (res.statusCode === 200) {
-              wx.openDocument({
-                filePath: res.tempFilePath,
-                success: () => {
-                  console.log('PDF文件打开成功');
-                },
-                fail: (err) => {
-                  console.log('PDF文件打开失败', err);
-                  wx.showToast({
-                    title: '文件打开失败',
-                    icon: 'none'
-                  });
-                }
-              });
-            } else {
-              wx.showToast({
-                title: '文件下载失败',
-                icon: 'none'
-              });
-            }
-          },
-          fail: (err) => {
-            wx.hideLoading();
-            console.log('下载失败', err);
-            wx.showToast({
-              title: '文件访问失败',
-              icon: 'none'
-            });
-          }
-        });
-      } else if (['doc', 'docx'].includes(fileExtension)) {
-        // Word文档
-        wx.hideLoading();
-        wx.downloadFile({
-          url: fileUrl,
-          success: (res) => {
-            if (res.statusCode === 200) {
-              wx.openDocument({
-                filePath: res.tempFilePath,
-                success: () => {
-                  console.log('Word文档打开成功');
-                },
-                fail: (err) => {
-                  console.log('Word文档打开失败', err);
-                  wx.showToast({
-                    title: '文件打开失败',
-                    icon: 'none'
-                  });
-                }
-              });
-            } else {
-              wx.showToast({
-                title: '文件下载失败',
-                icon: 'none'
-              });
-            }
-          },
-          fail: (err) => {
-            wx.hideLoading();
-            console.log('下载失败', err);
-            wx.showToast({
-              title: '文件访问失败',
-              icon: 'none'
-            });
-          }
-        });
-      } else {
-        // 其他文件类型
-        wx.hideLoading();
-        wx.showModal({
-          title: '文件预览',
-          content: '暂不支持此文件类型的预览，请下载后查看。',
-          showCancel: false,
-          confirmText: '确定'
-        });
-      }
     }
   },
 
@@ -244,5 +197,7 @@ Page({
   onReachBottom() {
     // 如果数据量很大，可以在这里实现分页加载
     // 目前数据已经全部加载，所以这里不做处理
-  }
+  },
+
+
 }); 

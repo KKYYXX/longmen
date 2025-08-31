@@ -961,114 +961,38 @@ Page({
   },
 
   // 预览文件
+  // 预览文件 - 完全参考项目修改页面的成功实现
   previewFile(e) {
     const file = e.currentTarget.dataset.file;
-    const apiConfig = require('../../config/api.js');
+    
+    console.log('=== 案例文档预览文件 ===');
+    console.log('file:', file);
 
-    if (apiConfig.isMockEnabled()) {
-      // 开发模式：显示文件信息
-      wx.showModal({
-        title: '文件预览（开发模式）',
-        content: `文件名：${file.fileName || file.name}\n文件大小：${file.fileSize || file.size}\n文件类型：${file.fileType || '未知'}\n\n开发模式下无法实际打开文件，生产环境中将支持文件预览功能。`,
-        showCancel: false,
-        confirmText: '知道了'
-      });
+    if (!file) {
       return;
     }
 
-    // 生产模式：实际预览文件
     const fileUrl = file.fileUrl || file.url;
-
     if (!fileUrl || fileUrl === '#') {
-      wx.showToast({
-        title: '文件链接无效',
-        icon: 'none'
-      });
       return;
     }
 
-    // 显示加载提示
-    wx.showLoading({
-      title: '正在加载文件...'
-    });
-
+    // 完全参考项目修改页面的简单预览逻辑
     if (file.fileType === 'image' || this.isImageFile(file.fileName || file.name)) {
-      // 图片文件直接预览
-      wx.hideLoading();
       wx.previewImage({
         urls: [fileUrl],
-        current: fileUrl,
-        fail: (error) => {
-          console.error('图片预览失败:', error);
-          wx.showToast({
-            title: '图片预览失败',
-            icon: 'none'
-          });
-        }
-      });
-    } else if (file.fileType === 'pdf' || file.fileType === 'doc' || file.fileType === 'docx' ||
-               file.fileType === 'excel' || file.fileType === 'ppt' || this.isDocumentFile(file.fileName || file.name)) {
-      // 文档文件下载后打开
-      wx.downloadFile({
-        url: fileUrl,
-        header: {
-          'Content-Type': 'application/octet-stream'
-        },
-        success: (res) => {
-          wx.hideLoading();
-          if (res.statusCode === 200) {
-            wx.openDocument({
-              filePath: res.tempFilePath,
-              fileType: file.fileType || this.getFileTypeFromName(file.fileName || file.name),
-              success: () => {
-                console.log('文档打开成功');
-              },
-              fail: (error) => {
-                console.error('文档打开失败:', error);
-                wx.showModal({
-                  title: '文件打开失败',
-                  content: '可能是文件格式不支持或文件已损坏，请尝试下载到本地查看。',
-                  confirmText: '下载文件',
-                  cancelText: '取消',
-                  success: (modalRes) => {
-                    if (modalRes.confirm) {
-                      this.downloadFile(e);
-                    }
-                  }
-                });
-              }
-            });
-          } else {
-            wx.hideLoading();
-            wx.showToast({
-              title: '文件下载失败',
-              icon: 'none'
-            });
-          }
-        },
-        fail: (error) => {
-          wx.hideLoading();
-          console.error('文件下载失败:', error);
-          wx.showModal({
-            title: '文件下载失败',
-            content: '网络连接异常或文件不存在，请检查网络连接后重试。',
-            showCancel: false,
-            confirmText: '知道了'
-          });
-        }
+        current: fileUrl
       });
     } else {
-      // 其他类型文件提示下载
-      wx.hideLoading();
-      wx.showModal({
-        title: '文件类型提示',
-        content: '该文件类型暂不支持在线预览，是否下载到本地查看？',
-        confirmText: '下载',
-        cancelText: '取消',
-        success: (modalRes) => {
-          if (modalRes.confirm) {
-            this.downloadFile(e);
-          }
+      // 直接使用文件路径预览，就像项目修改页面一样
+      wx.openDocument({
+        filePath: fileUrl,
+        success: () => {
+          console.log('打开文档成功');
+        },
+        fail: (err) => {
+          console.error('打开文档失败:', err);
+          // 不显示任何错误提示，和项目修改页面保持一致
         }
       });
     }

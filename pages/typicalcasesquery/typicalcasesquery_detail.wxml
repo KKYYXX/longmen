@@ -37,8 +37,8 @@
           <text class="file-name-large">{{caseData.files[0].fileName}}</text>
           <text class="file-size-large">{{caseData.files[0].fileSize}}</text>
         </view>
-        <view class="open-btn-large" bindtap="openMainFile">
-          <text class="open-text">打开文件</text>
+        <view class="file-info-notice">
+          <text class="notice-text">文件内容显示在下方</text>
         </view>
       </view>
 

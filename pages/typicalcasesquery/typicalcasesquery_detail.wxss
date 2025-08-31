@@ -219,23 +219,18 @@
   opacity: 0.8;
 }
 
-.open-btn-large {
-  padding: 8px 16px; /* 更小的内边距 */
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 18px; /* 更小的圆角 */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 更轻的阴影 */
-  transition: all 0.3s ease;
-  border: 1px solid rgba(92, 80, 50, 0.2); /* 添加淡边框 */
+.file-info-notice {
+  padding: 8px 16px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 18px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  text-align: center;
 }
 
-.open-btn-large:active {
-  transform: scale(0.95);
-}
-
-.open-text {
-  font-size: 14px; /* 更小的字体 */
-  font-weight: 500; /* 减轻字重 */
-  color: #5c5032; /* 更温和的颜色 */
+.notice-text {
+  font-size: 12px;
+  font-weight: 400;
+  color: #667eea;
 }
 
 /* 文件内容显示区域 */

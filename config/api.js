@@ -41,6 +41,20 @@ const apiConfig = {
     const cleanPath = path.startsWith('/') ? path : '/' + path;
     return this.baseUrl + cleanPath;
   },
+
+  // 构建文件访问URL
+  buildFileUrl: function(filename) {
+    if (!filename) return this.baseUrl;
+    
+    // 如果filename已经是完整URL，直接返回
+    if (filename.startsWith('http://') || filename.startsWith('https://')) {
+      return filename;
+    }
+    
+    // 确保filename不以/开头
+    const cleanFilename = filename.startsWith('/') ? filename.substring(1) : filename;
+    return this.baseUrl + '/uploads/' + cleanFilename;
+  },
   
   // 获取当前环境
   getEnvironment: function() {

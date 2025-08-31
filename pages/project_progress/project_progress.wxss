@@ -484,6 +484,56 @@
   object-fit: cover;
 }
 
+/* 进度视频 */
+.progress-videos {
+  margin-top: 12px;
+}
+
+.progress-video-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(139,117,65,0.2);
+}
+
+.video-icon {
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.video-text {
+  font-size: 14px;
+  color: #5c5032;
+}
+
+/* 进度文档 */
+.progress-documents {
+  margin-top: 12px;
+}
+
+.progress-document-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(139,117,65,0.2);
+}
+
+.document-icon {
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.document-text {
+  font-size: 14px;
+  color: #5c5032;
+}
+
 /* 完成度 */
 .completion-info {
   display: flex;
