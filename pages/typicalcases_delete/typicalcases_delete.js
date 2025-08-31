@@ -170,7 +170,7 @@ Page({
 
     wx.showModal({
       title: '确认删除',
-      content: `确定要删除案例"${caseItem.title}"吗？此操作不可恢复。\n\n案例ID: ${caseItem.id}`,
+      content: `确定要删除案例"${caseItem.title}"吗？此操作不可恢复`,
       confirmText: '删除',
       confirmColor: '#e74c3c',
       cancelText: '取消',
@@ -322,7 +322,7 @@ Page({
   findModelIdByName(caseTitle, callback) {
     const normalizedTitle = (caseTitle || '').trim();
     if (!normalizedTitle) {
-      console.warn('案例标题为空，无法查询ID');
+      console.warn('案例标题为空，无法查询');
       callback(null);
       return;
     }
@@ -380,7 +380,7 @@ Page({
           // 通知其他页面数据已更新
           wx.setStorageSync('caseListNeedRefresh', true);
           
-          console.log('案例删除成功，标题:', caseItem.title, 'ID:', modelId);
+          console.log('案例删除成功，标题:', caseItem.title);
         } else {
           wx.showToast({
             title: (res.data && res.data.message) ? res.data.message : '删除失败',
