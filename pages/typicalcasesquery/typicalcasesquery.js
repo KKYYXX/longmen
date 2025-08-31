@@ -268,10 +268,24 @@ Page({
     // 获取新闻链接信息
     this.fetchNewsInfo(caseData.model_name, (news) => {
       if (news && news.length > 0) {
-        // 跳转到webview页面显示新闻
+        // 复制新闻链接到剪贴板
         const newsUrl = news[0].news_url;
-        wx.navigateTo({
-          url: `/pages/webview/webview?url=${encodeURIComponent(newsUrl)}&title=${encodeURIComponent(news[0].news_title || '新闻详情')}`
+        wx.setClipboardData({
+          data: newsUrl,
+          success: () => {
+            wx.showModal({
+              title: '新闻链接已复制',
+              content: '新闻链接已复制，请到浏览器中打开',
+              showCancel: false,
+              confirmText: '确定'
+            });
+          },
+          fail: () => {
+            wx.showToast({
+              title: '复制失败',
+              icon: 'none'
+            });
+          }
         });
       } else {
         wx.showToast({
