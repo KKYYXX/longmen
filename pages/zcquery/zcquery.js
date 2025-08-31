@@ -93,13 +93,15 @@ Page({
     const index = e.currentTarget.dataset.index;
     const file = this.data.fileList[index];
     
-    // 跳转到文件详情页面
-    this.goToFileDetail(file);
+    // 直接预览文件
+    this.previewFile(file);
   },
 
-  // 直接预览文件 - 参考项目进度修改内容页面的实现
-  goToFileDetail(file) {
-    console.log('=== 政策文件查询预览 ===');
+
+
+  // 预览文件内容 - 参考项目进度修改内容页面的实现
+  previewFile(file) {
+    console.log('=== 政策文件预览 ===');
     console.log('file:', file);
     
     const fileUrl = file.fileUrl;
@@ -124,57 +126,61 @@ Page({
         current: fileUrl
       });
     } else {
-      // 文档文件直接预览 - 参考项目进度修改内容页面的实现
-      wx.openDocument({
-        filePath: fileUrl,
-        success: () => {
-          console.log('打开文档成功');
+      // 文档文件需要先下载到本地再预览
+      const apiConfig = require('../../config/api.js');
+      const fullUrl = fileUrl.startsWith('http') ? fileUrl : apiConfig.buildFileUrl(fileUrl);
+      
+      wx.showLoading({
+        title: '正在下载文件...'
+      });
+      
+      // 使用wx.downloadFile下载到本地临时文件，然后使用wx.openDocument打开
+      wx.downloadFile({
+        url: fullUrl,
+        timeout: 10000, // 10秒超时
+        success: (res) => {
+          wx.hideLoading();
+          if (res.statusCode === 200) {
+            wx.openDocument({
+              filePath: res.tempFilePath,
+              success: () => {
+                console.log('打开文档成功');
+              },
+              fail: (err) => {
+                console.error('打开文档失败:', err);
+                wx.showToast({
+                  title: '无法预览此文件',
+                  icon: 'none'
+                });
+              }
+            });
+          } else {
+            wx.showToast({
+              title: '文件下载失败',
+              icon: 'none'
+            });
+          }
         },
         fail: (err) => {
-          console.error('打开文档失败:', err);
+          wx.hideLoading();
+          console.error('下载文件失败:', err);
+          
+          // 根据错误类型给出不同的提示
+          let errorMessage = '文件下载失败';
+          if (err.errMsg) {
+            if (err.errMsg.includes('timeout')) {
+              errorMessage = '下载超时，请检查网络连接';
+            } else if (err.errMsg.includes('fail')) {
+              errorMessage = '服务器连接失败，请检查服务器状态';
+            } else if (err.errMsg.includes('abort')) {
+              errorMessage = '下载被中断';
+            }
+          }
+          
           wx.showToast({
-            title: '无法预览此文件',
-            icon: 'none'
-          });
-        }
-      });
-    }
-  },
-
-  // 预览文件内容 - 参考项目进度修改内容页面的实现
-  previewFile(file) {
-    console.log('=== 政策文件预览 ===');
-    console.log('file:', file);
-    
-    const fileUrl = file.fileUrl;
-    const fileName = file.fileName;
-    
-    if (!fileUrl) {
-      return;
-    }
-
-    // 获取文件扩展名
-    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-    
-    // 根据文件类型处理 - 参考项目进度修改内容页面的逻辑
-    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension)) {
-      // 图片文件直接预览
-      wx.previewImage({
-        urls: [fileUrl],
-        current: fileUrl
-      });
-    } else {
-      // 文档文件直接预览 - 参考项目进度修改内容页面的实现
-      wx.openDocument({
-        filePath: fileUrl,
-        success: () => {
-          console.log('打开文档成功');
-        },
-        fail: (err) => {
-          console.error('打开文档失败:', err);
-          wx.showToast({
-            title: '无法预览此文件',
-            icon: 'none'
+            title: errorMessage,
+            icon: 'none',
+            duration: 2000
           });
         }
       });

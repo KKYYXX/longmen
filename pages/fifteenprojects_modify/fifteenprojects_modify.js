@@ -277,8 +277,11 @@ Page({
         this.getProjectDetailDataByIdForModify(projectId, originalProject, callback);
       } else {
         console.warn('未找到项目ID，项目名称:', projectName);
-        // 如果找不到ID，直接返回原项目数据
-        callback(originalProject);
+        // 如果找不到ID，也要获取进度记录数量
+        this.getProjectProgressCount(originalProject.projectName, (progressCount) => {
+          originalProject.progress = progressCount;
+          callback(originalProject);
+        });
       }
     });
   },
@@ -360,15 +363,28 @@ Page({
           };
 
           console.log('增强后的项目数据:', enhancedProject);
-          callback(enhancedProject);
+          
+          // 获取项目进度记录数量
+          this.getProjectProgressCount(enhancedProject.projectName, (progressCount) => {
+            enhancedProject.progress = progressCount;
+            callback(enhancedProject);
+          });
         } else {
           console.warn('获取项目详情失败，使用原有数据:', res);
-          callback(originalProject);
+          // 即使获取详情失败，也要获取进度记录数量
+          this.getProjectProgressCount(originalProject.projectName, (progressCount) => {
+            originalProject.progress = progressCount;
+            callback(originalProject);
+          });
         }
       },
       fail: (err) => {
         console.error('获取项目详情失败:', err);
-        callback(originalProject);
+        // 即使网络请求失败，也要获取进度记录数量
+        this.getProjectProgressCount(originalProject.projectName, (progressCount) => {
+          originalProject.progress = progressCount;
+          callback(originalProject);
+        });
       }
     });
   },
@@ -982,62 +998,64 @@ Page({
         return;
       }
       
-      // 如果是服务器URL，需要先下载到本地
-      if (documentUrl.startsWith('http')) {
-        wx.showLoading({
-          title: '正在下载文件...'
-        });
-        
-        wx.downloadFile({
-          url: documentUrl,
-          success: (res) => {
-            wx.hideLoading();
-            if (res.statusCode === 200) {
-              wx.openDocument({
-                filePath: res.tempFilePath,
-                success: () => {
-                  console.log('打开文档成功');
-                },
-                fail: (err) => {
-                  console.error('打开文档失败:', err);
-                  wx.showToast({
-                    title: '无法预览此文件',
-                    icon: 'none'
-                  });
-                }
-              });
-            } else {
-              wx.showToast({
-                title: '文件下载失败',
-                icon: 'none'
-              });
-            }
-          },
-          fail: (err) => {
-            wx.hideLoading();
-            console.error('下载文件失败:', err);
+      // 使用统一的文件访问方式
+      const apiConfig = require('../../config/api.js');
+      const fullUrl = documentUrl.startsWith('http') ? documentUrl : apiConfig.buildFileUrl(documentUrl);
+      
+      wx.showLoading({
+        title: '正在下载文件...'
+      });
+      
+      // 使用wx.downloadFile下载到本地临时文件，然后使用wx.openDocument打开
+      wx.downloadFile({
+        url: fullUrl,
+        timeout: 10000, // 10秒超时
+        success: (res) => {
+          wx.hideLoading();
+          if (res.statusCode === 200) {
+            wx.openDocument({
+              filePath: res.tempFilePath,
+              success: () => {
+                console.log('打开文档成功');
+              },
+              fail: (err) => {
+                console.error('打开文档失败:', err);
+                wx.showToast({
+                  title: '无法预览此文件',
+                  icon: 'none'
+                });
+              }
+            });
+          } else {
             wx.showToast({
               title: '文件下载失败',
               icon: 'none'
             });
           }
-        });
-      } else {
-        // 本地文件直接打开
-        wx.openDocument({
-          filePath: documentUrl,
-          success: () => {
-            console.log('打开文档成功');
-          },
-          fail: (err) => {
-            console.error('打开文档失败:', err);
-            wx.showToast({
-              title: '无法预览此文件',
-              icon: 'none'
-            });
+        },
+        fail: (err) => {
+          wx.hideLoading();
+          console.error('下载文件失败:', err);
+          
+          // 根据错误类型给出不同的提示
+          let errorMessage = '文件下载失败';
+          if (err.errMsg) {
+            if (err.errMsg.includes('timeout')) {
+              errorMessage = '下载超时，请检查网络连接';
+            } else if (err.errMsg.includes('fail')) {
+              errorMessage = '服务器连接失败，请检查服务器状态';
+            } else if (err.errMsg.includes('abort')) {
+              errorMessage = '下载被中断';
+            }
           }
-        });
-      }
+          
+          wx.showToast({
+            title: errorMessage,
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
     }
   },
 
@@ -1450,7 +1468,6 @@ Page({
   // 页面加载
   onLoad: function(options) {
     console.log('修改页面加载，参数:', options);
-
     // 检查是否为编辑模式
     if (options.projectId) {
       this.setData({
@@ -2416,62 +2433,72 @@ Page({
       // 文档文件使用打开文档功能
       const documentUrl = file.serverUrl || file.path;
       
-      // 如果是服务器URL，需要先下载到本地
-      if (documentUrl.startsWith('http')) {
-        wx.showLoading({
-          title: '正在下载文件...'
+      if (!documentUrl) {
+        wx.showToast({
+          title: '文档路径无效',
+          icon: 'none'
         });
-        
-        wx.downloadFile({
-          url: documentUrl,
-          success: (res) => {
-            wx.hideLoading();
-            if (res.statusCode === 200) {
-              wx.openDocument({
-                filePath: res.tempFilePath,
-                success: () => {
-                  console.log('打开文档成功');
-                },
-                fail: (err) => {
-                  console.error('打开文档失败:', err);
-                  wx.showToast({
-                    title: '无法预览此文件',
-                    icon: 'none'
-                  });
-                }
-              });
-            } else {
-              wx.showToast({
-                title: '文件下载失败',
-                icon: 'none'
-              });
-            }
-          },
-          fail: (err) => {
-            wx.hideLoading();
-            console.error('下载文件失败:', err);
+        return;
+      }
+      
+      // 使用统一的文件访问方式
+      const apiConfig = require('../../config/api.js');
+      const fullUrl = documentUrl.startsWith('http') ? documentUrl : apiConfig.buildFileUrl(documentUrl);
+      
+      wx.showLoading({
+        title: '正在下载文件...'
+      });
+      
+      // 使用wx.downloadFile下载到本地临时文件，然后使用wx.openDocument打开
+      wx.downloadFile({
+        url: fullUrl,
+        timeout: 10000, // 10秒超时
+        success: (res) => {
+          wx.hideLoading();
+          if (res.statusCode === 200) {
+            wx.openDocument({
+              filePath: res.tempFilePath,
+              success: () => {
+                console.log('打开文档成功');
+              },
+              fail: (err) => {
+                console.error('打开文档失败:', err);
+                wx.showToast({
+                  title: '无法预览此文件',
+                  icon: 'none'
+                });
+              }
+            });
+          } else {
             wx.showToast({
               title: '文件下载失败',
               icon: 'none'
             });
           }
-        });
-      } else {
-        // 本地文件直接打开
-        wx.openDocument({
-          filePath: documentUrl,
-          success: () => {
-            console.log('打开文档成功');
-          },
-          fail: (err) => {
-            console.error('打开文档失败:', err);
-            wx.showToast({
-              title: '无法预览此文件',
-              icon: 'none'
-            });
+        },
+        fail: (err) => {
+          wx.hideLoading();
+          console.error('下载文件失败:', err);
+          
+          // 根据错误类型给出不同的提示
+          let errorMessage = '文件下载失败';
+          if (err.errMsg) {
+            if (err.errMsg.includes('timeout')) {
+              errorMessage = '下载超时，请检查网络连接';
+            } else if (err.errMsg.includes('fail')) {
+              errorMessage = '服务器连接失败，请检查服务器状态';
+            } else if (err.errMsg.includes('abort')) {
+              errorMessage = '下载被中断';
+            }
           }
-        });
-      }
+          
+          wx.showToast({
+            title: errorMessage,
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
     }
   },
 
@@ -2962,6 +2989,36 @@ Page({
           content: errorMessage,
           showCancel: false
         });
+      }
+    });
+  },
+
+  // 获取项目进度记录数量
+  getProjectProgressCount(projectName, callback) {
+    console.log('获取项目进度记录数量，项目名称:', projectName);
+    
+    wx.request({
+      url: apiConfig.buildUrl('/app/api/progress/times'),
+      method: 'GET',
+      data: {
+        project_name: projectName
+      },
+      success: (res) => {
+        console.log('获取进度记录数量响应:', res);
+        
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          const progressData = res.data.data || [];
+          const progressCount = progressData.length;
+          console.log(`项目 ${projectName} 的进度记录数量:`, progressCount);
+          callback(progressCount);
+        } else {
+          console.warn('获取进度记录数量失败:', res);
+          callback(0);
+        }
+      },
+      fail: (err) => {
+        console.error('请求进度记录数量失败:', err);
+        callback(0);
       }
     });
   },

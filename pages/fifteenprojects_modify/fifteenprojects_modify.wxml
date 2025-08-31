@@ -109,7 +109,12 @@
         <view class="column-number">第{{index + 1}}列</view>
         <view class="column-info">
           <view class="column-name">{{item.name}}</view>
-          <view class="column-current">当前内容：{{selectedProject[item.key] || '暂无'}}</view>
+          <view class="column-current" wx:if="{{item.key === 'progress'}}">
+            当前内容：{{selectedProject[item.key] > 0 ? '共' + selectedProject[item.key] + '条记录' : '暂无'}}
+          </view>
+          <view class="column-current" wx:else>
+            当前内容：{{selectedProject[item.key] || '暂无'}}
+          </view>
         </view>
         <view class="select-icon">{{selectedColumn && selectedColumn.key === item.key ? '✓' : '○'}}</view>
       </view>

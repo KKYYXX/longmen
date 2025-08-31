@@ -83,8 +83,11 @@ function uploadFileToServer(filePath, fileName, fileType = 'file') {
         });
 
         // 使用后端的上传接口
+        const uploadUrl = apiConfig.buildUrl('/app/api/upload');
+        console.log('上传URL:', uploadUrl);
+        
         wx.uploadFile({
-          url: apiConfig.buildUrl('/app/api/upload'),
+          url: uploadUrl,
           filePath: filePath,
           name: 'file',
           header: {
@@ -93,6 +96,7 @@ function uploadFileToServer(filePath, fileName, fileType = 'file') {
           formData: {
             fileType: fileType
           },
+          timeout: 30000, // 30秒超时
           success: (res) => {
             wx.hideLoading();
             console.log('文件上传响应:', res);
@@ -104,7 +108,7 @@ function uploadFileToServer(filePath, fileName, fileType = 'file') {
                 console.log('文件上传成功:', result.file_url);
                 resolve({
                   success: true,
-                  fileUrl: result.file_url,
+                  fileUrl: result.file_url, // 使用后端返回的file_url
                   fileName: fileName,
                   fileType: fileType,
                   fileSize: fileInfo.size
@@ -121,7 +125,22 @@ function uploadFileToServer(filePath, fileName, fileType = 'file') {
           fail: (error) => {
             wx.hideLoading();
             console.error('文件上传请求失败:', error);
-            reject(new Error('文件上传请求失败'));
+            
+            // 根据错误类型提供更详细的错误信息
+            let errorMessage = '文件上传请求失败';
+            if (error.errMsg) {
+              if (error.errMsg.includes('timeout')) {
+                errorMessage = '上传超时，请检查网络连接';
+              } else if (error.errMsg.includes('fail')) {
+                errorMessage = '网络连接失败，请检查服务器状态';
+              } else if (error.errMsg.includes('abort')) {
+                errorMessage = '上传被中断';
+              } else if (error.errMsg.includes('parameter error')) {
+                errorMessage = '文件参数错误，请重新选择文件';
+              }
+            }
+            
+            reject(new Error(errorMessage));
           }
         });
       },

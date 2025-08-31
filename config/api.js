@@ -81,6 +81,12 @@ const apiConfig = {
   // 获取请求超时时间
   getTimeout: function() {
     return this.timeout;
+  },
+  
+  // 检查是否启用模拟数据
+  isMockEnabled: function() {
+    // 开发环境默认启用模拟数据
+    return this.getEnvironment() === 'development';
   }
 };
 

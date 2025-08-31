@@ -924,7 +924,7 @@ Page({
     });
   },
 
-  // 文件预览功能 - 完全按照项目修改页面的实现
+  // 文件预览功能 - 使用下载+预览的逻辑
   previewFile: function(e) {
     const index = e.currentTarget.dataset.index;
     const file = e.currentTarget.dataset.file;
@@ -941,23 +941,83 @@ Page({
       return;
     }
 
-    // 完全按照项目修改页面的逻辑，简单直接
-    if (file.type === 'image') {
+    const fileUrl = file.path || file.serverUrl;
+    const fileName = file.name || '文件';
+    
+    if (!fileUrl) {
+      wx.showToast({
+        title: '文件链接无效',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 获取文件扩展名
+    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+    
+    // 根据文件类型处理
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension) || file.type === 'image') {
+      // 图片文件直接预览
       wx.previewImage({
-        urls: [file.path],
-        current: file.path
+        urls: [fileUrl],
+        current: fileUrl
       });
     } else {
-      wx.openDocument({
-        filePath: file.path,
-        success: () => {
-          console.log('打开文档成功');
+      // 文档文件需要先下载到本地再预览
+      const apiConfig = require('../../config/api.js');
+      const fullUrl = fileUrl.startsWith('http') ? fileUrl : apiConfig.buildFileUrl(fileUrl);
+      
+      wx.showLoading({
+        title: '正在下载文件...'
+      });
+      
+      // 使用wx.downloadFile下载到本地临时文件，然后使用wx.openDocument打开
+      wx.downloadFile({
+        url: fullUrl,
+        timeout: 10000, // 10秒超时
+        success: (res) => {
+          wx.hideLoading();
+          if (res.statusCode === 200) {
+            wx.openDocument({
+              filePath: res.tempFilePath,
+              success: () => {
+                console.log('打开文档成功');
+              },
+              fail: (err) => {
+                console.error('打开文档失败:', err);
+                wx.showToast({
+                  title: '无法预览此文件',
+                  icon: 'none'
+                });
+              }
+            });
+          } else {
+            wx.showToast({
+              title: '文件下载失败',
+              icon: 'none'
+            });
+          }
         },
         fail: (err) => {
-          console.error('打开文档失败:', err);
+          wx.hideLoading();
+          console.error('下载文件失败:', err);
+          
+          // 根据错误类型给出不同的提示
+          let errorMessage = '文件下载失败';
+          if (err.errMsg) {
+            if (err.errMsg.includes('timeout')) {
+              errorMessage = '下载超时，请检查网络连接';
+            } else if (err.errMsg.includes('fail')) {
+              errorMessage = '服务器连接失败，请检查服务器状态';
+            } else if (err.errMsg.includes('abort')) {
+              errorMessage = '下载被中断';
+            }
+          }
+          
           wx.showToast({
-            title: '无法预览此文件',
-            icon: 'none'
+            title: errorMessage,
+            icon: 'none',
+            duration: 2000
           });
         }
       });

@@ -928,34 +928,98 @@ Page({
   previewFile(e) {
     const file = e.currentTarget.dataset.file;
     
-    wx.showActionSheet({
-      itemList: ['查看文件信息', '打开文件'],
-      success: (res) => {
-        if (res.tapIndex === 0) {
-          // 查看文件信息
-          wx.showModal({
-            title: '文件信息',
-            content: `文件名：${file.name}\n文件大小：${file.sizeFormatted}\n文件类型：${file.type.toUpperCase()}\n上传时间：${new Date(file.uploadTime).toLocaleString()}`,
-            showCancel: false
-          });
-        } else if (res.tapIndex === 1) {
-          // 打开文件
-          wx.showModal({
-            title: '打开文件',
-            content: `确定要打开文件"${file.name}"吗？\n\n文件类型：${file.type.toUpperCase()}\n文件大小：${file.sizeFormatted}`,
-            success: (modalRes) => {
-              if (modalRes.confirm) {
-                // 这里可以调用文件打开API
+    console.log('=== 典型案例添加文件预览 ===');
+    console.log('file:', file);
+    
+    if (!file) {
+      wx.showToast({
+        title: '文件信息无效',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const fileUrl = file.url || file.path;
+    const fileName = file.name || '文件';
+    
+    if (!fileUrl) {
+      wx.showToast({
+        title: '文件链接无效',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 获取文件扩展名
+    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+    
+    // 根据文件类型处理
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension) || file.type === 'image') {
+      // 图片文件直接预览
+      wx.previewImage({
+        urls: [fileUrl],
+        current: fileUrl
+      });
+    } else {
+      // 文档文件需要先下载到本地再预览
+      const apiConfig = require('../../config/api.js');
+      const fullUrl = fileUrl.startsWith('http') ? fileUrl : apiConfig.buildFileUrl(fileUrl);
+      
+      wx.showLoading({
+        title: '正在下载文件...'
+      });
+      
+      // 使用wx.downloadFile下载到本地临时文件，然后使用wx.openDocument打开
+      wx.downloadFile({
+        url: fullUrl,
+        timeout: 10000, // 10秒超时
+        success: (res) => {
+          wx.hideLoading();
+          if (res.statusCode === 200) {
+            wx.openDocument({
+              filePath: res.tempFilePath,
+              success: () => {
+                console.log('打开文档成功');
+              },
+              fail: (err) => {
+                console.error('打开文档失败:', err);
                 wx.showToast({
-                  title: '文件打开功能开发中',
+                  title: '无法预览此文件',
                   icon: 'none'
                 });
               }
+            });
+          } else {
+            wx.showToast({
+              title: '文件下载失败',
+              icon: 'none'
+            });
+          }
+        },
+        fail: (err) => {
+          wx.hideLoading();
+          console.error('下载文件失败:', err);
+          
+          // 根据错误类型给出不同的提示
+          let errorMessage = '文件下载失败';
+          if (err.errMsg) {
+            if (err.errMsg.includes('timeout')) {
+              errorMessage = '下载超时，请检查网络连接';
+            } else if (err.errMsg.includes('fail')) {
+              errorMessage = '服务器连接失败，请检查服务器状态';
+            } else if (err.errMsg.includes('abort')) {
+              errorMessage = '下载被中断';
             }
+          }
+          
+          wx.showToast({
+            title: errorMessage,
+            icon: 'none',
+            duration: 2000
           });
         }
-      }
-    });
+      });
+    }
   },
 
   // 预览视频
