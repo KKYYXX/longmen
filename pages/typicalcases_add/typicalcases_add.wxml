@@ -92,7 +92,6 @@
             <text class="file-size">{{item.sizeFormatted}}</text>
           </view>
           <view class="file-actions">
-            <text class="preview-btn" bindtap="previewFile" data-file="{{item}}">打开</text>
             <text class="delete-btn" bindtap="deleteFile" data-id="{{item.id}}">删除</text>
           </view>
         </view>
@@ -112,7 +111,6 @@
             <text class="link-url">{{item.url}}</text>
           </view>
           <view class="link-actions">
-            <text class="preview-btn" bindtap="openNewsLink" data-link="{{item}}">查看</text>
             <text class="delete-btn" bindtap="deleteNewsLink" data-id="{{item.id}}">删除</text>
           </view>
         </view>
@@ -132,7 +130,6 @@
             <text class="video-size">{{item.sizeFormatted}}</text>
           </view>
           <view class="video-actions">
-            <text class="preview-btn" bindtap="previewVideo" data-video="{{item}}">播放</text>
             <text class="delete-btn" bindtap="deleteVideo" data-id="{{item.id}}">删除</text>
           </view>
         </view>

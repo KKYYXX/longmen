@@ -154,9 +154,6 @@ Page({
 
   // 上传文件到服务器
   uploadFilesToServer(files, fileType) {
-    // 注释掉开发环境模拟上传，进行前后端联调
-    // const apiConfig = require('../../config/api.js');
-
     // 参数验证：检查文件是否存在且有效
     if (!files || files.length === 0) {
       wx.showToast({
@@ -197,7 +194,7 @@ Page({
       return;
     }
 
-    console.log('准备上传文件:', {
+    console.log('准备保存文件到本地状态:', {
       name: file.name,
       size: file.size,
       filePath: filePath,
@@ -205,123 +202,32 @@ Page({
       fileObject: file
     });
     
+    // 只保存到本地状态，不调用上传接口
+    const tempFile = {
+      id: Date.now(),
+      name: file.name,
+      tempFilePath: filePath, // 保存临时路径
+      type: fileType,
+      size: file.size,
+      sizeFormatted: this.formatFileSize(file.size),
+      uploadTime: new Date().toISOString()
+    };
+
     this.setData({
-      isUploading: true,
-      fileUploadProgress: 0
+      uploadedFiles: [...this.data.uploadedFiles, tempFile]
     });
- 
 
-    // 显示上传进度
-    const progressTimer = setInterval(() => {
-      if (this.data.fileUploadProgress < 90) {
-        this.setData({
-          fileUploadProgress: this.data.fileUploadProgress + 10
-        });
-      }
-    }, 200);
-
-    // 注释掉开发环境模拟上传成功，进行前后端联调
-    // if (apiConfig.isMockEnabled()) {
-    //   setTimeout(() => {
-    //     clearInterval(progressTimer);
-    //     this.setData({
-    //       fileUploadProgress: 100,
-    //       isUploading: false
-    //     });
-
-    //     // 模拟上传成功
-    //     const fileSize = files[0].size || 1024 * 1024;
-    //     const uploadedFile = {
-    //       id: Date.now(),
-    //       name: files[0].name || `文件_${Date.now()}.${fileType}`,
-    //       url: files[0].tempFilePath,
-    //       type: fileType,
-    //       size: fileSize,
-    //       sizeFormatted: `${(fileSize / 1024 / 1024).toFixed(2)}MB`,
-    //       uploadTime: new Date().toISOString()
-    //     };
-
-    //     this.setData({
-    //       uploadedFiles: [...this.data.uploadedFiles, uploadedFile]
-    //     });
-
-    //     // 显示更明显的成功提示
-    //     wx.showModal({
-    //       title: '✅ 上传成功',
-    //       content: `文件"${uploadedFile.name}"已成功上传！\n\n文件大小：${uploadedFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}`,
-    //       showCancel: false,
-    //       confirmText: '确定',
-    //       success: () => {
-    //         // 显示Toast提示
-    //         wx.showToast({
-    //           title: '文件已添加到预览列表',
-    //           icon: 'success',
-    //           duration: 2000
-    //         });
-    //       }
-    //     });
-    //   }, 2000);
-    //   return;
-    // }
-
-    // 前后端联调阶段：先上传文件到文件服务器，然后调用后端接口
-    const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
-    
-    wx.uploadFile({
-      url: uploadServerUrl,
-      filePath: filePath, // 使用兼容的文件路径 
-      name: 'file',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      formData: {
-        fileType: fileType
-      },
-      success: (res) => {
-        clearInterval(progressTimer);
-        this.setData({
-          fileUploadProgress: 100,
-          isUploading: false
-        });
-
-        try {
-          const result = JSON.parse(res.data);
-          if (result.success) {
-            // 文件上传成功后，调用后端接口保存文件信息
-            this.saveFileInfoToBackend(files[0], fileType, result.file_url);
-          } else {
-            wx.showToast({
-              title: result.message || '文件上传失败',
-              icon: 'none'
-            });
-          }
-        } catch (e) {
-          console.error('解析响应失败:', e);
-          wx.showToast({
-            title: '服务器响应异常',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        clearInterval(progressTimer);
-        this.setData({
-          isUploading: false
-        });
-        console.error('文件上传失败:', err);
-        
-        let errorMsg = '文件上传失败';
-        if (err.errMsg && err.errMsg.includes('timeout')) {
-          errorMsg = '上传超时，请检查网络';
-        } else if (err.errMsg && err.errMsg.includes('fail')) {
-          errorMsg = '网络连接失败';
-        } else if (err.errMsg && err.errMsg.includes('parameter error')) {
-          errorMsg = '文件参数错误，请重新选择文件';
-        }
-        
+    // 显示成功提示
+    wx.showModal({
+      title: '✅ 文件已添加',
+      content: `文件"${tempFile.name}"已添加到预览列表\n\n文件大小：${tempFile.sizeFormatted}\n文件类型：${fileType.toUpperCase()}\n\n点击"提交所有内容"时将统一上传`,
+      showCancel: false,
+      confirmText: '确定',
+      success: () => {
         wx.showToast({
-          title: errorMsg,
-          icon: 'none'
+          title: '文件已添加到预览列表',
+          icon: 'success',
+          duration: 2000
         });
       }
     });
@@ -425,9 +331,6 @@ Page({
 
   // 添加新闻链接
   addNewsLink(title, url) {
-    // 注释掉开发环境模拟添加，进行前后端联调
-    // const apiConfig = require('../../config/api.js');
-    
     // 验证URL格式
     if (!this.isValidUrl(url)) {
       wx.showToast({
@@ -437,87 +340,29 @@ Page({
       return;
     }
 
-    // 注释掉开发环境模拟添加成功，进行前后端联调
-    // if (apiConfig.isMockEnabled()) {
-    //   const newsLink = {
-    //     id: Date.now(),
-    //     title: title,
-    //     url: url,
-    //     addTime: new Date().toISOString()
-    //   };
+    // 只保存到本地状态，不调用上传接口
+    const tempNewsLink = {
+      id: Date.now(),
+      title: title,
+      url: url,
+      addTime: new Date().toISOString()
+    };
 
-    //   this.setData({
-    //     newsLinks: [...this.data.newsLinks, newsLink]
-    //   });
+    this.setData({
+      newsLinks: [...this.data.newsLinks, tempNewsLink]
+    });
 
-    //   // 显示更明显的成功提示
-    //   wx.showModal({
-    //     title: '✅ 链接添加成功',
-    //     content: `新闻链接"${title}"已成功添加！\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
-    //     showCancel: false,
-    //     confirmText: '确定',
-    //     success: () => {
-    //       wx.showToast({
-    //         title: '链接已添加到预览列表',
-    //         icon: 'success',
-    //         duration: 2000
-    //       });
-    //     }
-    //   });
-    //   return;
-    // }
-
-    // 前后端联调阶段：调用后端接口保存新闻链接
-    wx.request({
-      url: apiConfig.buildUrl('/app/api/news'),
-      method: 'POST',
-      header: {
-        'Content-Type': 'application/json'
-      },
-      data: {
-        model_name: this.data.caseName, // 典型案例名称
-        news_title: title, // 新闻标题
-        news_url: url // 新闻链接
-      },
-      success: (res) => {
-        if (res.data.success) {
-          const newsLink = {
-            id: res.data.data.id,
-            title: title,
-            url: url,
-            addTime: new Date().toISOString()
-          };
-
-          this.setData({
-            newsLinks: [...this.data.newsLinks, newsLink]
-          });
-
-          // 显示成功提示
-          wx.showModal({
-            title: '✅ 链接添加成功',
-            content: `新闻链接"${title}"已成功保存\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}`,
-            showCancel: false,
-            confirmText: '确定',
-            success: () => {
-              wx.showToast({
-                title: '链接已添加到预览列表',
-                icon: 'success',
-                duration: 2000
-              });
-            }
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '新闻链接添加失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('添加新闻链接失败:', err);
+    // 显示成功提示
+    wx.showModal({
+      title: '✅ 链接已添加',
+      content: `新闻链接"${title}"已添加到预览列表\n\n链接地址：${url}\n添加时间：${new Date().toLocaleString()}\n\n点击"提交所有内容"时将统一上传`,
+      showCancel: false,
+      confirmText: '确定',
+      success: () => {
         wx.showToast({
-          title: '新闻链接添加失败',
-          icon: 'none'
+          title: '链接已添加到预览列表',
+          icon: 'success',
+          duration: 2000
         });
       }
     });
@@ -582,10 +427,6 @@ Page({
 
   // 上传视频到服务器
   uploadVideosToServer(videos) {
-    // 注释掉开发环境模拟上传，进行前后端联调
-    // const apiConfig = require('../../config/api.js');
-    
-
     // 参数验证：检查视频是否存在且有效
     if (!videos || videos.length === 0) {
       wx.showToast({
@@ -597,18 +438,16 @@ Page({
 
     const video = videos[0];
     
-     // 检查视频的必要属性 - 兼容不同的视频路径属性
-     let videoPath = video.tempFilePath || video.path;
-     if (!videoPath) {
-       console.error('视频路径为空，视频对象:', video);
-       wx.showToast({
-         title: '视频路径无效，请重新选择视频',
-         icon: 'none'
-       });
-       return;
-     }
-
-   
+    // 检查视频的必要属性 - 兼容不同的视频路径属性
+    let videoPath = video.tempFilePath || video.path;
+    if (!videoPath) {
+      console.error('视频路径为空，视频对象:', video);
+      wx.showToast({
+        title: '视频路径无效，请重新选择视频',
+        icon: 'none'
+      });
+      return;
+    }
 
     if (!video.size || video.size <= 0) {
       console.error('视频大小无效:', video);
@@ -619,128 +458,39 @@ Page({
       return;
     }
 
-    console.log('准备上传视频:', {
+    console.log('准备保存视频到本地状态:', {
       size: video.size,
       videoPath: videoPath,
       duration: video.duration,
       videoObject: video
     });
 
+    // 只保存到本地状态，不调用上传接口
+    const tempVideo = {
+      id: Date.now(),
+      name: video.name || `视频_${Date.now()}.mp4`,
+      tempFilePath: videoPath, // 保存临时路径
+      size: video.size,
+      sizeFormatted: this.formatFileSize(video.size),
+      duration: video.duration || 60,
+      uploadTime: new Date().toISOString()
+    };
+
     this.setData({
-      isUploading: true,
-      videoUploadProgress: 0
+      uploadedVideos: [...this.data.uploadedVideos, tempVideo]
     });
 
-    // 显示上传进度
-    const progressTimer = setInterval(() => {
-      if (this.data.videoUploadProgress < 90) {
-        this.setData({
-          videoUploadProgress: this.data.videoUploadProgress + 10
-        });
-      }
-    }, 300);
-
-    // 注释掉开发环境模拟上传成功，进行前后端联调
-    // if (apiConfig.isMockEnabled()) {
-    //   setTimeout(() => {
-    //     clearInterval(progressTimer);
-    //     this.setData({
-    //       videoUploadProgress: 100,
-    //       isUploading: false
-    //     });
-
-    //     // 模拟上传成功
-    //     const videoSize = videos[0].size || 1024 * 1024;
-    //     const uploadedVideo = {
-    //       id: Date.now(),
-    //       name: videos[0].name || `视频_${Date.now()}.mp4`,
-    //       url: videos[0].tempFilePath,
-    //       size: videoSize,
-    //       sizeFormatted: `${(videoSize / 1024 / 1024).toFixed(2)}MB`,
-    //       duration: videos[0].duration || 60,
-    //       uploadTime: new Date().toISOString()
-    //     };
-
-    //     this.setData({
-    //       uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
-    //     });
-
-    //     // 显示更明显的成功提示
-    //     wx.showModal({
-    //       title: '✅ 视频上传成功',
-    //       content: `视频"${uploadedVideo.name}"已成功上传！\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
-    //       showCancel: false,
-    //       confirmText: '确定',
-    //       success: () => {
-    //         wx.showToast({
-    //           title: '视频已添加到预览列表',
-    //           icon: 'success',
-    //           duration: 2000
-    //         });
-    //       }
-    //     });
-    //   }, 2000);
-    //   return;
-    // }
-
-    // 前后端联调阶段：先上传视频到文件服务器，然后调用后端接口
-    const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
-    
-    wx.uploadFile({
-      url: uploadServerUrl,
-      filePath: videoPath, // 使用兼容的视频路径
-      name: 'file',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      formData: {
-        fileType: 'video'
-      },
-      success: (res) => {
-        clearInterval(progressTimer);
-        this.setData({
-          videoUploadProgress: 100,
-          isUploading: false
-        });
-
-        try {
-          const result = JSON.parse(res.data);
-          if (result.success) {
-            // 视频上传成功后，调用后端接口保存视频信息
-            this.saveVideoInfoToBackend(videos[0], result.file_url);
-          } else {
-            wx.showToast({
-              title: result.message || '视频上传失败',
-              icon: 'none'
-            });
-          }
-        } catch (e) {
-          console.error('解析响应失败:', e);
-          wx.showToast({
-            title: '服务器响应异常',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        clearInterval(progressTimer);
-        this.setData({
-          isUploading: false
-        });
-        console.error('视频上传失败:', err);
-        
-        let errorMsg = '视频上传失败';
-        if (err.errMsg && err.errMsg.includes('timeout')) {
-          errorMsg = '上传超时，请检查网络';
-        } else if (err.errMsg && err.errMsg.includes('fail')) {
-          errorMsg = '网络连接失败';
-        } else if (err.errMsg && err.errMsg.includes('parameter error')) {
-          errorMsg = '视频参数错误，请重新选择视频';
-        }
-        
+    // 显示成功提示
+    wx.showModal({
+      title: '✅ 视频已添加',
+      content: `视频"${tempVideo.name}"已添加到预览列表\n\n视频大小：${tempVideo.sizeFormatted}\n视频时长：${tempVideo.duration}秒\n\n点击"提交所有内容"时将统一上传`,
+      showCancel: false,
+      confirmText: '确定',
+      success: () => {
         wx.showToast({
-          title: errorMsg,
-          icon: 'none'
+          title: '视频已添加到预览列表',
+          icon: 'success',
+          duration: 2000
         });
       }
     });
@@ -811,38 +561,14 @@ Page({
   deleteFile(e) {
     const fileId = e.currentTarget.dataset.id;
     
-    // 调用后端接口删除文件
-    // 接口：DELETE /api/typical-cases/delete-file/{fileId}
-    wx.request({
-      url: apiConfig.buildUrl(`/app/api/models/${fileId}`),
-      method: 'DELETE',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      success: (res) => {
-        if (res.data.success) {
-          const files = this.data.uploadedFiles.filter(file => file.id !== fileId);
-          this.setData({
-            uploadedFiles: files
-          });
-          wx.showToast({
-            title: '文件删除成功',
-            icon: 'success'
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '文件删除失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('删除文件失败:', err);
-        wx.showToast({
-          title: '文件删除失败',
-          icon: 'none'
-        });
-      }
+    // 直接从本地状态中删除文件
+    const files = this.data.uploadedFiles.filter(file => file.id !== fileId);
+    this.setData({
+      uploadedFiles: files
+    });
+    wx.showToast({
+      title: '文件已删除',
+      icon: 'success'
     });
   },
 
@@ -850,38 +576,14 @@ Page({
   deleteNewsLink(e) {
     const linkId = e.currentTarget.dataset.id;
     
-    // 调用后端接口删除新闻链接
-    // 接口：DELETE /api/typical-cases/delete-news-link/{linkId}
-    wx.request({
-      url: apiConfig.buildUrl(`/app/api/news/${linkId}`),
-      method: 'DELETE',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      success: (res) => {
-        if (res.data.success) {
-          const links = this.data.newsLinks.filter(link => link.id !== linkId);
-          this.setData({
-            newsLinks: links
-          });
-          wx.showToast({
-            title: '新闻链接删除成功',
-            icon: 'success'
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '新闻链接删除失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('删除新闻链接失败:', err);
-        wx.showToast({
-          title: '新闻链接删除失败',
-          icon: 'none'
-        });
-      }
+    // 直接从本地状态中删除新闻链接
+    const links = this.data.newsLinks.filter(link => link.id !== linkId);
+    this.setData({
+      newsLinks: links
+    });
+    wx.showToast({
+      title: '新闻链接已删除',
+      icon: 'success'
     });
   },
 
@@ -889,38 +591,14 @@ Page({
   deleteVideo(e) {
     const videoId = e.currentTarget.dataset.id;
     
-    // 调用后端接口删除视频
-    // 接口：DELETE /api/typical-cases/delete-video/{videoId}
-    wx.request({
-      url: apiConfig.buildUrl(`/app/api/video/${videoId}`),
-      method: 'DELETE',
-      header: {
-        'Authorization': `Bearer ${wx.getStorageSync('token')}`
-      },
-      success: (res) => {
-        if (res.data.success) {
-          const videos = this.data.uploadedVideos.filter(video => video.id !== videoId);
-          this.setData({
-            uploadedVideos: videos
-          });
-          wx.showToast({
-            title: '视频删除成功',
-            icon: 'success'
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '视频删除失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('删除视频失败:', err);
-        wx.showToast({
-          title: '视频删除失败',
-          icon: 'none'
-        });
-      }
+    // 直接从本地状态中删除视频
+    const videos = this.data.uploadedVideos.filter(video => video.id !== videoId);
+    this.setData({
+      uploadedVideos: videos
+    });
+    wx.showToast({
+      title: '视频已删除',
+      icon: 'success'
     });
   },
 
@@ -1111,152 +789,54 @@ Page({
 
   // 提交到服务器
   submitToServer() {
-    // 注释掉开发环境保存到本地存储，进行前后端联调
-    // const apiConfig = require('../../config/api.js');
-    
     wx.showLoading({
       title: '提交中...'
     });
 
-    // 注释掉开发环境保存到本地存储并模拟提交成功，进行前后端联调
-    // if (apiConfig.isMockEnabled()) {
-    //   setTimeout(() => {
-    //     // 构建案例数据对象
-    //     const newCase = {
-    //       id: Date.now(), // 使用时间戳作为ID，确保大于2000
-    //       caseName: this.data.caseName,
-    //       title: this.data.caseName,
-    //       category: '用户上传', // 添加分类字段
-    //       uploadTime: new Date().toLocaleString(),
-    //       createDate: new Date().toISOString().split('T')[0],
-    //       updateDate: new Date().toISOString().split('T')[0], // 添加更新日期
-    //       description: `用户上传的典型案例：${this.data.caseName}`,
-    //       summary: `用户上传的典型案例：${this.data.caseName}`,
-    //       author: '当前用户',
-    //       contact: '用户联系方式',
-    //       files: this.data.uploadedFiles.map(file => ({
-    //         name: file.name,
-    //         size: file.size,
-    //         sizeFormatted: file.sizeFormatted || this.formatFileSize(file.size)
-    //       })),
-    //       videos: this.data.uploadedVideos.map(video => ({
-    //         name: video.name,
-    //         duration: video.duration || '未知时长'
-    //       })),
-    //       links: this.data.newsLinks.map(link => ({
-    //         title: link.title,
-    //         url: link.url
-    //       })),
-    //       fileCount: this.data.uploadedFiles.length,
-    //       videoCount: this.data.uploadedVideos.length,
-    //       linkCount: this.data.newsLinks.length
-    //     };
-
-    //     // 保存到本地存储
-    //     const storedCases = wx.getStorageSync('typicalCases') || [];
-    //     storedCases.push(newCase);
-    //     wx.setStorageSync('typicalCases', storedCases);
-
-    //     // 通知其他页面数据已更新
-    //     wx.setStorageSync('caseListNeedRefresh', true);
-
-    //     wx.hideLoading();
-    //     const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
-    //     wx.showModal({
-    //       title: '🎉 提交成功（开发模式）',
-    //       content: `典型案例"${this.data.caseName}"已成功提交！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n案例已保存到本地存储`,
-    //       showCancel: false,
-    //       confirmText: '完成',
-    //       success: () => {
-    //         wx.showToast({
-    //           title: '提交完成，返回上一页',
-    //           icon: 'success',
-    //           duration: 2000
-    //         });
-    //         setTimeout(() => {
-    //           wx.navigateBack();
-    //         }, 2000);
-    //       }
-    //     });
-    //   }, 2000);
-    //   return;
-    // }
-
-    // 前后端联调阶段：显示提交成功提示
-    const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
-    
-    setTimeout(() => {
-      wx.hideLoading();
-      wx.showModal({
-        title: '🎉 提交成功',
-        content: `典型案例"${this.data.caseName}"已成功提交\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n所有数据已保存`,
-        showCancel: false,
-        confirmText: '完成',
-        success: () => {
-          wx.showToast({
-            title: '提交完成，返回上一页',
-            icon: 'success',
-            duration: 2000
-          });
-          setTimeout(() => {
-            wx.navigateBack();
-          }, 2000);
-        }
+    // 按顺序调用三个上传接口：文件 → 新闻链接 → 视频
+    this.uploadFilesSequentially()
+      .then(() => {
+        console.log('文件上传完成，开始上传新闻链接');
+        return this.uploadNewsLinksSequentially();
+      })
+      .then(() => {
+        console.log('新闻链接上传完成，开始上传视频');
+        return this.uploadVideosSequentially();
+      })
+      .then(() => {
+        console.log('所有内容上传完成');
+        wx.hideLoading();
+        
+        const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
+        wx.showModal({
+          title: '🎉 提交成功',
+          content: `典型案例"${this.data.caseName}"已成功提交\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目\n\n所有数据已保存`,
+          showCancel: false,
+          confirmText: '完成',
+          success: () => {
+            wx.showToast({
+              title: '提交完成，返回上一页',
+              icon: 'success',
+              duration: 2000
+            });
+            setTimeout(() => {
+              wx.navigateBack();
+            }, 2000);
+          }
+        });
+      })
+      .catch((error) => {
+        wx.hideLoading();
+        console.error('上传失败:', error);
+        wx.showModal({
+          title: '❌ 上传失败',
+          content: `上传过程中出现错误：${error.message}\n\n请检查网络连接后重试`,
+          showCancel: false,
+          confirmText: '确定'
+        });
       });
-    }, 1000);
 
-    // 注释掉生产环境实际上传到服务器，进行前后端联调
-    // wx.request({
-    //   url: apiConfig.buildApiUrl('/api/typical-cases/submit-content'),
-    //   method: 'POST',
-    //   header: {
-    //     'Authorization': `Bearer ${wx.getStorageSync('token')}`,
-    //     'Content-Type': 'application/json'
-    //   },
-    //   data: {
-    //     caseName: this.data.caseName,
-    //     files: this.data.uploadedFiles,
-    //     newsLinks: this.data.newsLinks,
-    //     videos: this.data.uploadedVideos,
-    //     submitTime: new Date().toISOString()
-    //   },
-    //   success: (res) => {
-    //     wx.hideLoading();
-    //     if (res.data.success) {
-    //       // 显示详细的成功提示
-    //       const totalItems = this.data.uploadedFiles.length + this.data.newsLinks.length + this.data.uploadedVideos.length;
-    //       wx.showModal({
-    //         title: '🎉 提交成功',
-    //         content: `典型案例"${this.data.caseName}"已成功提交到服务器！\n\n📄 文件：${this.data.uploadedFiles.length}个\n🔗 链接：${this.data.newsLinks.length}个\n🎥 视频：${this.data.uploadedVideos.length}个\n\n总计：${totalItems}个项目`,
-    //         showCancel: false,
-    //         confirmText: '完成',
-    //         success: () => {
-    //           wx.showToast({
-    //             title: '提交完成，返回上一页',
-    //             icon: 'success',
-    //             duration: 2000
-    //           });
-    //           setTimeout(() => {
-    //             wx.navigateBack();
-    //           }, 2000);
-    //         }
-    //       });
-    //     } else {
-    //       wx.showToast({
-    //         title: res.data.message || '提交失败',
-    //         icon: 'none'
-    //       });
-    //     }
-    //   },
-    //   fail: (err) => {
-    //     wx.hideLoading();
-    //     console.error('提交失败:', err);
-    //     wx.showToast({
-    //       title: '提交失败',
-    //       icon: 'none'
-    //     });
-    //   }
-    // });
+
   },
 
   // 清空文件列表
@@ -1347,13 +927,13 @@ Page({
   // 按顺序上传文件
   uploadFilesSequentially() {
     return new Promise((resolve, reject) => {
-      if (this.data.tempFiles.length === 0) {
+      if (this.data.uploadedFiles.length === 0) {
         resolve();
         return;
       }
 
       let uploadedCount = 0;
-      const totalFiles = this.data.tempFiles.length;
+      const totalFiles = this.data.uploadedFiles.length;
 
       const uploadNextFile = (index) => {
         if (index >= totalFiles) {
@@ -1361,7 +941,7 @@ Page({
           return;
         }
 
-        const file = this.data.tempFiles[index];
+        const file = this.data.uploadedFiles[index];
         const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
         
         wx.uploadFile({
@@ -1407,13 +987,13 @@ Page({
   // 按顺序上传新闻链接
   uploadNewsLinksSequentially() {
     return new Promise((resolve, reject) => {
-      if (this.data.tempNewsLinks.length === 0) {
+      if (this.data.newsLinks.length === 0) {
         resolve();
         return;
       }
 
       let uploadedCount = 0;
-      const totalLinks = this.data.tempNewsLinks.length;
+      const totalLinks = this.data.newsLinks.length;
 
       const uploadNextLink = (index) => {
         if (index >= totalLinks) {
@@ -1421,7 +1001,7 @@ Page({
           return;
         }
 
-        const link = this.data.tempNewsLinks[index];
+        const link = this.data.newsLinks[index];
         
         wx.request({
           url: apiConfig.buildUrl('/app/api/news'),
@@ -1460,13 +1040,13 @@ Page({
   // 按顺序上传视频
   uploadVideosSequentially() {
     return new Promise((resolve, reject) => {
-      if (this.data.tempVideos.length === 0) {
+      if (this.data.uploadedVideos.length === 0) {
         resolve();
         return;
       }
 
       let uploadedCount = 0;
-      const totalVideos = this.data.tempVideos.length;
+      const totalVideos = this.data.uploadedVideos.length;
 
       const uploadNextVideo = (index) => {
         if (index >= totalVideos) {
@@ -1474,7 +1054,7 @@ Page({
           return;
         }
 
-        const video = this.data.tempVideos[index];
+        const video = this.data.uploadedVideos[index];
         const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
         
         wx.uploadFile({
