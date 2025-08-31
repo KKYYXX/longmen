@@ -319,93 +319,7 @@ Page({
 
 
 
-  // 预览文件
-  previewFile(e) {
-    const file = e.currentTarget.dataset.file;
-    const apiConfig = require('../../config/api.js');
 
-    if (apiConfig.isMockEnabled()) {
-      // 开发模式：模拟打开文件，然后显示相关链接
-      wx.showToast({
-        title: '正在打开文件...',
-        icon: 'loading',
-        duration: 1000
-      });
-
-      var self = this;
-      setTimeout(function() {
-        wx.showToast({
-          title: '文件已打开（模拟）',
-          icon: 'success',
-          duration: 1500
-        });
-
-        // 延迟显示相关链接
-        setTimeout(function() {
-          self.showRelatedLinks();
-        }, 1500);
-      }, 1000);
-      return;
-    }
-
-    if (file.fileType === 'pdf' || file.fileType === 'doc' || file.fileType === 'docx') {
-      // 使用微信文档预览
-      var self = this;
-      wx.downloadFile({
-        url: file.fileUrl,
-        success: function(res) {
-          wx.openDocument({
-            filePath: res.tempFilePath,
-            success: function() {
-              console.log('文档打开成功');
-              // 文档打开后，立即显示相关链接
-              setTimeout(function() {
-                self.showRelatedLinks();
-              }, 1000);
-            },
-            fail: function(error) {
-              console.error('文档打开失败:', error);
-              wx.showToast({
-                title: '文件打开失败',
-                icon: 'none'
-              });
-            }
-          });
-        },
-        fail: (error) => {
-          console.error('文件下载失败:', error);
-          wx.showToast({
-            title: '文件下载失败',
-            icon: 'none'
-          });
-        }
-      });
-    } else if (file.fileType === 'image') {
-      // 图片预览
-      wx.previewImage({
-        urls: [file.fileUrl],
-        current: file.fileUrl
-      });
-    } else {
-      // 其他文件类型直接下载
-      wx.downloadFile({
-        url: file.fileUrl,
-        success: (res) => {
-          wx.showToast({
-            title: '文件已下载',
-            icon: 'success'
-          });
-        },
-        fail: (error) => {
-          console.error('文件下载失败:', error);
-          wx.showToast({
-            title: '文件下载失败',
-            icon: 'none'
-          });
-        }
-      });
-    }
-  },
 
   // 播放视频
   playVideo(e) {
@@ -761,124 +675,19 @@ Page({
     });
   },
 
-  // 直接打开主文件
+  // 移除文件打开功能
   openMainFile() {
-    const caseData = this.data.caseData;
-    if (!caseData || !caseData.files || caseData.files.length === 0) {
-      wx.showToast({
-        title: '没有可打开的文件',
-        icon: 'none'
-      });
-      return;
-    }
-
-    const mainFile = caseData.files[0];
-    this.openFile(mainFile);
-  },
-
-  // 打开文件的通用方法
-  openFile(file) {
-    if (!file || !file.fileName) {
-      wx.showToast({
-        title: '文件信息不完整',
-        icon: 'none'
-      });
-      return;
-    }
-
-    // 显示加载提示
-    wx.showLoading({
-      title: '正在打开文件...'
-    });
-
-    // 根据文件类型判断打开方式
-    const fileName = file.fileName.toLowerCase();
-    const fileExtension = fileName.split('.').pop();
-
-    if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(fileExtension)) {
-      // 文档类型，使用微信文档预览
-      this.openDocument(file);
-    } else if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension)) {
-      // 图片类型，使用图片预览
-      this.previewImage(file);
-    } else if (['mp4', 'avi', 'mov', 'wmv', 'flv', '3gp'].includes(fileExtension)) {
-      // 视频类型，使用视频播放
-      this.playVideo(file);
-    } else if (['txt', 'json', 'xml', 'html', 'css', 'js'].includes(fileExtension)) {
-      // 文本类型，显示内容
-      this.showTextContent(file);
-    } else {
-      // 其他类型，提供下载选项
-      wx.hideLoading();
-      wx.showModal({
-        title: '文件类型',
-        content: `检测到 ${fileExtension.toUpperCase()} 文件，是否下载到本地？`,
-        confirmText: '下载',
-        cancelText: '取消',
-        success: (res) => {
-          if (res.confirm) {
-            this.downloadFileToLocal(file);
-          }
-        }
-      });
-    }
-  },
-
-  // 打开文档
-  openDocument(file) {
-    // 模拟文件URL（实际应用中应该从后端获取）
-    const fileUrl = file.fileUrl || `https://example.com/files/${file.fileName}`;
-
-    wx.downloadFile({
-      url: fileUrl,
-      success: (res) => {
-        wx.hideLoading();
-        wx.openDocument({
-          filePath: res.tempFilePath,
-          fileType: file.fileName.split('.').pop(),
-          success: () => {
-            console.log('文档打开成功');
-          },
-          fail: (error) => {
-            console.error('文档打开失败:', error);
-            wx.showToast({
-              title: '文档打开失败',
-              icon: 'none'
-            });
-          }
-        });
-      },
-      fail: (error) => {
-        wx.hideLoading();
-        console.error('文件下载失败:', error);
-        wx.showToast({
-          title: '文件下载失败，请检查网络',
-          icon: 'none'
-        });
-      }
+    wx.showToast({
+      title: '文件已在下方显示',
+      icon: 'none'
     });
   },
 
-  // 预览图片
-  previewImage(file) {
-    wx.hideLoading();
-    const imageUrl = file.fileUrl || `https://example.com/files/${file.fileName}`;
 
-    wx.previewImage({
-      urls: [imageUrl],
-      current: imageUrl,
-      success: () => {
-        console.log('图片预览成功');
-      },
-      fail: (error) => {
-        console.error('图片预览失败:', error);
-        wx.showToast({
-          title: '图片预览失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
+
+
+
+
 
   // 显示文本内容
   showTextContent(file) {
@@ -902,81 +711,7 @@ Page({
     });
   },
 
-  // 下载文件到本地
-  downloadFileToLocal(file) {
-    const fileUrl = file.fileUrl || `https://example.com/files/${file.fileName}`;
 
-    wx.showLoading({
-      title: '正在下载...'
-    });
-
-    wx.downloadFile({
-      url: fileUrl,
-      success: (res) => {
-        wx.saveFile({
-          tempFilePath: res.tempFilePath,
-          success: (saveRes) => {
-            wx.hideLoading();
-            wx.showToast({
-              title: '文件已保存',
-              icon: 'success'
-            });
-            console.log('文件保存路径:', saveRes.savedFilePath);
-          },
-          fail: (error) => {
-            wx.hideLoading();
-            console.error('文件保存失败:', error);
-            wx.showToast({
-              title: '文件保存失败',
-              icon: 'none'
-            });
-          }
-        });
-      },
-      fail: (error) => {
-        wx.hideLoading();
-        console.error('文件下载失败:', error);
-        wx.showToast({
-          title: '文件下载失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
-
-  // 下载文件
-  downloadFile(e) {
-    const file = e.currentTarget.dataset.file;
-    
-    wx.downloadFile({
-      url: file.fileUrl,
-      success: (res) => {
-        wx.saveFile({
-          tempFilePath: res.tempFilePath,
-          success: () => {
-            wx.showToast({
-              title: '文件已保存',
-              icon: 'success'
-            });
-          },
-          fail: (error) => {
-            console.error('文件保存失败:', error);
-            wx.showToast({
-              title: '文件保存失败',
-              icon: 'none'
-            });
-          }
-        });
-      },
-      fail: (error) => {
-        console.error('文件下载失败:', error);
-        wx.showToast({
-          title: '文件下载失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
 
   // 分享案例
   shareCase() {
@@ -1021,9 +756,17 @@ Page({
       return;
     }
 
-    // 生产模式：实际加载文件内容
-    // 这里可以调用API获取文件内容或直接打开文件
-    this.previewFile({ currentTarget: { dataset: { file: file } } });
+    // 生产模式：直接生成模拟内容，不调用预览
+    var mockContent = this.generateMockFileContent(file);
+    self.setData({
+      fileContent: mockContent
+    });
+    
+    wx.showToast({
+      title: '文件内容已加载',
+      icon: 'success',
+      duration: 1500
+    });
   },
 
   // 生成模拟文件内容

@@ -29,11 +29,11 @@ Page({
     }
   },
 
-  // 加载文档
+  // 加载文档 - 参考项目进度修改内容页面的实现
   loadDocument: function(url) {
     console.log('开始加载文档:', url);
     
-    // 如果是 wxfile:// 链接，提取真实路径
+    // 参考项目进度修改内容页面的逻辑，直接使用URL
     const filePath = url.startsWith('wxfile://') ? url.replace('wxfile://', '') : url;
     
     wx.showLoading({
@@ -72,6 +72,8 @@ Page({
       }
     });
   },
+
+
 
   // 显示备用选项
   showAlternativeOptions: function(url) {

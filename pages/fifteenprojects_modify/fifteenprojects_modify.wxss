@@ -1626,6 +1626,21 @@ picker .form-input {
   font-weight: bold;
 }
 
+.media-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12rpx;
+  cursor: pointer;
+  z-index: 1;
+}
+
 .upload-btn {
   background: linear-gradient(135deg, #F5E6A3 0%, #E8D5A3 100%);
   color: #6D4C41;
@@ -1935,4 +1950,173 @@ picker .form-input {
   color: #2E7D32;
   font-weight: 500;
   line-height: 1.5;
+}
+
+/* 添加内容预览样式 */
+.added-images {
+  margin-top: 20rpx;
+}
+
+.media-label {
+  display: block;
+  font-size: 28rpx;
+  color: #666666;
+  margin-bottom: 15rpx;
+  font-weight: 500;
+}
+
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+}
+
+.image-item {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+  object-fit: cover;
+  border: 2rpx solid rgba(232, 213, 163, 0.3);
+}
+
+.image-remove {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  width: 32rpx;
+  height: 32rpx;
+  background: #ff4444;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.added-videos {
+  margin-top: 20rpx;
+}
+
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.video-item {
+  position: relative;
+  width: 100%;
+  height: 200rpx;
+}
+
+.preview-video {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+  object-fit: cover;
+  border: 2rpx solid rgba(232, 213, 163, 0.3);
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12rpx;
+  cursor: pointer;
+}
+
+.play-icon {
+  font-size: 48rpx;
+  color: white;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+}
+
+.video-remove {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  width: 32rpx;
+  height: 32rpx;
+  background: #ff4444;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.added-documents {
+  margin-top: 20rpx;
+}
+
+.document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12rpx;
+  border: 2rpx solid rgba(232, 213, 163, 0.3);
+}
+
+.document-info {
+  flex: 1;
+}
+
+.document-name {
+  display: block;
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.document-size {
+  display: block;
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.document-actions {
+  display: flex;
+  gap: 15rpx;
+}
+
+.preview-btn {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.other-items {
+  margin-top: 20rpx;
 }
