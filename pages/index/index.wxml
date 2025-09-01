@@ -8,7 +8,7 @@
     <view class="city-emblem">
       <text class="emblem-icon">🏛️</text>
     </view>
-    <text class="app-title">龙门政府数据管理平台</text>
+    <text class="app-title">龙门“双百行动”数据管理平台</text>
     <text class="app-subtitle">智能管理 · 高效服务 · 安全保障</text>
     
     <!-- 装饰元素 -->
@@ -21,7 +21,7 @@
     <!-- 功能按钮区域 - 整合了双方设计的优势 -->
     <view class="feature-buttons">
       <!-- 功能按钮1 -->
-      <view class="feature-card" bindtap="goToTypicalCases">
+      <view class="feature-card" bindtap="goToTypicalCases" style="position: relative; left: 2rpx; top: 519rpx">
         <view class="icon-container">
           <text class="feature-icon">📖</text>
         </view>
@@ -32,18 +32,18 @@
       </view>
       
       <!-- 功能按钮2 -->
-      <view class="feature-card" bindtap="goToFifteenProjects" style="position: relative; left: 0rpx; top: -1rpx">
+      <view class="feature-card" bindtap="goToFifteenProjects" style="position: relative; left: 5rpx; top: -20rpx">
         <view class="icon-container">
           <text class="feature-icon">📋</text>
         </view>
         <view class="feature-info">
-          <text class="feature-title">十五项项目</text>
+          <text class="feature-title">项目清单</text>
           <text class="feature-desc">重点任务追踪、责任落实监督、进度管理控制</text>
         </view>
       </view>
       
       <!-- 功能按钮3 -->
-      <view class="feature-card" bindtap="goToPolicyDocuments">
+      <view class="feature-card" bindtap="goToPolicyDocuments" style="position: relative; left: 9rpx; top: -560rpx">
         <view class="icon-container">
           <text class="feature-icon">📄</text>
         </view>

@@ -24,7 +24,7 @@ Page({
   },
 
   onLoad: function() {
-    console.log('十五项项目查询页面加载');
+    console.log('项目清单查询页面加载');
     this.loadProjectList();
     
     // 测试接口连接
@@ -67,7 +67,7 @@ Page({
   },
 
   onShow: function() {
-    console.log('十五项项目查询页面显示');
+    console.log('项目清单查询页面显示');
 
     // 检查是否有新添加的项目
     const app = getApp();
