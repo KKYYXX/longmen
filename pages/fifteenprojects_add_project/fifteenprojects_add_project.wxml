@@ -62,8 +62,11 @@
           range="{{item.options}}"
           data-field="{{item.key}}"
         >
-          <view class="picker-display">
+          <!--<view class="picker-display">
             {{projectData[item.key] || '请选择' + item.name}}
+          </view>-->
+          <view class="picker-display">
+            {{projectData[item.key] || (item.placeholder || '请选择' + item.name)}}
           </view>
         </picker>
 

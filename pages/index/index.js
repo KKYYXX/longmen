@@ -68,6 +68,16 @@ Page({
     });
   },
 
+  goToWorkSummy(){
+    wx.navigateTo({  // 已修正拼写
+      url: '/pages/worksummy/worksummy',
+      success: () => {},
+      fail: (err) => {
+        console.error('页面跳转失败:', err);
+      }
+    });
+  },
+
   // 首页tab点击事件
   onHomeTab() {
     console.log('点击首页tab');

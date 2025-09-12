@@ -116,12 +116,14 @@ page {
 }
 
 /* 功能卡片 - 整合原有按钮样式的视觉效果 */
+
 .feature-buttons {
   display: flex;
   flex-direction: column;
   gap: 40rpx;
   margin-top: 20rpx;
 }
+
 
 .feature-card {
   background: #ffffff;
@@ -140,6 +142,7 @@ page {
   box-sizing: border-box;
   margin-left: -40rpx;
 }
+
 
 /* 卡片内渐变高光 */
 .feature-card::before {

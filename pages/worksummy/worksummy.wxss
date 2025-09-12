@@ -1,0 +1,45 @@
+/* 页面整体 */
+.container {
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+/* 标题 */
+.title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 40rpx;
+  color: #333;
+}
+
+/* 卡片按钮样式 */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+}
+
+/* 卡片内容 */
+.card-content {
+  display: flex;
+  align-items: center;
+}
+
+/* 图标 */
+.icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+}
+
+/* 学校文字 */
+.card-text {
+  font-size: 30rpx;
+  color: #333;
+}

@@ -20,6 +20,8 @@ Page({
       { name: '项目内容和落实举措', key: 'content', type: 'textarea', required: true, placeholder: '请输入项目内容和落实举措' },
       { name: '主要任务目标', key: 'objectives', type: 'textarea', required: true, placeholder: '请输入主要任务目标' },
       { name: '联系人信息', key: 'contacts', type: 'contacts', required: true, placeholder: '添加联系人' },
+      { name: '是否属于广东财经大学', key: 'isgdufe', type: 'select', required: true, options: ['0', '1'], placeholder: '是填"1",否填"0"' },
+      { name: '是否属于广东工贸职业技术学院', key: 'isgdpic', type: 'select', required: true, options: ['0', '1'], placeholder: '是填"1",否填"0"' },
       { name: '备注', key: 'remarks', type: 'textarea', required: false, placeholder: '请输入备注信息' },
 
     ],
@@ -205,7 +207,9 @@ Page({
       objectives: projectData.objectives,
       contacts: this.formatContactsForDatabase(this.data.contacts),
       remarks: projectData.remarks,
-      progress: projectData.progress || 0
+      progress: projectData.progress || 0,
+      is_gdpic: projectData.isEnabled, //新的
+      is_gdufe: projectData.isEnabled,// 新增映射，字段名根据后端需求调整
     };
 
     console.log('准备提交的项目数据:', submitData);

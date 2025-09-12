@@ -36,7 +36,8 @@
     "pages/项目进度修改权限人员/项目进度修改权限人员",
     "pages/项目进度内容/项目进度内容",
     "pages/document-viewer/document-viewer",
-    "pages/登录后的页面/登录后的页面"
+    "pages/登录后的页面/登录后的页面",
+    "pages/worksummy/worksummy"
   ],
   "window": {
     "backgroundTextStyle": "light",

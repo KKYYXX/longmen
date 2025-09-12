@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="title">请选择学校</view>
+
+  <!-- 学校按钮卡片 -->
+  <view class="card" bindtap="showProjectCount" data-school="gdczdx">
+    <view class="card-content">
+      <image class="icon" src="/assets/school.png"></image>
+      <text class="card-text">广东财经大学</text>
+    </view>
+  </view>
+
+  <view class="card" bindtap="showProjectCount" data-school="gdgmzyjsxy">
+    <view class="card-content">
+      <image class="icon" src="/assets/school.png"></image>
+      <text class="card-text">广东工贸职业技术学院</text>
+    </view>
+  </view>
+</view>

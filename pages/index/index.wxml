@@ -21,35 +21,46 @@
     <!-- 功能按钮区域 - 整合了双方设计的优势 -->
     <view class="feature-buttons">
       <!-- 功能按钮1 -->
-      <view class="feature-card" bindtap="goToTypicalCases" style="position: relative; left: 2rpx; top: 519rpx">
+      <view class="feature-card" bindtap="goToTypicalCases">
         <view class="icon-container">
           <text class="feature-icon">📖</text>
         </view>
         <view class="feature-info">
           <text class="feature-title">典型案例</text>
-          <text class="feature-desc">优秀实践成果展示，经验分享学习平台，创新解决方案库</text>
+          <text class="feature-desc">优秀实践成果展示</text>
         </view>
       </view>
       
       <!-- 功能按钮2 -->
-      <view class="feature-card" bindtap="goToFifteenProjects" style="position: relative; left: 5rpx; top: -20rpx">
+      <view class="feature-card" bindtap="goToFifteenProjects">
         <view class="icon-container">
           <text class="feature-icon">📋</text>
         </view>
         <view class="feature-info">
           <text class="feature-title">项目清单</text>
-          <text class="feature-desc">重点任务追踪、责任落实监督、进度管理控制</text>
+          <text class="feature-desc">重点任务追踪</text>
         </view>
       </view>
       
       <!-- 功能按钮3 -->
-      <view class="feature-card" bindtap="goToPolicyDocuments" style="position: relative; left: 9rpx; top: -560rpx">
+      <view class="feature-card" bindtap="goToPolicyDocuments">
         <view class="icon-container">
           <text class="feature-icon">📄</text>
         </view>
         <view class="feature-info">
           <text class="feature-title">政策文件</text>
-          <text class="feature-desc">最新政府公告、政策法规库、文件查阅下载</text>
+          <text class="feature-desc">最新政府公告</text>
+        </view>
+      </view>
+
+       <!-- 功能按钮4 -->
+       <view class="feature-card" bindtap="goToWorkSummy">
+        <view class="icon-container">
+          <text class="feature-icon">📄</text>
+        </view>
+        <view class="feature-info">
+          <text class="feature-title">工作总结</text>
+          <text class="feature-desc">项目工作统计总结</text>
         </view>
       </view>
     </view>
