@@ -42,6 +42,48 @@ const apiConfig = {
     return this.baseUrl + cleanPath;
   },
 
+  // 构建标准API接口URL（使用/api前缀）
+  buildStandardUrl: function(path) {
+    if (!path) return this.baseUrl + '/api';
+    
+    // 如果path已经是完整URL，直接返回
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    
+    // 确保path以/开头
+    const cleanPath = path.startsWith('/') ? path : '/' + path;
+    return this.baseUrl + '/api' + cleanPath;
+  },
+
+  // 构建应用接口URL（使用/app前缀）
+  buildAppUrl: function(path) {
+    if (!path) return this.baseUrl + '/app';
+    
+    // 如果path已经是完整URL，直接返回
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    
+    // 确保path以/开头
+    const cleanPath = path.startsWith('/') ? path : '/' + path;
+    return this.baseUrl + '/app' + cleanPath;
+  },
+
+  // 构建用户接口URL（使用/user前缀）
+  buildUserUrl: function(path) {
+    if (!path) return this.baseUrl + '/user';
+    
+    // 如果path已经是完整URL，直接返回
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    
+    // 确保path以/开头
+    const cleanPath = path.startsWith('/') ? path : '/' + path;
+    return this.baseUrl + '/user' + cleanPath;
+  },
+
   // 构建文件访问URL
   buildFileUrl: function(filename) {
     if (!filename) return this.baseUrl;
