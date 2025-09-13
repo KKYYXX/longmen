@@ -1360,7 +1360,7 @@ Page({
     console.log('开始保存进度数据到数据库:', progressData);
 
     // 验证必要参数
-    if (!progressData.project_name || !progressData.practice_time || !progressData.practice_location || !progressData.practice_members) {
+    if (!progressData.project_name || !progressData.practice_time || !progressData.practice_location || !progressData.practice_members || !progressData.news) {
       wx.hideLoading();
       wx.showModal({
         title: '参数不完整',
