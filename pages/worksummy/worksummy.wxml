@@ -1,18 +1,50 @@
-<view class="container">
-  <view class="title">请选择学校</view>
-
-  <!-- 学校按钮卡片 -->
-  <view class="card" bindtap="showProjectCount" data-school="gdczdx">
-    <view class="card-content">
-      <image class="icon" src="/assets/school.png"></image>
-      <text class="card-text">广东财经大学</text>
-    </view>
+<!-- 学校选择页面 -->
+<view class="worksummy-container">
+  <view class="page-header">
+    <text class="page-title">请选择要查看项目统计的学校</text>
+    <!--<text class="page-subtitle">请选择要查看项目统计的学校</text>-->
   </view>
+  
+  <!-- 学校列表 -->
+  <view class="school-list">
+    <view 
+      class="school-item" 
+      bindtap="showProjectCount" 
+      data-school="gdczdx"
+    >
+      <view class="school-info">
+        <!--<view class="school-icon">🏫</view>-->
+        <view class="school-details">
+          <view class="school-name">广东财经大学</view>
+          <view class="school-meta">
+            <!--<text class="school-type">本科院校</text>
+            <text class="school-location">广州</text>-->
+          </view>
+        </view>
+      </view>
+      <view class="school-actions">
+        <view class="select-btn">查看</view>
+      </view>
+    </view>
 
-  <view class="card" bindtap="showProjectCount" data-school="gdgmzyjsxy">
-    <view class="card-content">
-      <image class="icon" src="/assets/school.png"></image>
-      <text class="card-text">广东工贸职业技术学院</text>
+    <view 
+      class="school-item" 
+      bindtap="showProjectCount" 
+      data-school="gdgmzyjsxy"
+    >
+      <view class="school-info">
+        <!--<view class="school-icon">🏫</view>-->
+        <view class="school-details">
+          <view class="school-name">广东工贸职业技术学院</view>
+          <view class="school-meta">
+            <!--<text class="school-type">高职院校</text>
+            <text class="school-location">广州</text>-->
+          </view>
+        </view>
+      </view>
+      <view class="school-actions">
+        <view class="select-btn">查看</view>
+      </view>
     </view>
   </view>
 </view>

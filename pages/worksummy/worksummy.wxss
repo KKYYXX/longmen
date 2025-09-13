@@ -1,45 +1,102 @@
-/* 页面整体 */
-.container {
-  background-color: #f8f8f8;
+/* 学校选择页面样式 */
+
+.worksummy-container {
   min-height: 100vh;
-  padding: 30rpx;
+  background: #ffffff;
+  padding: 0;
   box-sizing: border-box;
 }
 
-/* 标题 */
-.title {
-  font-size: 32rpx;
+.page-header {
+  text-align: center;
+  padding: 40rpx;
+  background: #f8f9fa;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.page-title {
+  display: block;
+  font-size: 36rpx;
   font-weight: bold;
-  margin-bottom: 40rpx;
-  color: #333;
+  color: #333333;
+  margin-bottom: 8rpx;
 }
 
-/* 卡片按钮样式 */
-.card {
-  background: #fff;
+.page-subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #666666;
+}
+
+/* 学校列表 */
+.school-list {
+  padding: 20rpx 0;
+}
+
+.school-item {
+  margin: 0 40rpx 20rpx 40rpx;
+  background: #ffffff;
   border-radius: 16rpx;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  padding: 30rpx 40rpx;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
-/* 卡片内容 */
-.card-content {
+.school-info {
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
-/* 图标 */
-.icon {
-  width: 40rpx;
-  height: 40rpx;
+.school-icon {
+  font-size: 40rpx;
   margin-right: 20rpx;
 }
 
-/* 学校文字 */
-.card-text {
-  font-size: 30rpx;
-  color: #333;
+.school-details {
+  flex: 1;
+}
+
+.school-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.school-meta {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.school-type, .school-location {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.school-actions {
+  display: flex;
+  align-items: center;
+}
+
+.select-btn {
+  padding: 16rpx 32rpx;
+  font-size: 28rpx;
+  border-radius: 8rpx;
+  background: #f1a464;
+  color: #ffffff;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.school-item:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
 }
