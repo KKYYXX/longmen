@@ -111,7 +111,8 @@
                 </view>
             </view>
               
-            <!-- 视频区域 -->
+            <!-- 视频区域（已注释：视频播放功能被禁用） -->
+            <!--
             <view class="media-section">
                 <view class="media-header">
                     <text class="media-icon">🎥</text>
@@ -128,6 +129,7 @@
                     </view>
                 </view>
             </view>
+            -->
              
             <!-- 新闻稿区域 -->
             <view class="media-section">

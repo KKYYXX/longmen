@@ -326,10 +326,11 @@ Page({
     // 获取视频信息
     this.fetchVideoInfo(caseData.model_name, (videos) => {
       if (videos && videos.length > 0) {
-        // 跳转到视频播放页面
-        const videoUrl = videos[0].video_url;
-        wx.navigateTo({
-          url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(caseData.title)}`
+        // 视频播放功能已被禁用
+        wx.showToast({
+          title: '视频播放功能已被禁用',
+          icon: 'none',
+          duration: 2000
         });
       } else {
         wx.showToast({

@@ -640,56 +640,11 @@ Page({
 
   // 上传视频
   uploadVideo() {
-    // 显示选择来源的弹窗
-    wx.showActionSheet({
-      itemList: ['从相册选择', '从聊天记录选择', '拍摄视频'],
-      success: (res) => {
-        let sourceType = [];
-        switch (res.tapIndex) {
-          case 0: // 相册
-            sourceType = ['album'];
-            break;
-          case 1: // 聊天记录
-            sourceType = ['album']; // 微信会自动显示聊天记录选项
-            break;
-          case 2: // 拍摄
-            sourceType = ['camera'];
-            break;
-          default:
-            return;
-        }
-        
-        wx.chooseVideo({
-          sourceType: sourceType,
-          maxDuration: 60,
-          camera: 'back',
-          success: (res) => {
-            console.log('选择的视频文件:', res);
-            
-            // 直接添加到列表，不立即上传，等保存时统一上传
-            this.addItem({
-              type: '视频',
-              name: `视频${this.data.addedItems.length + 1}_${Date.now()}.mp4`,
-              path: res.tempFilePath, // 保存临时路径，等待统一上传
-              size: res.size,
-              sizeText: fileUpload.formatFileSize(res.size),
-              duration: res.duration
-            });
-
-            wx.showToast({
-              title: '已添加视频',
-              icon: 'success'
-            });
-          },
-          fail: (err) => {
-            console.error('选择视频失败:', err);
-            wx.showToast({
-              title: '选择视频失败',
-              icon: 'none'
-            });
-          }
-        });
-      }
+    // 视频上传功能已注释并禁用
+    wx.showToast({
+      title: '视频上传功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
@@ -974,9 +929,11 @@ Page({
         return;
       }
       
-      // 使用微信小程序的视频播放器
-      wx.navigateTo({
-        url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(item.name || '视频预览')}`
+      // 视频播放功能已被禁用
+      wx.showToast({
+        title: '视频播放功能已被禁用',
+        icon: 'none',
+        duration: 2000
       });
     }
   },
@@ -1359,12 +1316,12 @@ Page({
   saveProgressDataToDatabase(progressData) {
     console.log('开始保存进度数据到数据库:', progressData);
 
-    // 验证必要参数
-    if (!progressData.project_name || !progressData.practice_time || !progressData.practice_location || !progressData.practice_members || !progressData.news) {
+    // 验证必要参数（news 非必填，只校验项目名、时间、地点、人员）
+    if (!progressData.project_name || !progressData.practice_time || !progressData.practice_location || !progressData.practice_members||!progressData.news) {
       wx.hideLoading();
       wx.showModal({
         title: '参数不完整',
-        content: '请确保添加了：时间、地点、人员等必要内容',
+        content: '请确保添加了：时间、地点、人员、新闻稿等必要内容',
         showCancel: false
       });
       return;
@@ -2644,9 +2601,11 @@ Page({
       return;
     }
     
-    // 使用微信小程序的视频播放器
-    wx.navigateTo({
-      url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(videoName)}`
+    // 视频播放功能已被禁用
+    wx.showToast({
+      title: '视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 

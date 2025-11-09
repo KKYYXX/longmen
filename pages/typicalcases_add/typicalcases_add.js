@@ -386,175 +386,28 @@ Page({
       return;
     }
 
-    // 显示选择来源的弹窗
-    wx.showActionSheet({
-      itemList: ['从相册选择', '从聊天记录选择', '拍摄视频'],
-      success: (res) => {
-        let sourceType = [];
-        switch (res.tapIndex) {
-          case 0: // 相册
-            sourceType = ['album'];
-            break;
-          case 1: // 聊天记录
-            sourceType = ['album']; // 微信会自动显示聊天记录选项
-            break;
-          case 2: // 拍摄
-            sourceType = ['camera'];
-            break;
-          default:
-            return;
-        }
-        
-        wx.chooseMedia({
-          count: 3,
-          mediaType: ['video'],
-          sourceType: sourceType,
-          maxDuration: 300, // 最大5分钟
-          success: (res) => {
-            this.uploadVideosToServer(res.tempFiles);
-          },
-          fail: (err) => {
-            console.error('选择视频失败:', err);
-            wx.showToast({
-              title: '选择视频失败',
-              icon: 'none'
-            });
-          }
-        });
-      }
+    // 视频上传功能已注释并禁用
+    wx.showToast({
+      title: '视频上传功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
   // 上传视频到服务器
   uploadVideosToServer(videos) {
-    // 参数验证：检查视频是否存在且有效
-    if (!videos || videos.length === 0) {
-      wx.showToast({
-        title: '没有选择视频',
-        icon: 'none'
-      });
-      return;
-    }
-
-    const video = videos[0];
-    
-    // 检查视频的必要属性 - 兼容不同的视频路径属性
-    let videoPath = video.tempFilePath || video.path;
-    if (!videoPath) {
-      console.error('视频路径为空，视频对象:', video);
-      wx.showToast({
-        title: '视频路径无效，请重新选择视频',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (!video.size || video.size <= 0) {
-      console.error('视频大小无效:', video);
-      wx.showToast({
-        title: '视频大小无效，请重新选择视频',
-        icon: 'none'
-      });
-      return;
-    }
-
-    console.log('准备保存视频到本地状态:', {
-      size: video.size,
-      videoPath: videoPath,
-      duration: video.duration,
-      videoObject: video
-    });
-
-    // 只保存到本地状态，不调用上传接口
-    const tempVideo = {
-      id: Date.now(),
-      name: video.name || `视频_${Date.now()}.mp4`,
-      tempFilePath: videoPath, // 保存临时路径
-      size: video.size,
-      sizeFormatted: this.formatFileSize(video.size),
-      duration: video.duration || 60,
-      uploadTime: new Date().toISOString()
-    };
-
-    this.setData({
-      uploadedVideos: [...this.data.uploadedVideos, tempVideo]
-    });
-
-    // 显示成功提示
-    wx.showModal({
-      title: '✅ 视频已添加',
-      content: `视频"${tempVideo.name}"已添加到预览列表\n\n视频大小：${tempVideo.sizeFormatted}\n视频时长：${tempVideo.duration}秒\n\n点击"提交所有内容"时将统一上传`,
-      showCancel: false,
-      confirmText: '确定',
-      success: () => {
-        wx.showToast({
-          title: '视频已添加到预览列表',
-          icon: 'success',
-          duration: 2000
-        });
-      }
+    // 视频上传到服务器相关逻辑已注释并禁用
+    wx.showToast({
+      title: '视频上传功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
   // 保存视频信息到后端
   saveVideoInfoToBackend(video, videoUrl) {
-    // 调用后端 /api/video 接口保存视频信息
-    wx.request({
-      url: apiConfig.buildUrl('/app/api/video'),
-      method: 'POST',
-      header: {
-        'Content-Type': 'application/json'
-      },
-      data: {
-        model_name: this.data.caseName, // 典型案例名称
-        video_url: videoUrl // 视频URL
-      },
-      success: (res) => {
-        if (res.data.success) {
-          // 添加到已上传视频列表
-          const uploadedVideo = {
-            id: res.data.data.id,
-            name: video.name || `视频_${Date.now()}.mp4`,
-            url: videoUrl,
-            size: video.size,
-            sizeFormatted: this.formatFileSize(video.size),
-            duration: video.duration,
-            uploadTime: new Date().toISOString()
-          };
-
-          this.setData({
-            uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
-          });
-
-          // 显示成功提示
-          wx.showModal({
-            title: '✅ 视频上传成功',
-            content: `视频"${uploadedVideo.name}"已成功上传并保存\n\n视频大小：${uploadedVideo.sizeFormatted}\n视频时长：${uploadedVideo.duration}秒`,
-            showCancel: false,
-            confirmText: '确定',
-            success: () => {
-              wx.showToast({
-                title: '视频已添加到预览列表',
-                icon: 'success',
-                duration: 2000
-              });
-            }
-          });
-        } else {
-          wx.showToast({
-            title: res.data.message || '保存视频信息失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('保存视频信息失败:', err);
-        wx.showToast({
-          title: '保存视频信息失败',
-          icon: 'none'
-        });
-      }
-    });
+    // 保存视频信息到后端的逻辑已注释并禁用
+    console.warn('saveVideoInfoToBackend 已被禁用');
   },
 
   // 删除已上传的文件
@@ -702,9 +555,11 @@ Page({
 
   // 预览视频
   previewVideo(e) {
-    const video = e.currentTarget.dataset.video;
-    wx.navigateTo({
-      url: `/pages/video-player/video-player?url=${encodeURIComponent(video.url)}&title=${encodeURIComponent(video.name)}`
+    // 视频预览/播放已禁用
+    wx.showToast({
+      title: '视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
@@ -1103,61 +958,7 @@ Page({
 
   // 按顺序上传视频
   uploadVideosSequentially() {
-    return new Promise((resolve, reject) => {
-      if (this.data.uploadedVideos.length === 0) {
-        resolve();
-        return;
-      }
-
-      let uploadedCount = 0;
-      const totalVideos = this.data.uploadedVideos.length;
-
-      const uploadNextVideo = (index) => {
-        if (index >= totalVideos) {
-          resolve();
-          return;
-        }
-
-        const video = this.data.uploadedVideos[index];
-        const uploadServerUrl = apiConfig.buildUrl('/app/api/upload');
-        
-        wx.uploadFile({
-          url: uploadServerUrl,
-          filePath: video.tempFilePath,
-          name: 'file',
-          header: {
-            'Authorization': `Bearer ${wx.getStorageSync('token')}`
-          },
-          formData: {
-            fileType: 'video'
-          },
-          success: (res) => {
-            try {
-              const result = JSON.parse(res.data);
-              if (result.success) {
-                // 视频上传成功后，调用后端接口保存视频信息
-                this.saveVideoInfoToBackend(video, result.file_url);
-                uploadedCount++;
-                
-                if (uploadedCount === totalVideos) {
-                  resolve();
-                } else {
-                  uploadNextVideo(index + 1);
-                }
-              } else {
-                reject(new Error(result.message || '视频上传失败'));
-              }
-            } catch (e) {
-              reject(new Error('视频上传响应解析失败'));
-            }
-          },
-          fail: (err) => {
-            reject(new Error('视频上传失败：' + err.errMsg));
-          }
-        });
-      };
-
-      uploadNextVideo(0);
-    });
+    // 视频批量上传逻辑已注释并禁用，直接返回 resolved
+    return Promise.resolve();
   }
 });

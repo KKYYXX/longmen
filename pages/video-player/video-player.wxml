@@ -9,6 +9,8 @@
   </view>
 
   <view class="video-player-container">
+    <!-- 视频播放组件已注释，视频功能被禁用 -->
+    <!--
     <video 
       class="video-player"
       src="{{videoUrl}}"
@@ -41,6 +43,10 @@
       bindtap="onVideoTap"
       bindlongtap="onVideoLongTap">
     </video>
+    -->
+    <view class="video-disabled">
+      <text>视频播放功能已被禁用。</text>
+    </view>
   </view>
 
   <view class="video-info">

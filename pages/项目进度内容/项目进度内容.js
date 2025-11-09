@@ -663,11 +663,12 @@ Page({
           .filter(url => url.length > 0);
       }
       
-      // 处理视频数据
+      /* 视频相关数据处理已注释，视频功能已被禁用
       let videos = [];
       if (item.video_url) {
         videos = [item.video_url.trim()];
       }
+      */
       
       // 处理新闻稿文件数据 - 完全参考十五项项目修改页面的文件格式
       let newsFiles = [];
@@ -822,16 +823,11 @@ Page({
         }
       });
     } else if (['mp4', 'avi', 'mov', 'wmv', 'flv', '3gp', 'm4v'].includes(fileExt)) {
-      // 视频文件，使用video组件播放
-      wx.navigateTo({
-        url: `/pages/video-player/video-player?url=${encodeURIComponent(realPath)}&title=${encodeURIComponent('现场视频')}`,
-        fail: (err) => {
-          console.error('跳转视频播放页面失败:', err);
-          wx.showToast({
-            title: '无法播放视频',
-            icon: 'none'
-          });
-        }
+      // 视频文件，播放功能已被禁用
+      wx.showToast({
+        title: '视频播放功能已被禁用',
+        icon: 'none',
+        duration: 2000
       });
     } else {
       // 文档文件，跳转到专门的文档预览页面
@@ -896,31 +892,12 @@ Page({
     });
   },
 
-  // 视频播放功能 - 参考十五项项目修改页面的实现
+  // 视频播放功能已注释并禁用
   playVideo: function(e) {
-    const url = e.currentTarget.dataset.url;
-    
-    console.log('播放视频:', url);
-    
-    if (!url) {
-      wx.showToast({
-        title: '视频地址无效',
-        icon: 'none'
-      });
-      return;
-    }
-
-    // 跳转到专用视频播放页面
-    wx.navigateTo({
-      url: `/pages/video-player/video-player?url=${encodeURIComponent(url)}&title=${encodeURIComponent('现场视频')}`,
-      success: () => {
-        console.log('跳转视频播放页面成功');
-      },
-      fail: (err) => {
-        console.error('跳转视频播放页面失败:', err);
-        // 如果跳转失败，尝试调用之前的 handleLocalFile 逻辑
-        this.handleLocalFile(`wxfile://${url.replace('wxfile://', '')}`);
-      }
+    wx.showToast({
+      title: '视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
@@ -1150,74 +1127,21 @@ Page({
     });
   },
 
-  // 播放本地视频
+  // 播放本地视频功能已注释并禁用
   playLocalVideo: function(filePath) {
-    console.log('尝试播放视频:', filePath);
-    
-    wx.showLoading({
-      title: '加载视频中...',
-      mask: true
-    });
-
-    // 先检查文件是否存在
-    wx.getFileInfo({
-      filePath: filePath,
-      success: (fileInfo) => {
-        console.log('视频文件信息:', fileInfo);
-        wx.hideLoading();
-        
-        // 跳转到专用视频播放页面
-        wx.navigateTo({
-          url: `/pages/video-player/video-player?url=${encodeURIComponent(filePath)}&title=${encodeURIComponent('现场视频')}`,
-          success: () => {
-            console.log('跳转视频播放页面成功');
-          },
-          fail: (err) => {
-            console.error('跳转视频播放页面失败:', err);
-            // 如果跳转失败，尝试在当前页面播放
-            this.playVideoInCurrentPage(filePath);
-          }
-        });
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.error('获取视频文件信息失败:', err);
-        wx.showModal({
-          title: '视频无法访问',
-          content: `视频文件可能已被删除或移动\n\n文件路径：${filePath}\n\n您可以尝试：\n1. 在微信聊天中查找原视频\n2. 重新上传视频`,
-          showCancel: true,
-          cancelText: '关闭',
-          confirmText: '复制路径',
-          success: (res) => {
-            if (res.confirm) {
-              this.copyFilePath(`wxfile://${filePath}`);
-            }
-          }
-        });
-      }
+    wx.showToast({
+      title: '本地视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
-  // 在当前页面播放视频（备用方案）
+  // 在当前页面播放视频（备用方案）已注释并禁用
   playVideoInCurrentPage: function(filePath) {
-    wx.showModal({
-      title: '视频播放',
-      content: `准备播放视频文件\n\n如果无法正常播放，建议：\n1. 复制路径到微信聊天中播放\n2. 使用其他视频播放器`,
-      showCancel: true,
-      cancelText: '取消',
-      confirmText: '尝试播放',
-      success: (res) => {
-        if (res.confirm) {
-          // 这里可以添加在当前页面显示video组件的逻辑
-          // 或者复制路径让用户在微信中打开
-          this.copyFilePath(`wxfile://${filePath}`);
-          wx.showToast({
-            title: '路径已复制，请在微信中打开',
-            icon: 'none',
-            duration: 3000
-          });
-        }
-      }
+    wx.showToast({
+      title: '视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
@@ -1410,47 +1334,13 @@ Page({
     });
   },
 
-  // 处理视频文件
+  // 处理视频文件功能已注释并禁用
   handleVideoFile: function(url) {
-    const isNetworkVideo = url.startsWith('http://') || url.startsWith('https://');
-    
-    if (isNetworkVideo) {
-      // 网络视频，尝试使用视频播放器
-      wx.navigateTo({
-        url: `/pages/video-player/video-player?url=${encodeURIComponent(url)}`,
-        fail: (err) => {
-          console.error('跳转视频播放器失败:', err);
-          // 失败则使用webview
-          this.openInWebView(url);
-        }
-      });
-    } else {
-      // 本地视频文件
-      wx.showModal({
-        title: '视频文件',
-        content: `文件：${url}\n\n这是一个本地视频文件。请选择操作：`,
-        showCancel: true,
-        cancelText: '复制路径',
-        confirmText: '尝试播放',
-        success: (res) => {
-          if (res.confirm) {
-            // 尝试播放
-            this.openInWebView(url);
-          } else {
-            // 复制路径
-            wx.setClipboardData({
-              data: url,
-              success: () => {
-                wx.showToast({
-                  title: '路径已复制',
-                  icon: 'success'
-                });
-              }
-            });
-          }
-        }
-      });
-    }
+    wx.showToast({
+      title: '视频相关功能已被禁用',
+      icon: 'none',
+      duration: 2000
+    });
   },
 
   // 处理图片文件

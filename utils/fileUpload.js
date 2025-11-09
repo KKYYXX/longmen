@@ -9,10 +9,10 @@ const FILE_CONFIG = {
     maxSize: 10 * 1024 * 1024, // 10MB
     allowedTypes: ['jpg', 'jpeg', 'png', 'gif', 'webp']
   },
-  video: {
+  /* video: {
     maxSize: 100 * 1024 * 1024, // 100MB
     allowedTypes: ['mp4', 'avi', 'mov', 'wmv', 'flv']
-  },
+  }, */
   document: {
     maxSize: 50 * 1024 * 1024, // 50MB
     allowedTypes: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt']
@@ -226,7 +226,10 @@ function uploadImage(filePath, fileName) {
  * @returns {Promise} 返回上传结果
  */
 function uploadVideo(filePath, fileName) {
+  /* 视频上传功能已注释，避免执行视频相关上传逻辑
   return uploadFileToServer(filePath, fileName, 'video');
+  */
+  return Promise.reject(new Error('视频上传功能已被禁用'));
 }
 
 /**
@@ -265,7 +268,7 @@ module.exports = {
   uploadFileToServer,
   uploadMultipleFiles,
   uploadImage,
-  uploadVideo,
+  // uploadVideo, // 已注释：视频上传功能被禁用
   uploadDocument,
   getFileUrl,
   validateFile,

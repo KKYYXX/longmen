@@ -1116,8 +1116,11 @@ Page({
       return;
     }
 
-    wx.navigateTo({
-      url: `/pages/video-player/video-player?url=${encodeURIComponent(video.videoUrl)}&title=${encodeURIComponent(video.videoName)}`
+    // 视频播放功能已被禁用
+    wx.showToast({
+      title: '视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 

@@ -882,8 +882,11 @@ Page({
     }
     
     // 使用微信小程序的视频播放器
-    wx.navigateTo({
-      url: `/pages/video-player/video-player?video_url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(title)}`
+    // 视频播放功能已被禁用
+    wx.showToast({
+      title: '视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 

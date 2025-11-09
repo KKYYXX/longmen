@@ -529,10 +529,7 @@
           <text class="upload-text">添加图片</text>
         </view>
 
-        <view class="upload-item" bindtap="uploadVideo">
-          <view class="upload-icon">🎥</view>
-          <text class="upload-text">添加视频</text>
-        </view>
+        <!-- 添加视频入口已移除（视频功能被禁用） -->
 
         <view class="upload-item" bindtap="addTime">
           <view class="upload-icon">⏰</view>

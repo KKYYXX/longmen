@@ -272,99 +272,22 @@ Page({
 
   // 视频上传功能
   uploadVideos() {
-    // 显示选择来源的弹窗
-    wx.showActionSheet({
-      itemList: ['从相册选择', '从聊天记录选择', '拍摄视频'],
-      success: (res) => {
-        let sourceType = [];
-        switch (res.tapIndex) {
-          case 0: // 相册
-            sourceType = ['album'];
-            break;
-          case 1: // 聊天记录
-            sourceType = ['album']; // 微信会自动显示聊天记录选项
-            break;
-          case 2: // 拍摄
-            sourceType = ['camera'];
-            break;
-          default:
-            return;
-        }
-        
-        wx.chooseMedia({
-          count: 3,
-          mediaType: ['video'],
-          sourceType: sourceType,
-          maxDuration: 300, // 最大5分钟
-          success: (res) => {
-            console.log('选择的视频文件:', res.tempFiles);
-            this.uploadVideosToServer(res.tempFiles);
-          },
-          fail: (err) => {
-            console.error('选择视频失败:', err);
-            wx.showToast({
-              title: '选择视频失败',
-              icon: 'none'
-            });
-          }
-        });
-      }
+    // 视频上传功能已注释并禁用
+    wx.showToast({
+      title: '视频上传功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 
   // 上传视频到服务器
   uploadVideosToServer(videos) {
-    console.log('开始上传视频:', videos);
-
-    // 批量上传视频到服务器
-    const uploadPromises = videos.map((video, index) => {
-      const fileName = video.name || `文件_${Date.now()}_${index}.mp4`;
-      return fileUpload.uploadVideo(video.tempFilePath, fileName);
+    // 视频上传至服务器的逻辑已注释并禁用
+    wx.showToast({
+      title: '视频上传功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
-
-    Promise.all(uploadPromises)
-      .then(results => {
-        // 处理上传结果
-        results.forEach((result, index) => {
-          if (result.success) {
-            // 添加到已上传视频列表
-            const uploadedVideo = {
-              id: Date.now() + index,
-              name: result.fileName,
-              url: result.fileUrl,
-              serverUrl: result.fileUrl,
-              size: result.fileSize,
-              sizeText: fileUpload.formatFileSize(result.fileSize),
-              duration: videos[index].duration,
-              uploadTime: new Date().toISOString()
-            };
-
-            this.setData({
-              uploadedVideos: [...this.data.uploadedVideos, uploadedVideo]
-            });
-          } else {
-            wx.showToast({
-              title: `视频${index + 1}上传失败: ${result.error || '未知错误'}`,
-              icon: 'none'
-            });
-          }
-        });
-
-        const successCount = results.filter(r => r.success).length;
-        if (successCount > 0) {
-          wx.showToast({
-            title: `已上传${successCount}个视频`,
-            icon: 'success'
-          });
-        }
-      })
-      .catch(error => {
-        console.error('视频上传失败:', error);
-        wx.showToast({
-          title: `视频上传失败: ${error.message}`,
-          icon: 'none'
-        });
-      });
   },
 
   // 删除已上传的文件
@@ -588,8 +511,11 @@ Page({
   // 预览视频
   previewVideo(e) {
     const video = e.currentTarget.dataset.video;
-    wx.navigateTo({
-      url: `/pages/video-player/video-player?url=${encodeURIComponent(video.url)}&title=${encodeURIComponent(video.name)}`
+    // 视频播放功能已被禁用
+    wx.showToast({
+      title: '视频播放功能已被禁用',
+      icon: 'none',
+      duration: 2000
     });
   },
 

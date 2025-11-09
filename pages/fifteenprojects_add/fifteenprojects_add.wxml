@@ -39,16 +39,6 @@
       </view>
     </view>
 
-    <view class="function-card" bindtap="uploadVideos">
-      <view class="card-content">
-        <text class="card-title">视频上传</text>
-        <text class="card-desc">从相册或聊天记录选择视频</text>
-      </view>
-      <view class="icon-circle video-icon-circle">
-        <view class="card-icon video-icon">
-          <text class="icon-text">🎥</text>
-        </view>
-      </view>
-    </view>
+    <!-- 视频上传入口已移除（视频功能被禁用） -->
   </view>
 </view>

@@ -92,8 +92,15 @@ function previewImage(imageUrl, allImageUrls = [], currentUrl = null) {
  * @param {string} title - 视频标题
  */
 function previewVideo(videoUrl, title = '视频预览') {
+  /* 视频预览/播放功能已注释，避免跳转到视频播放页面
   wx.navigateTo({
     url: `/pages/video-player/video-player?videoUrl=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(title)}`
+  });
+  */
+  wx.showToast({
+    title: '视频功能已被禁用',
+    icon: 'none',
+    duration: 2000
   });
 }
 
