@@ -7,7 +7,7 @@
   <!-- 步骤1：选择项目 -->
   <view class="step-section" wx:if="{{currentStep === 1}}">
     <view class="step-header">
-      <text class="step-title">步骤1：选择第几个项目</text>
+      <text class="step-title">步骤1：请选择项目</text>
     </view>
     
     <!-- 项目数量信息 -->

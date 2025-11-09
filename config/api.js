@@ -2,7 +2,7 @@
 const config = {
   // 开发环境配置
   development: {
-    baseUrl: 'http://175.178.197.202:80',
+    baseUrl: 'http://159.75.178.46:80',
     timeout: 10000
   },
   
@@ -14,12 +14,12 @@ const config = {
   
   // 生产环境配置
   production: {
-    baseUrl: 'https://your-production-server.com',
+    baseUrl: 'https://zhihuilongmenzhen.cn',
     timeout: 15000
   }
 };
 
-// 当前环境（开发模式）
+// 当前环境（生产模式）
 const currentEnv = 'development';
 
 // API接口配置
