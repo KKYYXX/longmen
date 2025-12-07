@@ -647,32 +647,103 @@ Page({
     wx.setStorageSync('isLoggedIn', true);
     wx.setStorageSync('loginType', 'normal');
 
-    // 普通登录成功处理
+    // 普通登录成功处理：先提示，再检查权限
     wx.showToast({
       title: '普通登录成功',
       icon: 'success',
       duration: 1500,
       success: () => {
-        // 延迟跳转到登录后的页面，使用reLaunch避免回退问题
         setTimeout(() => {
-          wx.reLaunch({
-            url: '/pages/登录后的页面/登录后的页面',
-            success: () => {
-              console.log('跳转登录后页面成功');
-            },
-            fail: (err) => {
-              console.error('跳转登录后页面失败:', err);
-              wx.showToast({
-                title: '跳转失败',
-                icon: 'none'
-              });
-            }
+          // 检查权限
+          this.checkUserPermission(user, () => {
+            // 有权限：跳转到登录后页面
+            wx.reLaunch({
+              url: '/pages/登录后的页面/登录后的页面'
+            });
+          }, () => {
+            // 无权限：跳转到 homepage 并弹窗提示
+            wx.switchTab({
+              url: '/pages/homepage/homepage',
+              success: () => {
+                wx.showModal({
+                  title: '提示',
+                  content: '您暂无权限进行查看',
+                  confirmText: '去登录',
+                  cancelText: '取消',
+                  success: (res) => {
+                    if (res.confirm) {
+                      wx.switchTab({
+                        url: '/pages/登录后的页面/登录后的页面'
+                      });
+                    }
+                  }
+                });
+              }
+            });
           });
         }, 1500);
       }
     });
 
     console.log('普通登录成功：', user);
+  },
+
+  // 权限检查函数（与 homepage 中逻辑保持一致）
+  checkUserPermission(user, onAllowed, onDenied) {
+    try {
+      const url = apiConfig.buildAppUrl('/user/query_15');
+      console.log('检查用户权限，调用接口：', url);
+      wx.request({
+        url: url,
+        method: 'GET',
+        success: (res) => {
+          console.log('权限接口返回：', res);
+          if (res.statusCode === 200 && res.data) {
+            let list = [];
+            try {
+              if (Array.isArray(res.data)) {
+                list = res.data;
+              } else if (Array.isArray(res.data.data)) {
+                list = res.data.data;
+              } else if (res.data.data) {
+                list = Array.isArray(res.data.data) ? res.data.data : [res.data.data];
+              }
+            } catch (e) {
+              console.error('解析权限接口返回数据失败', e, res);
+              list = [];
+            }
+
+            console.log('归一化后的权限列表：', list);
+            const curName = (user.name || user.realname || '').toString().trim();
+            const curPhone = (user.phone || user.telephone || user.mobile || '').toString().trim();
+
+            const match = list.find(item => {
+              if (!item) return false;
+              const name = (item.name || item.realname || item.user_name || item.username || '').toString().trim();
+              const phone = (item.phone || item.telephone || item.mobile || item.tel || '').toString().trim();
+              return ((name && curName && name === curName) && (phone && curPhone && phone === curPhone))
+                || (phone && curPhone && phone === curPhone);
+            });
+
+            if (match) {
+              if (typeof onAllowed === 'function') onAllowed();
+            } else {
+              if (typeof onDenied === 'function') onDenied();
+            }
+          } else {
+            console.error('权限接口返回异常或无数据', res);
+            if (typeof onDenied === 'function') onDenied();
+          }
+        },
+        fail: (err) => {
+          console.error('权限接口请求失败', err);
+          if (typeof onDenied === 'function') onDenied();
+        }
+      });
+    } catch (e) {
+      console.error('检查权限时发生异常', e);
+      if (typeof onDenied === 'function') onDenied();
+    }
   },
 
   /**
@@ -695,20 +766,43 @@ Page({
       icon: 'success',
       duration: 1500,
       success: () => {
-        // 延迟跳转到权限管理中心，使用navigateTo保持页面堆栈
+        // 延迟检查权限并根据结果跳转到权限管理中心或返回 homepage
         setTimeout(() => {
-          wx.navigateTo({
-            url: '/pages/admin/admin?name=' + encodeURIComponent(user.name) + '&phone=' + user.phone,
-            success: () => {
-              console.log('跳转权限管理中心成功');
-            },
-            fail: (err) => {
-              console.error('跳转权限管理中心失败:', err);
-              wx.showToast({
-                title: '跳转失败',
-                icon: 'none'
-              });
-            }
+          this.checkUserPermission(user, () => {
+            // 有权限，跳转到权限管理中心
+            wx.navigateTo({
+              url: '/pages/admin/admin?name=' + encodeURIComponent(user.name) + '&phone=' + user.phone,
+              success: () => {
+                console.log('跳转权限管理中心成功');
+              },
+              fail: (err) => {
+                console.error('跳转权限管理中心失败:', err);
+                wx.showToast({
+                  title: '跳转失败',
+                  icon: 'none'
+                });
+              }
+            });
+          }, () => {
+            // 无权限：跳转到 homepage 并提示
+            wx.switchTab({
+              url: '/pages/homepage/homepage',
+              success: () => {
+                wx.showModal({
+                  title: '提示',
+                  content: '您暂无权限进行查看',
+                  confirmText: '去登录',
+                  cancelText: '取消',
+                  success: (res) => {
+                    if (res.confirm) {
+                      wx.switchTab({
+                        url: '/pages/登录后的页面/登录后的页面'
+                      });
+                    }
+                  }
+                });
+              }
+            });
           });
         }, 1500);
       }

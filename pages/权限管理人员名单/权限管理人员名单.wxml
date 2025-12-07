@@ -24,14 +24,60 @@
     </view>
     
     <view class="button-group">
+
+      <!-- 典型案例查询按钮 -->
+      <view class="btn-container">
+        <button class="btn primary-btn" bindtap="onTypicalCasesQuery">
+          <view class="btn-icon">
+            <text class="icon">🔎</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">典型案例查询</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
+
       <!-- 项目查询按钮 -->
       <view class="btn-container">
         <button class="btn primary-btn" bindtap="onProjectQuery">
           <view class="btn-icon">
-            <text class="icon">🔍</text>
+            <text class="icon">🔎</text>
           </view>
           <view class="btn-content">
             <text class="btn-text">项目查询</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
+
+      <!-- 政策文件查询按钮 -->
+      <view class="btn-container">
+        <button class="btn primary-btn" bindtap="onPolicyQuery">
+          <view class="btn-icon">
+            <text class="icon">🔎</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">政策文件查询</text>
+          </view>
+          <view class="btn-arrow">
+            <text class="arrow">›</text>
+          </view>
+        </button>
+      </view>
+
+      <!-- 工作总结查询按钮 -->
+      <view class="btn-container">
+        <button class="btn primary-btn" bindtap="onWorkSummyQuery">
+          <view class="btn-icon">
+            <text class="icon">🔎</text>
+          </view>
+          <view class="btn-content">
+            <text class="btn-text">工作总结查询</text>
           </view>
           <view class="btn-arrow">
             <text class="arrow">›</text>

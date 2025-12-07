@@ -35,6 +35,63 @@ Page({
       }
     });
   },
+
+  // 典型案例查询
+  onTypicalCasesQuery() {
+    console.log('点击典型案例查询按钮');
+    wx.navigateTo({
+      url: '/pages/典型案例查询权限人员/典型案例查询权限人员',
+      success: function() {
+        console.log('成功跳转到典型案例查询页面');
+      },
+      fail: function(err) {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  },
+
+  // 政策文件查询
+  onPolicyQuery() {
+    console.log('点击政策文件查询按钮');
+    wx.navigateTo({
+      url: '/pages/政策文件查询权限人员/政策文件查询权限人员',
+      success: function() {
+        console.log('成功跳转到政策文件查询页面');
+      },
+      fail: function(err) {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  },
+
+  // 工作总结查询
+  onWorkSummyQuery() {
+    console.log('点击工作总结查询按钮');
+    wx.navigateTo({
+      url: '/pages/工作总结查询权限人员/工作总结查询权限人员',
+      success: function() {
+        console.log('成功跳转到工作总结查询页面');
+      },
+      fail: function(err) {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  },
   
   onProjectModify() {
     console.log('点击项目修改权限人员按钮');

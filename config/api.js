@@ -2,7 +2,12 @@
 const config = {
   // 开发环境配置
   development: {
-    baseUrl: 'http://159.75.178.46:80',
+    //连接服务器
+    //baseUrl: 'http://159.75.178.46:80',
+
+    //本地连接
+    baseUrl: 'http://127.0.0.1:5000',
+    
     timeout: 10000
   },
   
@@ -20,8 +25,9 @@ const config = {
 };
 
 // 当前环境（生产模式）
-const currentEnv = 'development';
-
+const currentEnv = 'production';
+// 当前环境（开发模式）
+//const currentEnv = 'development';
 // API接口配置
 const apiConfig = {
   // 基础配置

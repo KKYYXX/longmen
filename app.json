@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/homepage/homepage",
     "pages/index/index",
     "pages/personal/personal",
     "pages/admin/admin",
@@ -37,7 +38,10 @@
     "pages/项目进度内容/项目进度内容",
     "pages/document-viewer/document-viewer",
     "pages/登录后的页面/登录后的页面",
-    "pages/worksummy/worksummy"
+    "pages/worksummy/worksummy",
+    "pages/典型案例查询权限人员/典型案例查询权限人员",
+    "pages/政策文件查询权限人员/政策文件查询权限人员",
+    "pages/工作总结查询权限人员/工作总结查询权限人员"
   ],
   "window": {
     "backgroundTextStyle": "light",

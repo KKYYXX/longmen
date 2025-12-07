@@ -682,6 +682,70 @@ Page({
   },
 
   /**
+   * 检查当前用户是否在有权限的名单中（调用 /app/user/query_15）
+   * onAllowed: function() 当有权限时执行
+   * onDenied: function() 当没有权限时执行
+   */
+  checkUserPermission(user, onAllowed, onDenied) {
+    try {
+      const url = apiConfig.buildAppUrl('/user/query_15');
+      console.log('检查用户权限，调用接口：', url);
+      wx.request({
+        url: url,
+        method: 'GET',
+        success: (res) => {
+          console.log('权限接口返回：', res);
+          if (res.statusCode === 200 && res.data) {
+            let list = [];
+            try {
+              if (Array.isArray(res.data)) {
+                list = res.data;
+              } else if (Array.isArray(res.data.data)) {
+                list = res.data.data;
+              } else if (res.data.data) {
+                list = Array.isArray(res.data.data) ? res.data.data : [res.data.data];
+              }
+            } catch (e) {
+              console.error('解析权限接口返回数据失败', e, res);
+              list = [];
+            }
+
+            console.log('归一化后的权限列表：', list);
+            const curName = (user.name || user.realname || '').toString().trim();
+            const curPhone = (user.phone || user.telephone || user.mobile || '').toString().trim();
+
+            const match = list.find(item => {
+              if (!item) return false;
+              const name = (item.name || item.realname || item.user_name || item.username || '').toString().trim();
+              const phone = (item.phone || item.telephone || item.mobile || item.tel || '').toString().trim();
+              return ((name && curName && name === curName) && (phone && curPhone && phone === curPhone))
+                || (phone && curPhone && phone === curPhone);
+            });
+
+            if (match) {
+              console.log('用户通过权限校验');
+              if (typeof onAllowed === 'function') onAllowed();
+            } else {
+              console.warn('用户未通过权限校验');
+              if (typeof onDenied === 'function') onDenied();
+            }
+          } else {
+            console.error('权限接口返回异常或无数据', res);
+            if (typeof onDenied === 'function') onDenied();
+          }
+        },
+        fail: (err) => {
+          console.error('权限接口请求失败', err);
+          if (typeof onDenied === 'function') onDenied();
+        }
+      });
+    } catch (e) {
+      console.error('检查权限时发生异常', e);
+      if (typeof onDenied === 'function') onDenied();
+    }
+  },
+
+  /**
    * 处理权限管理登录成功
    */
   handleAdminLoginSuccess(user) {
@@ -772,6 +836,17 @@ Page({
               setTimeout(() => {
                 // 刷新页面状态，显示登录表单
                 this.loadUserInfo();
+                // 退出登录后使用 reLaunch 返回 homepage（非 tab 页用 switchTab 无效）
+                try {
+                  wx.reLaunch({
+                    url: '/pages/homepage/homepage'
+                  });
+                } catch (e) {
+                  console.error('reLaunch 到 homepage 失败，尝试 navigateTo', e);
+                  wx.navigateTo({
+                    url: '/pages/homepage/homepage'
+                  });
+                }
               }, 1500);
             }
           });

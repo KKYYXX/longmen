@@ -1,0 +1,5 @@
+/* pages/homepage/homepage.wxss */
+.container {
+  min-height: 100vh;
+  background-color: transparent;
+}
